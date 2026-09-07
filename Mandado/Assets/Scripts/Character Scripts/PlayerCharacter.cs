@@ -12,8 +12,13 @@ public class PlayerCharacter : BaseCharacter
 public class LevelUpActionSet
 {
     [SerializeField] private string _id;
-    [SerializeField] private string _prefixName;
+    
+    [Header("Level 2")]
+    [SerializeField] private string _levelTwoPrefixName;
     [SerializeField] private DiceActionSet _levelTwoAction;
+    
+    [Header("Level 3")]
+    [SerializeField] private string _levelThreePrefixName;
     [SerializeField] private DiceActionSet _levelThreeAction;
 }
 

@@ -2,17 +2,33 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BattleSystem : MonoBehaviour
+public class BattleSystem : BaseSystem
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private List<BaseCharacter> _fakePlayerData = new List<BaseCharacter>();
+    [SerializeField] private List<BaseCharacter> _fakeEnemyData = new List<BaseCharacter>();
+    [SerializeField] private FieldController _fieldController;
+    
+    private void Start()
     {
-        
+        LoadCharacters(_fakePlayerData, _fakeEnemyData);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void LoadCharacters(List<BaseCharacter> playerCharacters, List<BaseCharacter> enemyCharacters)
     {
+        List<CharacterData> data = new List<CharacterData>(); 
         
+        foreach (var character in playerCharacters)
+        {
+            data.Add(character.GetFullHealthCharacterData());
+        }
+        
+        _fieldController.LoadPlayerCharacters(data);
+        
+        foreach (var character in enemyCharacters)
+        {
+            data.Add(character.GetFullHealthCharacterData());
+        }
+        
+        _fieldController.LoadEnemyCharacters(data);
     }
 }

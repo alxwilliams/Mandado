@@ -26,7 +26,10 @@ public enum ActionType
     Damage,
     HealSelf,
     HealNearby,
-    DamageSelf
+    DamageSelf,
+    Guard,
+    Order
+    //Sometimes We'll Need Specific IDs if, for example, the 3FP cast does something different. 
 }
 
 
