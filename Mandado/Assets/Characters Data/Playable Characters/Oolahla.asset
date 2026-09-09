@@ -20,7 +20,7 @@ MonoBehaviour:
     _rollFourActions: []
     _rollFiveActions: []
     _focusActions: []
-  _width: 5
+  _width: 6
   _frontSprite: {fileID: 21300000, guid: 186cd5f4665feac459524f1f96bf93d5, type: 3}
   _backSprite: {fileID: 21300000, guid: 62fcc11a054c80847b774fd743db8bb1, type: 3}
   _levelUpSets:

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,42 +11,38 @@ public class FieldController : MonoBehaviour
 
     [SerializeField] private float _sideBySideBufferValue = 2;
 
-    private float _currentSpawnOffset = 0;
     public void LoadPlayerCharacters(List<CharacterData> characters)
     {
-        StartCoroutine(LoadCharactersCoroutine(characters));
+        StartCoroutine(LoadCharactersCoroutine(characters,_playerStartLocation));
     }
     
     public void LoadEnemyCharacters(List<CharacterData> characters)
     {
-        StartCoroutine(LoadCharactersCoroutine(characters));
+        StartCoroutine(LoadCharactersCoroutine(characters, _enemyStartLocation));
     }
     
-    public IEnumerator LoadCharactersCoroutine(List<CharacterData> characters)
+    public IEnumerator LoadCharactersCoroutine(List<CharacterData> characters, Transform startLocation)
     {
         int i = 0;
-        _currentSpawnOffset = 0;
+        float currentSpawnOffset = 0;
+        
+        foreach (Transform child in startLocation)
+        {
+            Destroy(child.gameObject);
+        }
+
+        yield return null;
         
         foreach (var character in characters)
         {
-            if(i == 0)
-            {
-                _currentSpawnOffset += character.width / 2 + _sideBySideBufferValue;
-            }
-            else
-            {
-                _currentSpawnOffset += character.width + _sideBySideBufferValue;
-            }
-            
-            GameObject obj = Instantiate(_characterPrefab, _playerStartLocation);
+            GameObject obj = Instantiate(_characterPrefab, startLocation);
             
             yield return null;
             
-            if(i > 0)
-            {
-                obj.transform.position += _currentSpawnOffset * Vector3.right;
-            }
             
+            obj.transform.position += currentSpawnOffset * Vector3.right;
+            currentSpawnOffset += character.width + _sideBySideBufferValue;
+
             InGameCharacterController controller = obj.GetComponent<InGameCharacterController>();
             
             yield return null;
@@ -57,5 +54,11 @@ public class FieldController : MonoBehaviour
         }
     }
 
-    
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(_playerStartLocation.position, _playerStartLocation.position + 15 * Vector3.right);
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(_enemyStartLocation.position, _enemyStartLocation.position + 15 * Vector3.right);
+    }
 }
