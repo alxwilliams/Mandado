@@ -11,6 +11,9 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
     public static Action InitializedEvent;
 
+    public MenuSystem MenuSystem => _menuSystem;
+    public BattleSystem BattleSystem => _battleSystem;
+
     private bool _initialized = false;
 
     public bool Initialized => _initialized;
@@ -33,8 +36,8 @@ public class GameManager : MonoBehaviour
 
     IEnumerator Initialize()
     {
-        _battleSystem.Initialize(this,_menuSystem.UpdateBattleMenuText);
         _menuSystem.Initialize(this);
+        _battleSystem.Initialize(this);
         
         _initialized = true;
         InitializedEvent?.Invoke();
@@ -45,7 +48,7 @@ public class GameManager : MonoBehaviour
     [ContextMenu("Show Battle Menu")]
     public void StartBattle()
     {
-        _menuSystem.ShowBattleMenu();
+        _battleSystem.ShowBattleMenu();
     }
 
 }

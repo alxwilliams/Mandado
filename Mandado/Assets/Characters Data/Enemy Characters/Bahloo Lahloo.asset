@@ -14,12 +14,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _name: Bahloo Lahloo
   _baseActionSet:
-    _rollOneActions: []
-    _rollTwoActions: []
-    _rollThreeActions: []
-    _rollFourActions: []
-    _rollFiveActions: []
-    _focusActions: []
-  _width: 4
+    maxHealth: 30
+    rollOneActions:
+    - value: 1
+      type: 0
+    rollTwoActions:
+    - value: 2
+      type: 0
+    rollThreeActions:
+    - value: 3
+      type: 0
+    rollFourActions:
+    - value: 4
+      type: 0
+    rollFiveActions:
+    - value: 5
+      type: 0
+    focusActions:
+    - value: 0
+      type: 0
+  _width: 15
   _frontSprite: {fileID: 21300000, guid: bcfb967ef4c16064487188e2d391444b, type: 3}
   _backSprite: {fileID: 21300000, guid: bcfb967ef4c16064487188e2d391444b, type: 3}

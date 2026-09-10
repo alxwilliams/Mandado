@@ -13,28 +13,21 @@ public class BaseCharacter : ScriptableObject
     [SerializeField] private Sprite _frontSprite;
     [SerializeField] private Sprite _backSprite;
 
-    private CharacterData _data;
-    private bool _characterLoaded = false;
 
-    private void OnEnable()
-    {
-        _characterLoaded = false;
-    }
 
     public CharacterData GetFullHealthCharacterData()
     {
-        if (!_characterLoaded)
-        {
-            _data.name = _name;
-            
-            _data.frontSprite = _frontSprite;
-            _data.backSprite = _backSprite;
-            _data.width = _width;
+        CharacterData data = new CharacterData();
+        
+        data.name = _name;
+        data.currentHealth =_baseActionSet.maxHealth;
+        data.actionSet = _baseActionSet;
+        
+        data.frontSprite = _frontSprite;
+        data.backSprite = _backSprite;
+        data.width = _width;
 
-            _characterLoaded = true;
-        }
-
-        return _data;
+        return data;
     }
 
 }
@@ -43,6 +36,8 @@ public class BaseCharacter : ScriptableObject
 public class CharacterData
 {
     public string name;
+    public float currentHealth;
+    public DiceActionSet actionSet;
     public float width;
     public Sprite frontSprite;
     public Sprite backSprite;

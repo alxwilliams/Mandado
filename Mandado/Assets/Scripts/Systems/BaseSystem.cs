@@ -13,6 +13,10 @@ public class BaseSystem : MonoBehaviour
 
     public virtual void Initialize(GameManager gameManager)
     {
+        if (_initialized)
+        {
+            return;
+        }
         _gameManager = gameManager;
         InitializedAction?.Invoke();
         _initialized = true;

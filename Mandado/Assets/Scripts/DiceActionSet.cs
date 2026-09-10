@@ -4,20 +4,21 @@ using System.Collections.Generic;
 [Serializable]
 public class DiceActionSet
 {
-    public List<CharacterAction> _rollOneActions;
-    public List<CharacterAction> _rollTwoActions;
-    public List<CharacterAction> _rollThreeActions;
-    public List<CharacterAction> _rollFourActions;
-    public List<CharacterAction> _rollFiveActions;
+    public float maxHealth = 15;
+    public List<CharacterAction> rollOneActions;
+    public List<CharacterAction> rollTwoActions;
+    public List<CharacterAction> rollThreeActions;
+    public List<CharacterAction> rollFourActions;
+    public List<CharacterAction> rollFiveActions;
 
-    public List<CharacterAction> _focusActions;
+    public List<CharacterAction> focusActions;
 }
 
 [Serializable]
 public class CharacterAction
 {
-    public float _num;
-    public ActionType _type;
+    public float value;
+    public ActionType type;
 }
 
 [Serializable]

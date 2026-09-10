@@ -4,27 +4,15 @@ using UnityEngine;
 
 public class MenuSystem : BaseSystem
 {
-    [SerializeField] private BattleMenu _battleMenu;
     private BaseMenu _activeMenu;
-    public override void Initialize(GameManager gameManager)
-    {
-        base.Initialize(gameManager);
-    }
 
-    public void UpdateBattleMenuText(string text)
+    public void SetNewMenu(BaseMenu newMenu)
     {
-        _battleMenu.UpdateDebugText(text);
-    }
-    
-    public void ShowBattleMenu()
-    {
-        if (_activeMenu != _battleMenu && _activeMenu.Active)
+        if (_activeMenu != null && _activeMenu != newMenu && _activeMenu.Active)
         {
             _activeMenu.Show(false);
         }
-
-        _activeMenu = _battleMenu;
         
-        _battleMenu.Show(true);
+        _activeMenu = newMenu;
     }
 }
