@@ -4,7 +4,6 @@ using System.Collections.Generic;
 [Serializable]
 public class DiceActionSet
 {
-    public float maxHealth = 15;
     public List<CharacterAction> rollOneActions;
     public List<CharacterAction> rollTwoActions;
     public List<CharacterAction> rollThreeActions;
@@ -12,6 +11,13 @@ public class DiceActionSet
     public List<CharacterAction> rollFiveActions;
 
     public List<CharacterAction> focusActions;
+}
+
+[Serializable]
+public class CompoundDiceActionSet
+{
+    public int diceRollSpan = 1;
+    public DiceActionSet _diceActionSet;
 }
 
 [Serializable]
