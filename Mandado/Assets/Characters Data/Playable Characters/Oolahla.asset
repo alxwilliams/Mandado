@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _name: Oolahla
   _baseActionSet:
-    _health: 15
+    maxHealth: 15
     rollOneActions:
     - value: 1
       type: 0
@@ -40,7 +40,7 @@ MonoBehaviour:
   - _id: Vanguard
     _levelTwoPrefixName: Double Vanguard
     _levelTwoAction:
-      _health: 20
+      maxHealth: 15
       rollOneActions: []
       rollTwoActions: []
       rollThreeActions: []
@@ -49,7 +49,7 @@ MonoBehaviour:
       focusActions: []
     _levelThreePrefixName: Elite Vanguard
     _levelThreeAction:
-      _health: 25
+      maxHealth: 15
       rollOneActions: []
       rollTwoActions: []
       rollThreeActions: []

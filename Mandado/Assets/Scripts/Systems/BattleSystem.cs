@@ -15,6 +15,8 @@ public class BattleSystem : BaseSystem
     private List<CharacterData> _currentPlayerCharacters;
     private List<CharacterData> _currentEnemyCharacters;
 
+    private Coroutine _attackRoutine;
+
     private int[] _diceRolls = new int[] {0,0,0,0,0,0};
 
     public override void Initialize(GameManager gameManager)
@@ -31,6 +33,8 @@ public class BattleSystem : BaseSystem
     {
         List<CharacterData> playerData = new List<CharacterData>(); 
         List<CharacterData> enemyData = new List<CharacterData>(); 
+        
+        _fieldController.WipeCharacterDictionary();
         
         foreach (var character in playerCharacters)
         {
@@ -71,30 +75,43 @@ public class BattleSystem : BaseSystem
 
     private void PlayerAttack()
     {
+        if (_attackRoutine != null)
+        {
+            StopCoroutine(_attackRoutine);
+        }
+
+        _attackRoutine = StartCoroutine(PlayerAttackRoutine());
+    }
+    
+    private IEnumerator PlayerAttackRoutine()
+    {
         for (int i = 0; i < 6; i++)
         {
             if (_diceRolls[i] > 0)
             {
                 if (_diceRolls[i] == 1)
                 {
-                    DealWithAction(_currentPlayerCharacters[i].actionSet.rollOneActions);
+                    yield return DealWithAction(_currentPlayerCharacters[i].actionSet.rollOneActions, _currentPlayerCharacters[i]);
                 }
                 else if (_diceRolls[i] == 2)
                 {
-                    DealWithAction(_currentPlayerCharacters[i].actionSet.rollTwoActions);
+                    yield return DealWithAction(_currentPlayerCharacters[i].actionSet.rollTwoActions, _currentPlayerCharacters[i]);
                 }
                 else if (_diceRolls[i] == 3)
                 {
-                    DealWithAction(_currentPlayerCharacters[i].actionSet.rollThreeActions);
+                    yield return DealWithAction(_currentPlayerCharacters[i].actionSet.rollThreeActions, _currentPlayerCharacters[i]);
                 }
                 else if (_diceRolls[i] == 4)
                 {
-                    DealWithAction(_currentPlayerCharacters[i].actionSet.rollFourActions);
+                    yield return DealWithAction(_currentPlayerCharacters[i].actionSet.rollFourActions, _currentPlayerCharacters[i]);
                 }
                 else if (_diceRolls[i] == 5)
                 {
-                    DealWithAction(_currentPlayerCharacters[i].actionSet.rollFiveActions);
+                    yield return DealWithAction(_currentPlayerCharacters[i].actionSet.rollFiveActions, _currentPlayerCharacters[i], true);
                 }
+
+                ShowCurrentHealth();
+                yield return new WaitForSeconds(.25f);
             }
             else
             {
@@ -104,20 +121,33 @@ public class BattleSystem : BaseSystem
         ShowCurrentHealth();
     }
 
-    private void DealWithAction(List<CharacterAction> actions)
+    private IEnumerator DealWithAction(List<CharacterAction> actions, CharacterData data, bool maxRoll = false)
     {
         foreach (var action in actions)
         {
             if (action.type == ActionType.Damage)
             {
-                DealDamageToEnemy(action.value);
+                if(!maxRoll)
+                {
+                    yield return new WaitForSeconds(_fieldController.CharacterAttack(data));
+                    DealDamageToEnemy(action.value);
+                }
+                else
+                {
+                    yield return new WaitForSeconds(_fieldController.CharacterBigAttack(data));
+                    DealDamageToEnemy(action.value);
+                }
             }
+
+            yield return new WaitForSeconds(0.1f);
         }
     }
 
     private void DealDamageToEnemy(float num)
     {
-        _currentEnemyCharacters[Random.Range(0, _currentEnemyCharacters.Count)].currentHealth -= num;
+        int enemyIndex = Random.Range(0, _currentEnemyCharacters.Count);
+        _currentEnemyCharacters[enemyIndex].currentHealth -= num;
+        _fieldController.CharacterTakeDamage(_currentEnemyCharacters[enemyIndex], num);
     }
     
     private void RollDice()
@@ -146,7 +176,12 @@ public class BattleSystem : BaseSystem
     {
         _battleMenu.Show(true);
     }
-    
-    
-    
+
+    private void OnDestroy()
+    {
+        if (_attackRoutine != null)
+        {
+            StopCoroutine(_attackRoutine);
+        }
+    }
 }

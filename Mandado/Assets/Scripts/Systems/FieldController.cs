@@ -11,6 +11,12 @@ public class FieldController : MonoBehaviour
 
     [SerializeField] private float _sideBySideBufferValue = 2;
 
+    private Dictionary<CharacterData, InGameCharacterController> _controllerDictionary = new Dictionary<CharacterData, InGameCharacterController>();
+
+    public void WipeCharacterDictionary()
+    {
+        _controllerDictionary = new Dictionary<CharacterData, InGameCharacterController>();
+    }
     public void LoadPlayerCharacters(List<CharacterData> characters)
     {
         StartCoroutine(LoadCharactersCoroutine(characters,_playerStartLocation));
@@ -38,8 +44,7 @@ public class FieldController : MonoBehaviour
             GameObject obj = Instantiate(_characterPrefab, startLocation);
             
             yield return null;
-            
-            
+
             obj.transform.position += currentSpawnOffset * Vector3.right;
             currentSpawnOffset += character.width + _sideBySideBufferValue;
 
@@ -47,12 +52,28 @@ public class FieldController : MonoBehaviour
             
             yield return null;
             controller.SetSprites(character.frontSprite,character.backSprite);
-            
-            
+
+            _controllerDictionary.TryAdd(character, controller);
 
             i++;
         }
     }
+
+    public float CharacterAttack(CharacterData data)
+    {
+        return _controllerDictionary[data].PlayAttack();
+    }
+    
+    public float CharacterBigAttack(CharacterData data)
+    {
+        return _controllerDictionary[data].PlayBigAttack();
+    }
+
+    public void CharacterTakeDamage(CharacterData data, float num)
+    {
+        _controllerDictionary[data].TakeDamage(num);
+    }
+
 
     private void OnDrawGizmos()
     {

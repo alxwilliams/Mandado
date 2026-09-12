@@ -25,6 +25,7 @@ public class CharacterAction
 public enum ActionType
 {
     Damage,
+    BigAttack,
     HealSelf,
     HealNearby,
     DamageSelf,

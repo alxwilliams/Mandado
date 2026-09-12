@@ -18,6 +18,8 @@ MonoBehaviour:
     rollOneActions:
     - value: 1
       type: 0
+    - value: 1
+      type: 0
     rollTwoActions:
     - value: 2
       type: 0
