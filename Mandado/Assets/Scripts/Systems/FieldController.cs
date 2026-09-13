@@ -13,7 +13,11 @@ public class FieldController : MonoBehaviour
 
     private InGameCharacterController _loadedController;
 
-    private float currentSpawnOffset = 0;
+    private float _currentPlayerSpawnOffset = 0;
+    private float _currentEnemySpawnOffset = 0;
+
+    private Coroutine _playerLoadRoutine;
+    private Coroutine _enemyLoadRoutine;
 
     private Dictionary<PlayerCharacterData, InGameCharacterController> _playerControllerDictionary = new Dictionary<PlayerCharacterData, InGameCharacterController>();
     private Dictionary<EnemyCharacterData, InGameCharacterController> _enemyControllerDictionary = new Dictionary<EnemyCharacterData, InGameCharacterController>();
@@ -24,64 +28,84 @@ public class FieldController : MonoBehaviour
     }
     public void LoadPlayerCharacters(List<PlayerCharacterData> characters)
     {
-        StartCoroutine(LoadPlayerCharactersCoroutine(characters));
+        if (_playerLoadRoutine != null)
+        {
+            StopCoroutine(_playerLoadRoutine);
+        }
+        _playerLoadRoutine = StartCoroutine(LoadPlayerCharactersCoroutine(characters));
     }
     
     public void LoadEnemyCharacters(List<EnemyCharacterData> characters)
     {
+        if (_enemyLoadRoutine != null)
+        {
+            StopCoroutine(_enemyLoadRoutine);
+        }
         StartCoroutine(LoadEnemyCharactersCoroutine(characters));
     }
     
     public IEnumerator LoadPlayerCharactersCoroutine(List<PlayerCharacterData> characters)
     {
         int i = 0;
-        float currentSpawnOffset = 0;
+        _currentPlayerSpawnOffset = 0;
         
         foreach (Transform child in _playerStartLocation)
         {
-            Destroy(child.gameObject);
+            DestroyImmediate(child.gameObject);
         }
 
         yield return null;
         
         foreach (var character in characters)
         {
-            yield return CreateCharacterController(_playerStartLocation, character.width, character.frontSprite,character.backSprite);
+            yield return CreateCharacterController(true, character.width, character.frontSprite,character.backSprite);
             _playerControllerDictionary.TryAdd(character, _loadedController);
 
             i++;
         }
+
+        _playerLoadRoutine = null;
     }
     
     public IEnumerator LoadEnemyCharactersCoroutine(List<EnemyCharacterData> characters)
     {
         int i = 0;
-        float currentSpawnOffset = 0;
+        _currentEnemySpawnOffset = 0;
         
         foreach (Transform child in _enemyStartLocation)
         {
-            Destroy(child.gameObject);
+            DestroyImmediate(child.gameObject);
         }
 
         yield return null;
         
         foreach (var character in characters)
         {
-            yield return CreateCharacterController(_enemyStartLocation, character.width, character.frontSprite,character.backSprite);
+            yield return CreateCharacterController(false, character.width, character.frontSprite,character.backSprite);
             _enemyControllerDictionary.TryAdd(character, _loadedController);
 
             i++;
         }
+
+        _enemyLoadRoutine = null;
     }
 
-    private IEnumerator CreateCharacterController(Transform startLocation, float width, Sprite frontSprite, Sprite backSprite)
+    private IEnumerator CreateCharacterController(bool player, float width, Sprite frontSprite, Sprite backSprite)
     {
-        GameObject obj = Instantiate(_characterPrefab, startLocation);
+        GameObject obj = Instantiate(_characterPrefab, player?_playerStartLocation:_enemyStartLocation);
 
         yield return null;
 
-        obj.transform.position += currentSpawnOffset * Vector3.right;
-        currentSpawnOffset += width + _sideBySideBufferValue;
+        if(player)
+        {
+            obj.transform.position += _currentPlayerSpawnOffset * Vector3.right;
+            _currentPlayerSpawnOffset += width + _sideBySideBufferValue;
+        }
+        else
+        {
+            obj.transform.position += _currentEnemySpawnOffset * Vector3.right;
+            _currentEnemySpawnOffset += width + _sideBySideBufferValue;
+        }
 
         InGameCharacterController controller = obj.GetComponent<InGameCharacterController>();
 
