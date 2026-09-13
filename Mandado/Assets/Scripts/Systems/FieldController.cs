@@ -106,9 +106,14 @@ public class FieldController : MonoBehaviour
         return _playerControllerDictionary[data].PlayBigAttack();
     }
 
-    public void CharacterTakeDamage(PlayerCharacterData data, float num)
+    public void PlayerTakeDamage(PlayerCharacterData data, float num)
     {
         _playerControllerDictionary[data].TakeDamage(num);
+    }
+    
+    public void EnemyTakeDamage(EnemyCharacterData data, float num)
+    {
+        _enemyControllerDictionary[data].TakeDamage(num);
     }
 
 

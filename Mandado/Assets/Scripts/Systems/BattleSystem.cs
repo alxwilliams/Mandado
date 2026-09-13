@@ -260,14 +260,14 @@ public class BattleSystem : BaseSystem
     {
         int enemyIndex = Random.Range(0, _currentEnemyCharacters.Count);
         _currentEnemyCharacters[enemyIndex].currentHealth -= num;
-        //_fieldController.CharacterTakeDamage(_currentEnemyCharacters[enemyIndex], num);
+        _fieldController.EnemyTakeDamage(_currentEnemyCharacters[enemyIndex], num);
     }
     
     private void DealDamageToPlayer(float num)
     {
         int playerIndex = Random.Range(0, _currentPlayerCharacters.Count);
         _currentPlayerCharacters[playerIndex].currentHealth -= num;
-        //_fieldController.CharacterTakeDamage(_currentEnemyCharacters[enemyIndex], num);
+        _fieldController.PlayerTakeDamage(_currentPlayerCharacters[playerIndex], num);
     }
     
     private void RollDice()
