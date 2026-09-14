@@ -115,19 +115,29 @@ public class FieldController : MonoBehaviour
         _loadedController = controller;
     }
 
-    public float EnemyAttack(EnemyCharacterData data)
+    public void PlayerCharacterGetHealed(PlayerCharacterData data, float num)
     {
-        return _enemyControllerDictionary[data].PlayAttack();
-    }
-
-    public float CharacterAttack(PlayerCharacterData data)
-    {
-        return _playerControllerDictionary[data].PlayAttack();
+        _playerControllerDictionary[data].GetHealed(num);
     }
     
-    public float CharacterBigAttack(PlayerCharacterData data)
+    public void EnemyCharacterGetHealed(EnemyCharacterData data, float num)
     {
-        return _playerControllerDictionary[data].PlayBigAttack();
+        _enemyControllerDictionary[data].GetHealed(num);
+    }
+    
+    public float EnemyCharacterMoveForward(EnemyCharacterData data)
+    {
+        return _enemyControllerDictionary[data].MoveForward();
+    }
+
+    public float PlayerCharacterMoveForward(PlayerCharacterData data)
+    {
+        return _playerControllerDictionary[data].MoveForward();
+    }
+    
+    public float PlayerCharacterMoveForwardFullDiceRoll(PlayerCharacterData data)
+    {
+        return _playerControllerDictionary[data].MoveForwardFullDiceRoll();
     }
 
     public void PlayerTakeDamage(PlayerCharacterData data, float num)

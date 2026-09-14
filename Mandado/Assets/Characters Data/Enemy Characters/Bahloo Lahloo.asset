@@ -18,7 +18,7 @@ MonoBehaviour:
   _frontSprite: {fileID: 21300000, guid: bcfb967ef4c16064487188e2d391444b, type: 3}
   _backSprite: {fileID: 21300000, guid: bcfb967ef4c16064487188e2d391444b, type: 3}
   _enemyAttacks:
-  - diceRollSpan: 2
+  - diceRollSpan: 3
     _diceActionSet:
       rollOneActions:
       - value: 2
@@ -36,25 +36,25 @@ MonoBehaviour:
       - value: 12
         type: 0
       focusActions: []
-  - diceRollSpan: 1
+  - diceRollSpan: 2
     _diceActionSet:
       rollOneActions:
       - value: 3
-        type: 0
+        type: 2
       rollTwoActions:
       - value: 5
-        type: 0
+        type: 2
       rollThreeActions:
       - value: 7
-        type: 0
+        type: 2
       rollFourActions:
       - value: 9
         type: 2
       rollFiveActions:
       - value: 15
-        type: 0
+        type: 2
       focusActions: []
-  - diceRollSpan: 2
+  - diceRollSpan: 1
     _diceActionSet:
       rollOneActions:
       - value: 1

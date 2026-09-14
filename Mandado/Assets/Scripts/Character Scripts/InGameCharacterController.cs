@@ -34,13 +34,19 @@ public class InGameCharacterController : MonoBehaviour
         _effectBoxAnimator.SetTrigger("Damage");
     }
 
-    public float PlayAttack()
+    public void GetHealed(float amount)
+    {
+        _effectBoxText.text = $"{amount}";
+        _effectBoxAnimator.SetTrigger("Healed");
+    }
+
+    public float MoveForward()
     {
         _animator.SetTrigger("GenericAttack");
         return _genericAttackClip.length;
     }
 
-    public float PlayBigAttack()
+    public float MoveForwardFullDiceRoll()
     {
         _animator.SetTrigger("BigAttack");
         return _bigAttackClip.length;

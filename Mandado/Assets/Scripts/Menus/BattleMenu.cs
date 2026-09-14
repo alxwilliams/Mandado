@@ -7,7 +7,9 @@ using UnityEngine.UI;
 
 public class BattleMenu : BaseMenu
 {
-    [SerializeField] private TMP_Text _debugText;
+    [SerializeField] private TMP_Text _debugPlayerText;
+    [SerializeField] private TMP_Text _debugEnemyText;
+    
     [SerializeField] private TMP_Text _diceText;
     [SerializeField] private Button _rollDiceButton;
     [SerializeField] private Button _goButton;
@@ -24,9 +26,14 @@ public class BattleMenu : BaseMenu
         base.Initialize(menuSystem);
     }
     
-    public void UpdateDebugText(string text)
+    public void UpdatePlayerDebugText(string text)
     {
-        _debugText.text = text;
+        _debugPlayerText.text = text;
+    }
+    
+    public void UpdateEnemyDebugText(string text)
+    {
+        _debugEnemyText.text = text;
     }
 
     public void UpdateDiceText(string text)

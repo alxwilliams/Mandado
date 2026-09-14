@@ -14,6 +14,7 @@ public class PlayerCharacter : BaseCharacter
         
         data.name = _name;
         data.currentHealth =_baseHealth;
+        data.currentFocus = 0;
         data.actionSet = _baseActionSet;
         
         data.frontSprite = _frontSprite;
@@ -45,6 +46,7 @@ public class PlayerCharacterData
 {
     public string name;
     public float currentHealth;
+    public float currentFocus;
     public DiceActionSet actionSet;
     public float width;
     public Sprite frontSprite;

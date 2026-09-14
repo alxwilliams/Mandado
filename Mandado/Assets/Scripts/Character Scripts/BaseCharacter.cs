@@ -12,8 +12,5 @@ public class BaseCharacter : ScriptableObject
     [Header("Sprites")]
     [SerializeField] protected Sprite _frontSprite;
     [SerializeField] protected Sprite _backSprite;
-
-    
-
 }
 

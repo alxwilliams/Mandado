@@ -11,6 +11,7 @@ public class BattleSystem : BaseSystem
     [SerializeField] private List<EnemyCharacter> _fakeEnemyData = new List<EnemyCharacter>();
     [SerializeField] private FieldController _fieldController;
     [SerializeField] private BattleMenu _battleMenu;
+    [SerializeField] private int _maxFocusPoints = 3;
 
     [Header("Wait Times")] 
     [SerializeField] private float _waitTimeBetweenAttacks = .25f;
@@ -57,29 +58,32 @@ public class BattleSystem : BaseSystem
         
         _fieldController.LoadEnemyCharacters(enemyData);
         _currentEnemyCharacters = enemyData;
-        ShowCurrentHealth();
+        UpdateDebugText();
         
         _canRollDice = true;
         _canAttack = false;
     }
 
     [ContextMenu("Show health")]
-    public void ShowCurrentHealth()
+    public void UpdateDebugText()
     {
         string testString = "";
 
 
         foreach (var character in _currentPlayerCharacters)
         {
-            testString += character.name + ": " + character.currentHealth + "\n";
+            testString += $"{character.name}: {character.currentHealth}\n   focus: {character.currentFocus} \n";
         }
+        
+        _battleMenu.UpdatePlayerDebugText(testString);
+        testString = "";
         
         foreach (var character in _currentEnemyCharacters)
         {
-            testString += character.name + ": " + character.currentHealth + "\n";
+            testString += $"{character.name}: {character.currentHealth}\n";
         }
         
-        _battleMenu.UpdateDebugText(testString);
+        _battleMenu.UpdateEnemyDebugText(testString);
     }
 
     private void PlayerAttack()
@@ -108,7 +112,7 @@ public class BattleSystem : BaseSystem
         yield return new WaitForSeconds(_timeBeforeEnemyAttacks);
         yield return EnemyDiceActions();
         
-        ShowCurrentHealth();
+        UpdateDebugText();
         
         _canAttack = false;
         _canRollDice = true;
@@ -124,35 +128,41 @@ public class BattleSystem : BaseSystem
                 if (_diceRolls[i] == 1)
                 {
                     yield return DealWithPlayerAction(_currentPlayerCharacters[i].actionSet.rollOneActions,
-                        _currentPlayerCharacters[i]);
+                        _currentPlayerCharacters[i],i);
                 }
                 else if (_diceRolls[i] == 2)
                 {
                     yield return DealWithPlayerAction(_currentPlayerCharacters[i].actionSet.rollTwoActions,
-                        _currentPlayerCharacters[i]);
+                        _currentPlayerCharacters[i],i);
                 }
                 else if (_diceRolls[i] == 3)
                 {
                     yield return DealWithPlayerAction(_currentPlayerCharacters[i].actionSet.rollThreeActions,
-                        _currentPlayerCharacters[i]);
+                        _currentPlayerCharacters[i],i);
                 }
                 else if (_diceRolls[i] == 4)
                 {
                     yield return DealWithPlayerAction(_currentPlayerCharacters[i].actionSet.rollFourActions,
-                        _currentPlayerCharacters[i]);
+                        _currentPlayerCharacters[i],i);
                 }
                 else if (_diceRolls[i] == 5)
                 {
                     yield return DealWithPlayerAction(_currentPlayerCharacters[i].actionSet.rollFiveActions,
-                        _currentPlayerCharacters[i], true);
+                        _currentPlayerCharacters[i],i, true);
                 }
 
-                ShowCurrentHealth();
+                UpdateDebugText();
                 yield return new WaitForSeconds(_waitTimeBetweenAttacks);
             }
             else
             {
-                //add focus point to character
+                
+                if(_currentPlayerCharacters[i].currentFocus < 3)
+                {
+                    _currentPlayerCharacters[i].currentFocus++;
+                    UpdateDebugText();
+                }
+                
             }
         }
     }
@@ -213,47 +223,83 @@ public class BattleSystem : BaseSystem
     private IEnumerator DealWithEnemyAction(List<CharacterAction> actions, EnemyCharacterData data, bool maxRoll = false)
     {
         foreach (var action in actions)
-        {
+        {                    
+            yield return new WaitForSeconds(_fieldController.EnemyCharacterMoveForward(data));
+
             if (action.type == ActionType.Damage)
             {
                 if(!maxRoll)
                 {
-                    yield return new WaitForSeconds(_fieldController.EnemyAttack(data));
                     DealDamageToPlayer(action.value);
                 }
                 else
                 {
                     //yield return new WaitForSeconds(_fieldController.CharacterBigAttack(data));
-                    yield return new WaitForSeconds(_fieldController.EnemyAttack(data));
                     DealDamageToPlayer(action.value);
+                }
+            }
+
+            if (action.type == ActionType.HealSelf)
+            {
+                HealEnemyUnit(action.value);
+            }
+
+            yield return new WaitForSeconds(_waitTimeBetweenAttacks);
+        }
+    }
+    
+
+    private IEnumerator DealWithPlayerAction(List<CharacterAction> actions, PlayerCharacterData data, int castingUnitIndex, bool maxRoll = false)
+    {
+        foreach (var action in actions)
+        {
+            yield return new WaitForSeconds(_fieldController.PlayerCharacterMoveForward(data));
+            
+            if (action.type == ActionType.Damage)
+            {
+                
+                if(!maxRoll)
+                {
+                    DealDamageToEnemy(action.value);
+                }
+                else
+                {
+                    DealDamageToEnemy(action.value);
+                }
+            }
+            
+            if (action.type == ActionType.HealSelf)
+            {
+                HealPlayerUnit(castingUnitIndex, action.value);
+            }
+            
+            if (action.type == ActionType.HealNearby)
+            {
+                if (castingUnitIndex > 0)
+                {
+                    HealPlayerUnit(castingUnitIndex -1, action.value);
+                }
+
+                if (castingUnitIndex < 5)
+                {
+                    HealPlayerUnit(castingUnitIndex + 1, action.value);
                 }
             }
 
             yield return new WaitForSeconds(0.1f);
         }
     }
-    
 
-    private IEnumerator DealWithPlayerAction(List<CharacterAction> actions, PlayerCharacterData data, bool maxRoll = false)
+    private void HealPlayerUnit(int unitIndex, float amount)
     {
-        foreach (var action in actions)
-        {
-            if (action.type == ActionType.Damage)
-            {
-                if(!maxRoll)
-                {
-                    yield return new WaitForSeconds(_fieldController.CharacterAttack(data));
-                    DealDamageToEnemy(action.value);
-                }
-                else
-                {
-                    yield return new WaitForSeconds(_fieldController.CharacterBigAttack(data));
-                    DealDamageToEnemy(action.value);
-                }
-            }
+        _currentPlayerCharacters[unitIndex].currentHealth += amount;
+        _fieldController.PlayerCharacterGetHealed(_currentPlayerCharacters[unitIndex], amount);
+    }
 
-            yield return new WaitForSeconds(0.1f);
-        }
+    private void HealEnemyUnit(float amount)
+    {
+        _currentEnemyCharacters[0].currentHealth += amount;
+        _fieldController.EnemyCharacterGetHealed(_currentEnemyCharacters[0],amount);
     }
 
     private void DealDamageToEnemy(float num)
@@ -311,11 +357,7 @@ public class BattleSystem : BaseSystem
         
         _battleMenu.UpdateDiceText(debugString);
     }
-
-    public void UpdateBattleMenuText(string text)
-    {
-        _battleMenu.UpdateDebugText(text);
-    }
+    
 
     public void ShowBattleMenu()
     {
