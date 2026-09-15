@@ -49,6 +49,7 @@ public class BattleSystem : BaseSystem
         }
         
         _fieldController.LoadPlayerCharacters(playerData);
+        _battleMenu.SetPlayerAmount(playerCharacters.Count);
         _currentPlayerCharacters = playerData;
         
         foreach (var character in enemyCharacters)
@@ -58,26 +59,18 @@ public class BattleSystem : BaseSystem
         
         _fieldController.LoadEnemyCharacters(enemyData);
         _currentEnemyCharacters = enemyData;
-        UpdateDebugText();
+        UpdateUI();
         
         _canRollDice = true;
         _canAttack = false;
     }
 
-    [ContextMenu("Show health")]
-    public void UpdateDebugText()
+    public void UpdateUI()
     {
         string testString = "";
-
-
-        foreach (var character in _currentPlayerCharacters)
-        {
-            testString += $"{character.name}: {character.currentHealth}\n   focus: {character.currentFocus} \n";
-        }
         
-        _battleMenu.UpdatePlayerDebugText(testString);
-        testString = "";
-        
+        _battleMenu.UpdatePlayerCharacters(_currentPlayerCharacters);
+
         foreach (var character in _currentEnemyCharacters)
         {
             testString += $"{character.name}: {character.currentHealth}\n";
@@ -112,7 +105,7 @@ public class BattleSystem : BaseSystem
         yield return new WaitForSeconds(_timeBeforeEnemyAttacks);
         yield return EnemyDiceActions();
         
-        UpdateDebugText();
+        UpdateUI();
         
         _canAttack = false;
         _canRollDice = true;
@@ -121,9 +114,9 @@ public class BattleSystem : BaseSystem
 
     private IEnumerator PlayerDiceActions()
     {
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < _currentPlayerCharacters.Count; i++)
         {
-            if (_diceRolls[i] > 0)
+            if (_diceRolls[i] > 0 && _currentPlayerCharacters[i].currentHealth > 0)
             {
                 if (_diceRolls[i] == 1)
                 {
@@ -151,18 +144,13 @@ public class BattleSystem : BaseSystem
                         _currentPlayerCharacters[i],i, true);
                 }
 
-                UpdateDebugText();
+                UpdateUI();
                 yield return new WaitForSeconds(_waitTimeBetweenAttacks);
             }
-            else
+            else if(_currentPlayerCharacters[i].currentFocus < 3 && _currentPlayerCharacters[i].currentHealth > 0)
             {
-                
-                if(_currentPlayerCharacters[i].currentFocus < 3)
-                {
-                    _currentPlayerCharacters[i].currentFocus++;
-                    UpdateDebugText();
-                }
-                
+                _currentPlayerCharacters[i].currentFocus++;
+                UpdateUI();
             }
         }
     }
@@ -285,6 +273,8 @@ public class BattleSystem : BaseSystem
                     HealPlayerUnit(castingUnitIndex + 1, action.value);
                 }
             }
+            
+            
 
             yield return new WaitForSeconds(0.1f);
         }

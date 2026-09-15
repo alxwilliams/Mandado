@@ -25,6 +25,7 @@ public class FieldController : MonoBehaviour
     public void WipeCharacterDictionary()
     {
         _playerControllerDictionary = new Dictionary<PlayerCharacterData, InGameCharacterController>();
+        _enemyControllerDictionary = new Dictionary<EnemyCharacterData, InGameCharacterController>();
     }
     public void LoadPlayerCharacters(List<PlayerCharacterData> characters)
     {

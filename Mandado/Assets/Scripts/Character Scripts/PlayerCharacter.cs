@@ -7,13 +7,16 @@ public class PlayerCharacter : BaseCharacter
 {
     [SerializeField] private List<LevelUpActionSet> _levelUpSets;
     [SerializeField] private DiceActionSet _baseActionSet;
+    [SerializeField] private ClassType _classType;
     
     public PlayerCharacterData GetFullHealthCharacterData()
     {
         PlayerCharacterData data = new PlayerCharacterData();
         
         data.name = _name;
+        data.classType = _classType;
         data.currentHealth =_baseHealth;
+        data.maxHealth = _baseHealth;
         data.currentFocus = 0;
         data.actionSet = _baseActionSet;
         
@@ -45,12 +48,21 @@ public class LevelUpActionSet
 public class PlayerCharacterData
 {
     public string name;
+    public ClassType classType;
     public float currentHealth;
+    public float maxHealth;
     public float currentFocus;
     public DiceActionSet actionSet;
     public float width;
     public Sprite frontSprite;
     public Sprite backSprite;
+}
+
+public enum ClassType
+{
+    Sentinel,
+    Pilgrim,
+    Warrior
 }
 
 

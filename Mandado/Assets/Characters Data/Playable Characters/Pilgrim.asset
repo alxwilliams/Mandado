@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d8e869c1099d1bf479a8ea8ebed737ba, type: 3}
-  m_Name: Holden
+  m_Name: Pilgrim
   m_EditorClassIdentifier: 
-  _name: Holden
+  _name: Pilgrim
   _width: 6
-  _baseHealth: 12
-  _frontSprite: {fileID: 21300000, guid: 55afde0bbf99fa248a3aaae928231a6f, type: 3}
-  _backSprite: {fileID: 21300000, guid: 55afde0bbf99fa248a3aaae928231a6f, type: 3}
+  _baseHealth: 15
+  _frontSprite: {fileID: 21300000, guid: cc2dd42ff57b30445ae212aa0a89e017, type: 3}
+  _backSprite: {fileID: 21300000, guid: cc2dd42ff57b30445ae212aa0a89e017, type: 3}
   _levelUpSets:
   - _id: Vanguard
     _levelTwoPrefixName: Double Vanguard
@@ -41,28 +41,19 @@ MonoBehaviour:
     rollOneActions:
     - value: 1
       type: 0
-    - value: 1
-      type: 2
     rollTwoActions:
     - value: 3
       type: 0
-    - value: 3
-      type: 2
     rollThreeActions:
     - value: 5
       type: 0
-    - value: 5
-      type: 2
     rollFourActions:
     - value: 7
       type: 0
-    - value: 7
-      type: 2
     rollFiveActions:
     - value: 10
       type: 0
-    - value: 10
-      type: 2
     focusActions:
     - value: 0
       type: 0
+  _classType: 0
