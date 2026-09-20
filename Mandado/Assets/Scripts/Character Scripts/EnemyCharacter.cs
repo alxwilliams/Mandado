@@ -16,6 +16,7 @@ public class EnemyCharacter : BaseCharacter
       data.currentHealth = _baseHealth;
       data.actionSet = _enemyAttacks;
 
+      data.statusEffects = new Dictionary<StatusEffects, float>();
       data.frontSprite = _frontSprite;
       data.backSprite = _backSprite;
       data.width = _width;
@@ -30,6 +31,7 @@ public class EnemyCharacterData
    public string name;
    public float currentHealth;
    public List<CompoundDiceActionSet> actionSet;
+   public Dictionary<StatusEffects, float> statusEffects;
    public float width;
    public Sprite frontSprite;
    public Sprite backSprite;

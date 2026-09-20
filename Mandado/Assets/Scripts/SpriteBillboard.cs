@@ -34,7 +34,7 @@ public class SpriteBillboard : MonoBehaviour
 
         if (GameManager.Instance != null)
         {
-            targetCamera = GameManager.Instance.Camera;
+            targetCamera = GameManager.Instance.MainCamera;
             UpdateBillboard(targetCamera.transform);
             _initialized = true;
         }

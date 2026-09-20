@@ -14,3 +14,8 @@ public class BaseCharacter : ScriptableObject
     [SerializeField] protected Sprite _backSprite;
 }
 
+public enum StatusEffects
+{
+    Guard,
+    Bleed,
+}

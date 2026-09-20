@@ -7,18 +7,20 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private BattleSystem _battleSystem;
     [SerializeField] private MenuSystem _menuSystem;
-    [SerializeField] private Camera _camera;    
+    [SerializeField] private CameraSystem _cameraSystem;  
     public static GameManager Instance { get; private set; }
     public static Action InitializedEvent;
 
     public MenuSystem MenuSystem => _menuSystem;
     public BattleSystem BattleSystem => _battleSystem;
 
+    public CameraSystem CameraSystem => _cameraSystem;
+
     private bool _initialized = false;
 
     public bool Initialized => _initialized;
 
-    public Camera Camera => _camera;
+    public Camera MainCamera => _cameraSystem.MainCamera;
 
     void Awake()
     {
@@ -38,6 +40,7 @@ public class GameManager : MonoBehaviour
     {
         _menuSystem.Initialize(this);
         _battleSystem.Initialize(this);
+        _cameraSystem.Initialize(this);
         
         _initialized = true;
         InitializedEvent?.Invoke();

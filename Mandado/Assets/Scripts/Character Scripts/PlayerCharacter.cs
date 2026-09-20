@@ -22,6 +22,7 @@ public class PlayerCharacter : BaseCharacter
         
         data.frontSprite = _frontSprite;
         data.backSprite = _backSprite;
+        data.statusEffects = new Dictionary<StatusEffects, float>();
         data.width = _width;
 
         return data;
@@ -53,6 +54,7 @@ public class PlayerCharacterData
     public float maxHealth;
     public float currentFocus;
     public DiceActionSet actionSet;
+    public Dictionary<StatusEffects, float> statusEffects;
     public float width;
     public Sprite frontSprite;
     public Sprite backSprite;

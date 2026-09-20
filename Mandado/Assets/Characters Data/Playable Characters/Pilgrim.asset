@@ -15,8 +15,8 @@ MonoBehaviour:
   _name: Pilgrim
   _width: 6
   _baseHealth: 15
-  _frontSprite: {fileID: 21300000, guid: cc2dd42ff57b30445ae212aa0a89e017, type: 3}
-  _backSprite: {fileID: 21300000, guid: cc2dd42ff57b30445ae212aa0a89e017, type: 3}
+  _frontSprite: {fileID: 21300000, guid: 9cdc9a9f8afa3ff498b2a13b016bc559, type: 3}
+  _backSprite: {fileID: 21300000, guid: 9cdc9a9f8afa3ff498b2a13b016bc559, type: 3}
   _levelUpSets:
   - _id: Vanguard
     _levelTwoPrefixName: Double Vanguard

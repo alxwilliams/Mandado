@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 [Serializable]
 public class DiceActionSet
@@ -10,7 +11,9 @@ public class DiceActionSet
     public List<CharacterAction> rollFourActions;
     public List<CharacterAction> rollFiveActions;
 
-    public List<CharacterAction> focusActions;
+    [Header("Focus")]
+    public string focusValueDescription;
+    public List<float> focusValues;
 }
 
 [Serializable]
@@ -35,7 +38,7 @@ public enum ActionType
     HealSelf,
     HealNearby,
     DamageSelf,
-    Guard,
+    GuardSelf,
     Order
     //Sometimes We'll Need Specific IDs if, for example, the 3FP cast does something different. 
 }

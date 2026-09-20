@@ -20,20 +20,25 @@ public class BattleSystem : BaseSystem
     private List<PlayerCharacterData> _currentPlayerCharacters;
     private List<EnemyCharacterData> _currentEnemyCharacters;
 
+    private CameraSystem _cameraSystem;
+
     private Coroutine _attackRoutine;
     private bool _canRollDice = true;
     private bool _canAttack = false;
 
     private int[] _diceRolls = new int[] {0,0,0,0,0,0};
 
+
     public override void Initialize(GameManager gameManager)
     {
+        _cameraSystem = gameManager.CameraSystem;
         _battleMenu.Initialize(gameManager.MenuSystem, RollDice, PlayerAttack);
         base.Initialize(gameManager);
     }
     private void Start()
     {
         LoadCharacters(_fakePlayerData, _fakeEnemyData);
+        _battleMenu.OpenTrays();
     }
 
     public void LoadCharacters(List<PlayerCharacter> playerCharacters, List<EnemyCharacter> enemyCharacters)
@@ -86,6 +91,8 @@ public class BattleSystem : BaseSystem
             return;
         }
         
+        EndPlayerTurn();
+        
         if (_attackRoutine != null)
         {
             StopCoroutine(_attackRoutine);
@@ -98,18 +105,43 @@ public class BattleSystem : BaseSystem
     {
         yield return PlayerDiceActions();
         _diceRolls = new int[5];
-        _battleMenu.UpdateDiceText("");
-        
+
         //enemy attack
         EnemyRollDice();
         yield return new WaitForSeconds(_timeBeforeEnemyAttacks);
         yield return EnemyDiceActions();
         
+        StartPlayerTurn();
+    }
+
+    private void StartPlayerTurn()
+    {
         UpdateUI();
-        
         _canAttack = false;
         _canRollDice = true;
+        ResetPlayerGuard();
+        ResetPlayerDiceTrays();
+        
+        _battleMenu.OpenTrays();
+        _cameraSystem.SwitchToPlayerView();
+    }
 
+    private void ResetPlayerGuard()
+    {
+        for (int i = 0; i < _currentPlayerCharacters.Count; i++)
+        {
+            if (_currentPlayerCharacters[i].statusEffects.ContainsKey(StatusEffects.Guard) && _currentPlayerCharacters[i].statusEffects[StatusEffects.Guard] != 0 )
+            {
+                _currentPlayerCharacters[i].statusEffects[StatusEffects.Guard] = 0;
+                _battleMenu.UpdateCharacterGuardUI(i,0);
+            }
+        }
+    }
+
+    private void EndPlayerTurn()
+    {
+        _battleMenu.CloseTrays();
+        _cameraSystem.SwitchToEnemyView();
     }
 
     private IEnumerator PlayerDiceActions()
@@ -273,11 +305,30 @@ public class BattleSystem : BaseSystem
                     HealPlayerUnit(castingUnitIndex + 1, action.value);
                 }
             }
+
+            if (action.type == ActionType.GuardSelf)
+            {
+                GuardPlayerUnit(castingUnitIndex, action.value);
+            }
             
             
 
             yield return new WaitForSeconds(0.1f);
         }
+    }
+
+    private void GuardPlayerUnit(int unitIndex, float amount)
+    {
+        if (_currentPlayerCharacters[unitIndex].statusEffects.ContainsKey(StatusEffects.Guard))
+        {
+            _currentPlayerCharacters[unitIndex].statusEffects[StatusEffects.Guard] += amount;
+        }
+        else
+        {
+            _currentPlayerCharacters[unitIndex].statusEffects[StatusEffects.Guard] = amount;
+        }
+        
+        _battleMenu.UpdateCharacterGuardUI(unitIndex,_currentPlayerCharacters[unitIndex].statusEffects[StatusEffects.Guard]);
     }
 
     private void HealPlayerUnit(int unitIndex, float amount)
@@ -295,6 +346,9 @@ public class BattleSystem : BaseSystem
     private void DealDamageToEnemy(float num)
     {
         int enemyIndex = Random.Range(0, _currentEnemyCharacters.Count);
+
+        num = CheckStatusEffectsForGuard(ref _currentEnemyCharacters[enemyIndex].statusEffects, num);
+        
         _currentEnemyCharacters[enemyIndex].currentHealth -= num;
         _fieldController.EnemyTakeDamage(_currentEnemyCharacters[enemyIndex], num);
     }
@@ -302,8 +356,41 @@ public class BattleSystem : BaseSystem
     private void DealDamageToPlayer(float num)
     {
         int playerIndex = Random.Range(0, _currentPlayerCharacters.Count);
+        
+        
+        float newDamageNum = CheckStatusEffectsForGuard(ref _currentPlayerCharacters[playerIndex].statusEffects, num);
+
+        if (num != newDamageNum)
+        {
+            _battleMenu.UpdateCharacterGuardUI(playerIndex,_currentPlayerCharacters[playerIndex].statusEffects[StatusEffects.Guard]);
+        }
+        
         _currentPlayerCharacters[playerIndex].currentHealth -= num;
         _fieldController.PlayerTakeDamage(_currentPlayerCharacters[playerIndex], num);
+    }
+
+    private float CheckStatusEffectsForGuard(ref Dictionary<StatusEffects,float> effects, float damage)
+    {
+        if (effects.ContainsKey(StatusEffects.Guard))
+        {
+            effects[StatusEffects.Guard] -= damage;
+
+            if (effects[StatusEffects.Guard] >= 0)
+            {
+                return 0;
+            }
+            else
+            {
+                float newDamage = effects[StatusEffects.Guard];
+                effects[StatusEffects.Guard] = 0;
+                
+                return newDamage;
+            }
+        }
+        else
+        {
+            return damage;
+        }
     }
     
     private void RollDice()
@@ -312,20 +399,26 @@ public class BattleSystem : BaseSystem
         {
             return;
         }
-        
+
         int[] dice = new int[_amountOfDiceRolled];
         _diceRolls = new[] { 0, 0, 0, 0, 0, 0};
-        string debugString = "";
+        //string debugString = "";
 
         //only rolling 5 dice
         for(int i =0; i < _amountOfDiceRolled; i++)
         {
             dice[i] = Random.Range(1, 6);
             _diceRolls[dice[i] - 1]++;
-            debugString += $"Dice{i + 1}: {dice[i]}\n";
+            //debugString += $"Dice{i + 1}: {dice[i]}\n";
+            //_battleMenu.SetDiceInCharacterUI(i, dice[i]);
+        }
+
+        for(int i =0; i < _diceRolls.Length; i++)
+        {
+            _battleMenu.SetDiceInCharacterUI(i, _diceRolls[i]);
         }
         
-        _battleMenu.UpdateDiceText(debugString);
+        //_battleMenu.UpdateDiceText(debugString);
         _canAttack = true;
         _canRollDice = false;
     }
@@ -345,9 +438,17 @@ public class BattleSystem : BaseSystem
             debugString += $"{i + 1}: {dice[i]}\n";
         }
         
-        _battleMenu.UpdateDiceText(debugString);
+        //_battleMenu.UpdateDiceText(debugString);
     }
-    
+
+    private void ResetPlayerDiceTrays()
+    {
+        for(int i = 0; i<6;i++)
+        {
+            _battleMenu.SetDiceInCharacterUI(i,0);
+        }
+    }
+
 
     public void ShowBattleMenu()
     {
