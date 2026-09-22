@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -22,12 +23,41 @@ public class PlayerCharacterUI : MonoBehaviour
     [SerializeField] private Image _fourDice;
     [SerializeField] private Image _fiveDice;
 
+    [Header("Dice Buttons")]
+    [SerializeField] private Button _firstButtons;
+    [SerializeField] private Button _secondButtons;
+    [SerializeField] private Button _thirdButtons;
+    [SerializeField] private Button _fourButtons;
+    [SerializeField] private Button _fiveButtons;
+    
     [Header("Status Effects")] 
     [SerializeField] private GameObject _guardSymbol;
     [SerializeField] private TMP_Text _guardText;
 
     private float _currentGuard = -1;
+    private int _diceNumber;
+    private float _amountOfActiveDice = 0;
 
+    private Action<int> DiceButtonPressAction;
+
+    public void Initialize(int diceNum, Action<int> diceButtonPress)
+    {
+        _diceNumber = diceNum;
+        DiceButtonPressAction = diceButtonPress;
+        
+        _firstButtons.onClick.AddListener(OnDiceButtonPress);
+        _secondButtons.onClick.AddListener(OnDiceButtonPress);
+        _thirdButtons.onClick.AddListener(OnDiceButtonPress);
+        _fourButtons.onClick.AddListener(OnDiceButtonPress);
+        _fiveButtons.onClick.AddListener(OnDiceButtonPress);
+    }
+
+    private void OnDiceButtonPress()
+    {
+        _amountOfActiveDice--;
+        SetActiveDice(_amountOfActiveDice);
+        DiceButtonPressAction?.Invoke(_diceNumber);
+    }
 
     public void SetAnimationSpeed(float animatorSpeed)
     {
@@ -76,6 +106,17 @@ public class PlayerCharacterUI : MonoBehaviour
         }
     }
 
+    public void IncreaseActiveDice()
+    {
+        _amountOfActiveDice++;
+        SetActiveDice(_amountOfActiveDice);
+    }
+
+    public void ResetDice()
+    {
+        SetActiveDice(0);
+    }
+
     public void SetActiveDice(float amount)
     {
         if (amount > 5 || amount < 0)
@@ -84,6 +125,7 @@ public class PlayerCharacterUI : MonoBehaviour
         }
         else
         {
+            _amountOfActiveDice = amount;
             _firstDice.gameObject.SetActive(amount >= 1);
             _secondDice.gameObject.SetActive(amount >= 2);
             _thirdDice.gameObject.SetActive(amount >= 3);

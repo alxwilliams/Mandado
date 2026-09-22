@@ -51,7 +51,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _battleSystem: {fileID: 898995414816468153}
   _menuSystem: {fileID: 2279710916015431597}
-  _camera: {fileID: 3143642489677662635}
+  _cameraSystem: {fileID: 0}
 --- !u!1 &3439152060592374463
 GameObject:
   m_ObjectHideFlags: 0

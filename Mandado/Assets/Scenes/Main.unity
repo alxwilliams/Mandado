@@ -344,7 +344,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
       propertyPath: _fakePlayerData.Array.size
-      value: 2
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
       propertyPath: _fakeEnemyData.Array.data[1]
@@ -361,15 +361,15 @@ PrefabInstance:
     - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
       propertyPath: _fakePlayerData.Array.data[3]
       value: 
-      objectReference: {fileID: 11400000, guid: 2a50593e6201e7d438df0013ced6ba1b, type: 2}
+      objectReference: {fileID: 11400000, guid: ff3734a6ecbbfb94da5182d68cff05ca, type: 2}
     - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
       propertyPath: _fakePlayerData.Array.data[4]
       value: 
-      objectReference: {fileID: 11400000, guid: 2a50593e6201e7d438df0013ced6ba1b, type: 2}
+      objectReference: {fileID: 11400000, guid: ff3734a6ecbbfb94da5182d68cff05ca, type: 2}
     - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
       propertyPath: _fakePlayerData.Array.data[5]
       value: 
-      objectReference: {fileID: 11400000, guid: 2a50593e6201e7d438df0013ced6ba1b, type: 2}
+      objectReference: {fileID: 11400000, guid: ff3734a6ecbbfb94da5182d68cff05ca, type: 2}
     - target: {fileID: 1090368326139045088, guid: 933a28806fdbca04da05100098e19242, type: 3}
       propertyPath: m_Name
       value: GameManager

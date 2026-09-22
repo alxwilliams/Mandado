@@ -8,15 +8,27 @@ using UnityEngine.UI;
 public class BattleMenu : BaseMenu
 {
     [SerializeField] private TMP_Text _debugEnemyText;
-    
-    [SerializeField] private TMP_Text _diceText;
+
     [SerializeField] private Button _rollDiceButton;
     [SerializeField] private Button _goButton;
     [SerializeField] private List<PlayerCharacterUI> _characterUIs = new List<PlayerCharacterUI>();
     [SerializeField] private float _trayOpeningWaitBetween = .1f;
+    [SerializeField] private List<Button> _diceTrayButtons = new List<Button>();
 
+    [Header("Dice Sprites")] 
+    [SerializeField] private Sprite _diceOne;
+    [SerializeField] private Sprite _diceTwo;
+    [SerializeField] private Sprite _diceThree;
+    [SerializeField] private Sprite _diceFour;
+    [SerializeField] private Sprite _diceFive;
+    [SerializeField] private Sprite _diceSix;
+    
+    private Dictionary<Button, int> _diceTrayDictionary = new Dictionary<Button, int>();
+    
     private Action _rollDiceAction;
     private Action _attackAction;
+    private Action<int> _increaseDiceRollsAction;
+    private Action<int> _decreaseDiceRollsAction;
 
     private Coroutine _trayOpeningRoutine;
     
@@ -80,13 +92,55 @@ public class BattleMenu : BaseMenu
         _trayOpeningRoutine = null;
     }
     
-    public virtual void Initialize(MenuSystem menuSystem, Action rollDice, Action attack)
+    public virtual void Initialize(MenuSystem menuSystem, Action rollDice, Action attack, Action<int> increaseDiceRolls, Action<int> decreaseDiceRolls)
     {
         _attackAction = attack;
         _rollDiceAction = rollDice;
+        _increaseDiceRollsAction = increaseDiceRolls;
+        _decreaseDiceRollsAction = decreaseDiceRolls;
+        
         _goButton.onClick.AddListener(Attack);
         _rollDiceButton.onClick.AddListener(RollDice);
+
+        for (int i = 0; i < 6; i++)
+        {
+            _characterUIs[i].Initialize(i+1,ReturnDice);
+        }
+
+        for (int i = 0; i < _diceTrayButtons.Count; i++)
+        {
+            int index = i;
+            Button button = _diceTrayButtons[i];
+            
+            _diceTrayButtons[i].onClick.AddListener(() => OnDiceButtonClicked(index, button));
+            _diceTrayDictionary.Add(_diceTrayButtons[i],0);
+        }
+        
         base.Initialize(menuSystem);
+    }
+
+    private void OnDiceButtonClicked(int index, Button button)
+    {
+        button.gameObject.SetActive(false);
+        SetDiceInCharacterUI(index, _diceTrayDictionary[button]);
+    }
+
+    private void Reroll()
+    {
+        _rollDiceAction?.Invoke();
+    }
+
+    private void ReturnDice(int diceNum)
+    {
+        for(int i = 0; i< _diceTrayButtons.Count;i++)
+        {
+            if (!_diceTrayButtons[i].gameObject.activeSelf)
+            {
+                SetDiceInTrayUI(i, diceNum);
+                _decreaseDiceRollsAction?.Invoke(diceNum-1);
+                break;
+            }
+        }
     }
 
     private void InitializeTrayAnimationSpeeds(int amount)
@@ -136,7 +190,62 @@ public class BattleMenu : BaseMenu
 
     public void SetDiceInCharacterUI(int index, int num)
     {
-        _characterUIs[index].SetActiveDice(num);
+        _increaseDiceRollsAction?.Invoke(num-1);
+        _characterUIs[num-1].IncreaseActiveDice();
+    }
+
+    public void ResetDiceTrays()
+    {
+        foreach (var button in _diceTrayButtons)
+        {
+            button.gameObject.SetActive(false);
+        }
+
+        foreach (var characterUI in _characterUIs)
+        {
+            characterUI.ResetDice();
+        }
+    }
+
+    public void SetDiceInTrayUI(int index, int num)
+    {
+        Button button = _diceTrayButtons[index];
+        
+        if (num != -1)
+        {
+            button.gameObject.SetActive(true);
+
+            if (num == 1)
+            {
+                button.image.sprite = _diceOne;
+            }
+            else if (num == 2)
+            {
+                button.image.sprite = _diceTwo;
+            }
+            else if (num == 3)
+            {
+                button.image.sprite = _diceThree;
+            }
+            else if (num == 4)
+            {
+                button.image.sprite = _diceFour;
+            }
+            else if (num == 5)
+            {
+                button.image.sprite = _diceFive;
+            }
+            else if (num == 6)
+            {
+                button.image.sprite = _diceSix;
+            }
+
+            _diceTrayDictionary[button] = num;
+        }
+        else
+        {
+            button.gameObject.SetActive(false);
+        }
     }
     
     public void UpdatePlayerCharacters(List<PlayerCharacterData> characters)

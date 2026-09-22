@@ -16,7 +16,7 @@ public class BattleSystem : BaseSystem
     [Header("Wait Times")] 
     [SerializeField] private float _waitTimeBetweenAttacks = .25f;
     [SerializeField] private float _timeBeforeEnemyAttacks = .5f;
-    
+
     private List<PlayerCharacterData> _currentPlayerCharacters;
     private List<EnemyCharacterData> _currentEnemyCharacters;
 
@@ -26,13 +26,15 @@ public class BattleSystem : BaseSystem
     private bool _canRollDice = true;
     private bool _canAttack = false;
 
-    private int[] _diceRolls = new int[] {0,0,0,0,0,0};
+    private int[] _activeDiceRolls = new int[] {0,0,0,0,0,0};
+
+    private int _diceInCharacterTrays = 0;
 
 
     public override void Initialize(GameManager gameManager)
     {
         _cameraSystem = gameManager.CameraSystem;
-        _battleMenu.Initialize(gameManager.MenuSystem, RollDice, PlayerAttack);
+        _battleMenu.Initialize(gameManager.MenuSystem, RollDice, PlayerAttack,IncreaseActiveDiceRolls, DecreaseActiveDiceRolls);
         base.Initialize(gameManager);
     }
     private void Start()
@@ -104,7 +106,7 @@ public class BattleSystem : BaseSystem
     private IEnumerator AttackRoutine()
     {
         yield return PlayerDiceActions();
-        _diceRolls = new int[5];
+        _activeDiceRolls = new int[5];
 
         //enemy attack
         EnemyRollDice();
@@ -148,29 +150,29 @@ public class BattleSystem : BaseSystem
     {
         for (int i = 0; i < _currentPlayerCharacters.Count; i++)
         {
-            if (_diceRolls[i] > 0 && _currentPlayerCharacters[i].currentHealth > 0)
+            if (_activeDiceRolls[i] > 0 && _currentPlayerCharacters[i].currentHealth > 0)
             {
-                if (_diceRolls[i] == 1)
+                if (_activeDiceRolls[i] == 1)
                 {
                     yield return DealWithPlayerAction(_currentPlayerCharacters[i].actionSet.rollOneActions,
                         _currentPlayerCharacters[i],i);
                 }
-                else if (_diceRolls[i] == 2)
+                else if (_activeDiceRolls[i] == 2)
                 {
                     yield return DealWithPlayerAction(_currentPlayerCharacters[i].actionSet.rollTwoActions,
                         _currentPlayerCharacters[i],i);
                 }
-                else if (_diceRolls[i] == 3)
+                else if (_activeDiceRolls[i] == 3)
                 {
                     yield return DealWithPlayerAction(_currentPlayerCharacters[i].actionSet.rollThreeActions,
                         _currentPlayerCharacters[i],i);
                 }
-                else if (_diceRolls[i] == 4)
+                else if (_activeDiceRolls[i] == 4)
                 {
                     yield return DealWithPlayerAction(_currentPlayerCharacters[i].actionSet.rollFourActions,
                         _currentPlayerCharacters[i],i);
                 }
-                else if (_diceRolls[i] == 5)
+                else if (_activeDiceRolls[i] == 5)
                 {
                     yield return DealWithPlayerAction(_currentPlayerCharacters[i].actionSet.rollFiveActions,
                         _currentPlayerCharacters[i],i, true);
@@ -185,6 +187,18 @@ public class BattleSystem : BaseSystem
                 UpdateUI();
             }
         }
+    }
+
+    private void IncreaseActiveDiceRolls(int num)
+    {
+        _activeDiceRolls[num]++;
+        _diceInCharacterTrays++;
+    }
+
+    private void DecreaseActiveDiceRolls(int num)
+    {
+        _activeDiceRolls[num]--;
+        _diceInCharacterTrays--;
     }
     
     private IEnumerator EnemyDiceActions()
@@ -201,7 +215,7 @@ public class BattleSystem : BaseSystem
 
             for (int j = 0; j < totalDiceSpan; j++)
             {
-                workingDiceTotal += _diceRolls[currentDiceNumber];
+                workingDiceTotal += _activeDiceRolls[currentDiceNumber];
 
                 if (j + 1 < totalDiceSpan)
                 {
@@ -400,25 +414,21 @@ public class BattleSystem : BaseSystem
             return;
         }
 
-        int[] dice = new int[_amountOfDiceRolled];
-        _diceRolls = new[] { 0, 0, 0, 0, 0, 0};
+        int[] dice = new int[_amountOfDiceRolled-_diceInCharacterTrays];
+        //_diceRolls = new[] { 0, 0, 0, 0, 0, 0};
         //string debugString = "";
 
         //only rolling 5 dice
-        for(int i =0; i < _amountOfDiceRolled; i++)
+        for(int i =0; i < _amountOfDiceRolled-_diceInCharacterTrays; i++)
         {
             dice[i] = Random.Range(1, 6);
-            _diceRolls[dice[i] - 1]++;
-            //debugString += $"Dice{i + 1}: {dice[i]}\n";
-            //_battleMenu.SetDiceInCharacterUI(i, dice[i]);
         }
 
-        for(int i =0; i < _diceRolls.Length; i++)
+        for(int i = 0; i < dice.Length; i++)
         {
-            _battleMenu.SetDiceInCharacterUI(i, _diceRolls[i]);
+            _battleMenu.SetDiceInTrayUI(i, dice[i]);
         }
         
-        //_battleMenu.UpdateDiceText(debugString);
         _canAttack = true;
         _canRollDice = false;
     }
@@ -427,14 +437,14 @@ public class BattleSystem : BaseSystem
     {
         
         int[] dice = new int[_amountOfDiceRolled];
-        _diceRolls = new[] { 0, 0, 0, 0, 0, 0};
+        _activeDiceRolls = new[] { 0, 0, 0, 0, 0, 0};
         string debugString = "Enemy Dice:\n";
 
         //only rolling 5 dice
         for(int i =0; i < _amountOfDiceRolled; i++)
         {
             dice[i] = Random.Range(1, 6);
-            _diceRolls[dice[i] - 1]++;
+            _activeDiceRolls[dice[i] - 1]++;
             debugString += $"{i + 1}: {dice[i]}\n";
         }
         
@@ -443,10 +453,9 @@ public class BattleSystem : BaseSystem
 
     private void ResetPlayerDiceTrays()
     {
-        for(int i = 0; i<6;i++)
-        {
-            _battleMenu.SetDiceInCharacterUI(i,0);
-        }
+        _diceInCharacterTrays = 0;
+        _activeDiceRolls = new[] { 0, 0, 0, 0, 0, 0};
+        _battleMenu.ResetDiceTrays();
     }
 
 
