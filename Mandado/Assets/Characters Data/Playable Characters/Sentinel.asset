@@ -27,7 +27,8 @@ MonoBehaviour:
       rollThreeActions: []
       rollFourActions: []
       rollFiveActions: []
-      focusActions: []
+      focusValueDescription: 
+      focusValues: []
     _levelThreePrefixName: Elite Vanguard
     _levelThreeHealth: 35
     _levelThreeAction:
@@ -36,7 +37,8 @@ MonoBehaviour:
       rollThreeActions: []
       rollFourActions: []
       rollFiveActions: []
-      focusActions: []
+      focusValueDescription: 
+      focusValues: []
   _baseActionSet:
     rollOneActions:
     - value: 2
@@ -69,7 +71,8 @@ MonoBehaviour:
       type: 5
     - value: 2
       type: 6
-    focusActions:
-    - value: 0
-      type: 0
+    focusValueDescription: This value is the amount the Sentinel heals PER focus
+      point at the end of the player's turn
+    focusValues:
+    - 3
   _classType: 0

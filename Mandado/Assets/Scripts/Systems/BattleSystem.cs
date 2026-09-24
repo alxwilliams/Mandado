@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class BattleSystem : BaseSystem
+public partial class BattleSystem : BaseSystem
 {
     [SerializeField] private int _amountOfDiceRolledPerTurn = 5;
     [SerializeField] private List<PlayerCharacter> _fakePlayerData = new List<PlayerCharacter>();
@@ -53,10 +53,15 @@ public class BattleSystem : BaseSystem
         List<EnemyCharacterData> enemyData = new List<EnemyCharacterData>(); 
         
         _fieldController.WipeCharacterDictionary();
-        
+
+        int i = 0;
         foreach (var character in playerCharacters)
         {
+            var data = character.GetFullHealthCharacterData();
+            data.currentIndex = i;
             playerData.Add(character.GetFullHealthCharacterData());
+
+            i++;
         }
         
         _fieldController.LoadPlayerCharacters(playerData);
@@ -146,6 +151,8 @@ public class BattleSystem : BaseSystem
 
     private void EndPlayerTurn()
     {
+        FocusSentinelCheckForHeals();
+        
         _battleMenu.CloseTrays();
         _cameraSystem.SwitchToEnemyView();
     }
@@ -373,9 +380,18 @@ public class BattleSystem : BaseSystem
     
     private void DealDamageToPlayer(float num)
     {
-        int playerIndex = Random.Range(0, _currentPlayerCharacters.Count);
-        
-        
+        int playerIndex;
+        int sentinelValue = FocusSentinelCheckForFullPoints();
+
+        if (sentinelValue != -1)
+        {
+            playerIndex = sentinelValue;
+        }
+        else
+        {
+            playerIndex = Random.Range(0, _currentPlayerCharacters.Count);
+        }
+
         float newDamageNum = CheckStatusEffectsForGuard(ref _currentPlayerCharacters[playerIndex].statusEffects, num);
 
         if (num != newDamageNum)
@@ -476,12 +492,10 @@ public class BattleSystem : BaseSystem
         _battleMenu.ResetDiceTrays();
     }
 
-
     public void ShowBattleMenu()
     {
         _battleMenu.Show(true);
     }
-
     private void OnDestroy()
     {
         if (_attackRoutine != null)

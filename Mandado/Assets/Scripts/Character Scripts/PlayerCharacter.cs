@@ -58,6 +58,7 @@ public class PlayerCharacterData
     public float width;
     public Sprite frontSprite;
     public Sprite backSprite;
+    public int currentIndex;
 }
 
 public enum ClassType

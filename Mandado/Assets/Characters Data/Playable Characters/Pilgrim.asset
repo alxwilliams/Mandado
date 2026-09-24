@@ -27,7 +27,8 @@ MonoBehaviour:
       rollThreeActions: []
       rollFourActions: []
       rollFiveActions: []
-      focusActions: []
+      focusValueDescription: 
+      focusValues: []
     _levelThreePrefixName: Elite Vanguard
     _levelThreeHealth: 35
     _levelThreeAction:
@@ -36,7 +37,8 @@ MonoBehaviour:
       rollThreeActions: []
       rollFourActions: []
       rollFiveActions: []
-      focusActions: []
+      focusValueDescription: 
+      focusValues: []
   _baseActionSet:
     rollOneActions:
     - value: 1
@@ -53,7 +55,6 @@ MonoBehaviour:
     rollFiveActions:
     - value: 10
       type: 0
-    focusActions:
-    - value: 0
-      type: 0
-  _classType: 0
+    focusValueDescription: 
+    focusValues: []
+  _classType: 1
