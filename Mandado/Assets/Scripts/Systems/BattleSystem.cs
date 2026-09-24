@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 
 public class BattleSystem : BaseSystem
 {
-    [SerializeField] private int _amountOfDiceRolled = 5;
+    [SerializeField] private int _amountOfDiceRolledPerTurn = 5;
     [SerializeField] private List<PlayerCharacter> _fakePlayerData = new List<PlayerCharacter>();
     [SerializeField] private List<EnemyCharacter> _fakeEnemyData = new List<EnemyCharacter>();
     [SerializeField] private FieldController _fieldController;
@@ -23,10 +23,11 @@ public class BattleSystem : BaseSystem
     private CameraSystem _cameraSystem;
 
     private Coroutine _attackRoutine;
-    private bool _canRollDice = true;
+    private bool _firstRoll = true;
     private bool _canAttack = false;
 
     private int[] _activeDiceRolls = new int[] {0,0,0,0,0,0};
+    private int _amountOfRerolls = 0;
 
     private int _diceInCharacterTrays = 0;
 
@@ -41,6 +42,9 @@ public class BattleSystem : BaseSystem
     {
         LoadCharacters(_fakePlayerData, _fakeEnemyData);
         _battleMenu.OpenTrays();
+        _diceInCharacterTrays = 0;
+        _amountOfRerolls = 3;
+        _battleMenu.SetRerollNumber(_amountOfRerolls);
     }
 
     public void LoadCharacters(List<PlayerCharacter> playerCharacters, List<EnemyCharacter> enemyCharacters)
@@ -68,7 +72,7 @@ public class BattleSystem : BaseSystem
         _currentEnemyCharacters = enemyData;
         UpdateUI();
         
-        _canRollDice = true;
+        _firstRoll = true;
         _canAttack = false;
     }
 
@@ -120,7 +124,7 @@ public class BattleSystem : BaseSystem
     {
         UpdateUI();
         _canAttack = false;
-        _canRollDice = true;
+        _firstRoll = true;
         ResetPlayerGuard();
         ResetPlayerDiceTrays();
         
@@ -406,20 +410,25 @@ public class BattleSystem : BaseSystem
             return damage;
         }
     }
+
+    private bool CheckDiceButtonClickable()
+    {
+        return !(!_firstRoll && _amountOfRerolls <= 0 && _amountOfDiceRolledPerTurn - _diceInCharacterTrays <= 0);
+    }
     
     private void RollDice()
     {
-        if (!_canRollDice)
+        if (!CheckDiceButtonClickable())
         {
             return;
         }
 
-        int[] dice = new int[_amountOfDiceRolled-_diceInCharacterTrays];
+        int[] dice = new int[_amountOfDiceRolledPerTurn-_diceInCharacterTrays];
         //_diceRolls = new[] { 0, 0, 0, 0, 0, 0};
         //string debugString = "";
 
         //only rolling 5 dice
-        for(int i =0; i < _amountOfDiceRolled-_diceInCharacterTrays; i++)
+        for(int i =0; i < _amountOfDiceRolledPerTurn-_diceInCharacterTrays; i++)
         {
             dice[i] = Random.Range(1, 6);
         }
@@ -430,18 +439,27 @@ public class BattleSystem : BaseSystem
         }
         
         _canAttack = true;
-        _canRollDice = false;
+        
+        if(_firstRoll)
+        {
+            _firstRoll = false;
+        }
+        else
+        {
+            _amountOfRerolls--;
+            _battleMenu.SetRerollNumber(_amountOfRerolls);
+        }
     }
     
     private void EnemyRollDice()
     {
         
-        int[] dice = new int[_amountOfDiceRolled];
+        int[] dice = new int[_amountOfDiceRolledPerTurn];
         _activeDiceRolls = new[] { 0, 0, 0, 0, 0, 0};
         string debugString = "Enemy Dice:\n";
 
         //only rolling 5 dice
-        for(int i =0; i < _amountOfDiceRolled; i++)
+        for(int i =0; i < _amountOfDiceRolledPerTurn; i++)
         {
             dice[i] = Random.Range(1, 6);
             _activeDiceRolls[dice[i] - 1]++;

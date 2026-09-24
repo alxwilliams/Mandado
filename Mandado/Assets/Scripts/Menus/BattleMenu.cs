@@ -14,7 +14,9 @@ public class BattleMenu : BaseMenu
     [SerializeField] private List<PlayerCharacterUI> _characterUIs = new List<PlayerCharacterUI>();
     [SerializeField] private float _trayOpeningWaitBetween = .1f;
     [SerializeField] private List<Button> _diceTrayButtons = new List<Button>();
+    [SerializeField] private TMP_Text _rerollText;
 
+    
     [Header("Dice Sprites")] 
     [SerializeField] private Sprite _diceOne;
     [SerializeField] private Sprite _diceTwo;
@@ -119,6 +121,11 @@ public class BattleMenu : BaseMenu
         base.Initialize(menuSystem);
     }
 
+    public void SetRerollNumber(int num)
+    {
+        _rerollText.text = $"{num}";
+    }
+    
     private void OnDiceButtonClicked(int index, Button button)
     {
         button.gameObject.SetActive(false);
