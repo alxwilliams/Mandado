@@ -32,6 +32,12 @@ public partial class BattleSystem : BaseSystem
     private int _diceInCharacterTrays = 0;
     private float _currentOrderTokens = 0;
 
+    private int _turnCount = 0;
+    private bool _playerHasHealed = false;
+
+    private EnemyAttackSet _currentEnemyAttackSet;
+    private int _currentEnemyAttackIndex;
+
 
     public override void Initialize(GameManager gameManager)
     {
@@ -51,6 +57,8 @@ public partial class BattleSystem : BaseSystem
         _diceInCharacterTrays = 0;
         _currentOrderTokens = 0;
         _amountOfRerolls = 3;
+        _turnCount = 0;
+        _playerHasHealed = false;
         
         _battleMenu.UpdateOrderTokenText(_currentOrderTokens);
         _battleMenu.SetRerollNumber(_amountOfRerolls);
@@ -124,7 +132,8 @@ public partial class BattleSystem : BaseSystem
         //enemy attack
         EnemyRollDice();
         yield return new WaitForSeconds(_timeBeforeEnemyAttacks);
-        yield return EnemyDiceActions();
+        
+        yield return EnemyAttackActions();
         
         EndEnemyTurn();
         StartPlayerTurn();
@@ -133,6 +142,7 @@ public partial class BattleSystem : BaseSystem
     private void EndEnemyTurn()
     {
         DealWithEnemyBleedDamage();
+        _turnCount++;
     }
 
     private void StartPlayerTurn()
@@ -264,68 +274,96 @@ public partial class BattleSystem : BaseSystem
         _activeDiceRolls[num]--;
         _diceInCharacterTrays--;
     }
-    
-    private IEnumerator EnemyDiceActions()
+
+    private List<EnemyAttackSet> GetPotentialEnemyAttacks()
     {
-        //if we make more enemies we will have to change this to account for each enemy instead of _currentEnemyCharacters[0]
+        var currentEnemy = _currentEnemyCharacters[0];
+        List<EnemyAttackSet> _potentialAttackSets = new List<EnemyAttackSet>();
 
-        int currentDiceNumber = 0;
-        yield return null;
-
-        /*for (int i = 0; i < _currentEnemyCharacters[0].actionSet.Count; i++)
+        foreach (var attackSet in currentEnemy.enemyActions)
         {
-            int workingDiceTotal = 0;
-            int iOriginalValue = i;
-            int totalDiceSpan = _currentEnemyCharacters[0].actionSet[i].diceRollSpan;
-
-            for (int j = 0; j < totalDiceSpan; j++)
+            bool conditionPass = true;
+            
+            foreach (var condition in attackSet.conditionList)
             {
-                workingDiceTotal += _activeDiceRolls[currentDiceNumber];
-
-                if (j + 1 < totalDiceSpan)
+                if (condition.condition == EnemyAttackCondition.HealthLowerThan && currentEnemy.currentHealth < condition.value)
                 {
-                    currentDiceNumber++;
+                    conditionPass = false;
+                    break;
+                }
+                
+                if (condition.condition == EnemyAttackCondition.HealthGreaterThan && currentEnemy.currentHealth > condition.value)
+                {
+                    conditionPass = false;
+                    break;
+                }
+
+                if (condition.condition == EnemyAttackCondition.TurnCountEqualTo && _turnCount != condition.value)
+                {
+                    conditionPass = false;
+                    break;
+                }
+                
+                if (condition.condition == EnemyAttackCondition.TurnCountGreaterThan && _turnCount > condition.value)
+                {
+                    conditionPass = false;
+                    break;
+                }
+                
+                if (condition.condition == EnemyAttackCondition.TurnCountLessThan && _turnCount < condition.value)
+                {
+                    conditionPass = false;
+                    break;
+                }
+                
+                if (condition.condition == EnemyAttackCondition.PlayerHasHealed && !_playerHasHealed)
+                {
+                    conditionPass = false;
+                    break;
+                }
+                
+                if (condition.condition == EnemyAttackCondition.PlayerHasNotHealed && _playerHasHealed)
+                {
+                    conditionPass = false;
+                    break;
                 }
             }
 
-            if (workingDiceTotal == 1)
+            if (conditionPass)
             {
-                yield return DealWithEnemyAction(_currentEnemyCharacters[0].actionSet[iOriginalValue]._diceActionSet.rollOneActions,
-                    _currentEnemyCharacters[0]);
+                _potentialAttackSets.Add(attackSet);
             }
-            else if (workingDiceTotal == 2)
-            {
-                yield return DealWithEnemyAction(_currentEnemyCharacters[0].actionSet[iOriginalValue]._diceActionSet.rollTwoActions,
-                    _currentEnemyCharacters[0]);
-            }
-            else if (workingDiceTotal == 3)
-            {
-                yield return DealWithEnemyAction(_currentEnemyCharacters[0].actionSet[iOriginalValue]._diceActionSet.rollThreeActions,
-                    _currentEnemyCharacters[0]);
-            }
-            else if (workingDiceTotal == 4)
-            {
-                yield return DealWithEnemyAction(_currentEnemyCharacters[0].actionSet[iOriginalValue]._diceActionSet.rollFourActions,
-                    _currentEnemyCharacters[0]);
-            }
-            else if (workingDiceTotal == 5)
-            {
-                yield return DealWithEnemyAction(_currentEnemyCharacters[0].actionSet[iOriginalValue]._diceActionSet.rollFiveActions,
-                    _currentEnemyCharacters[0], true);
-            }
+        }
 
-            currentDiceNumber++;
-            
-        }*/
+        return _potentialAttackSets;
+    }
+    
+    private IEnumerator EnemyAttackActions()
+    {
+
+        yield return null;
+
+        if (_currentEnemyAttackSet == null || _currentEnemyAttackIndex >= _currentEnemyAttackSet.sequencedAttacks.Count)
+        {
+            List<EnemyAttackSet> listOfAttacks = GetPotentialEnemyAttacks();
+
+            _currentEnemyAttackIndex = 0;
+            _currentEnemyAttackSet = listOfAttacks[Random.Range(0, listOfAttacks.Count)];
+        }
+
+        yield return DealWithEnemyAction(_currentEnemyAttackSet.sequencedAttacks[_currentEnemyAttackIndex].actionSet,
+            _currentEnemyCharacters[0]);
+        
+        _currentEnemyAttackIndex++;
     }
 
-    private IEnumerator DealWithEnemyAction(List<CharacterAction> actions, EnemyCharacterData data, bool maxRoll = false)
+    private IEnumerator DealWithEnemyAction(List<EnemyCharacterAction> actions, EnemyCharacterData data, bool maxRoll = false)
     {
         foreach (var action in actions)
         {                    
             yield return new WaitForSeconds(_fieldController.EnemyCharacterMoveForward(data));
 
-            if (action.type == ActionType.Damage)
+            if (action.type == EnemyActionType.DamageRandom)
             {
                 if(!maxRoll)
                 {
@@ -338,14 +376,32 @@ public partial class BattleSystem : BaseSystem
                 }
             }
 
-            if (action.type == ActionType.HealSelf)
+            if (action.type == EnemyActionType.Heal)
             {
                 HealEnemyUnit(action.value);
             }
             
-            if (action.type == ActionType.Bleed)
+            if (action.type == EnemyActionType.BleedRandom)
             {
-                ApplyPlayerBleed(action.value);
+                int playerIndex = Random.Range(0, _currentPlayerCharacters.Count);
+                ApplyPlayerBleedRandom(playerIndex, action.value);
+            }
+
+            if (action.type == EnemyActionType.BleedAll)
+            {
+                for (int i = 0; i < _currentPlayerCharacters.Count; i++)
+                {
+                    ApplyPlayerBleedRandom(i,action.value);
+                }
+            }
+
+            if (action.type == EnemyActionType.Focus)
+            {
+                if (data.currentFocus < 3)
+                {
+                    data.currentFocus+=action.value;
+                    _battleMenu.UpdateEnemyUI(data);
+                }
             }
 
             yield return new WaitForSeconds(_waitTimeBetweenAttacks);
@@ -353,13 +409,13 @@ public partial class BattleSystem : BaseSystem
     }
     
 
-    private IEnumerator DealWithPlayerAction(List<CharacterAction> actions, PlayerCharacterData data, int castingUnitIndex, bool maxRoll = false)
+    private IEnumerator DealWithPlayerAction(List<PlayerCharacterAction> actions, PlayerCharacterData data, int castingUnitIndex, bool maxRoll = false)
     {
         foreach (var action in actions)
         {
             yield return new WaitForSeconds(_fieldController.PlayerCharacterMoveForward(data));
             
-            if (action.type == ActionType.Damage)
+            if (action.type == PlayerActionType.Damage)
             {
                 
                 if(!maxRoll)
@@ -373,13 +429,13 @@ public partial class BattleSystem : BaseSystem
                 ResetPlayerEmpower(data.currentIndex);
             }
 
-            if (action.type == ActionType.Bleed)
+            if (action.type == PlayerActionType.Bleed)
             {
                 ApplyEnemyBleed(action.value);
             }
 
 
-            if (action.type == ActionType.Heal)
+            if (action.type == PlayerActionType.Heal)
             {
                 HealPlayerUnit(castingUnitIndex, action.value);
                 
@@ -388,31 +444,33 @@ public partial class BattleSystem : BaseSystem
                     HealPlayerUnit(castingUnitIndex -1, action.value);
                 }
 
-                if (castingUnitIndex < 5)
+                if (castingUnitIndex < 5 && castingUnitIndex + 1 < _currentPlayerCharacters.Count)
                 {
                     HealPlayerUnit(castingUnitIndex + 1, action.value);
                 }
+
+                _playerHasHealed = true;
             }
             
-            if (action.type == ActionType.HealSelf)
+            if (action.type == PlayerActionType.HealSelf)
             {
                 HealPlayerUnit(castingUnitIndex, action.value);
             }
             
-            if (action.type == ActionType.HealNearby)
+            if (action.type == PlayerActionType.HealNearby)
             {
                 if (castingUnitIndex > 0)
                 {
                     HealPlayerUnit(castingUnitIndex -1, action.value);
                 }
 
-                if (castingUnitIndex < 5)
+                if (castingUnitIndex < 5 && castingUnitIndex + 1 < _currentPlayerCharacters.Count)
                 {
                     HealPlayerUnit(castingUnitIndex + 1, action.value);
                 }
             }
 
-            if (action.type == ActionType.Guard)
+            if (action.type == PlayerActionType.Guard)
             {
                 GuardPlayerUnit(castingUnitIndex, action.value);
                 
@@ -421,18 +479,18 @@ public partial class BattleSystem : BaseSystem
                     GuardPlayerUnit(castingUnitIndex - 1, action.value);
                 }
 
-                if (castingUnitIndex < 5)
+                if (castingUnitIndex < 5 && castingUnitIndex + 1 < _currentPlayerCharacters.Count)
                 {
                     GuardPlayerUnit(castingUnitIndex + 1, action.value);
                 }
             }
 
-            if (action.type == ActionType.Order)
+            if (action.type == PlayerActionType.Order)
             {
                 UpdateOrder(action.value);
             }
 
-            if (action.type == ActionType.Empower)
+            if (action.type == PlayerActionType.Empower)
             {
                 EmpowerPlayerUnit(castingUnitIndex, action.value);
                 
@@ -441,15 +499,14 @@ public partial class BattleSystem : BaseSystem
                     EmpowerPlayerUnit(castingUnitIndex -1, action.value);
                 }
 
-                if (castingUnitIndex < 5)
+                if (castingUnitIndex < 5 && castingUnitIndex + 1 < _currentPlayerCharacters.Count)
                 {
                     EmpowerPlayerUnit(castingUnitIndex + 1, action.value);
                 }
             }
 
-            if (action.type == ActionType.Inspire)
+            if (action.type == PlayerActionType.Inspire)
             {
-                
                 _currentPlayerCharacters[castingUnitIndex].currentFocus++;
                 _battleMenu.UpdatePlayerCharacterFocus(_currentPlayerCharacters[castingUnitIndex]);
                 
@@ -459,13 +516,12 @@ public partial class BattleSystem : BaseSystem
                     _battleMenu.UpdatePlayerCharacterFocus(_currentPlayerCharacters[castingUnitIndex-1]);
                 }
 
-                if (castingUnitIndex < 5)
+                if (castingUnitIndex < 5 && castingUnitIndex + 1 < _currentPlayerCharacters.Count)
                 {
                     _currentPlayerCharacters[castingUnitIndex + 1].currentFocus++;
                     _battleMenu.UpdatePlayerCharacterFocus(_currentPlayerCharacters[castingUnitIndex+1]);
                 }
             }
-            
 
             yield return new WaitForSeconds(0.1f);
         }
@@ -485,7 +541,6 @@ public partial class BattleSystem : BaseSystem
     {
         _currentOrderTokens += newValue;
         _battleMenu.UpdateOrderTokenText(_currentOrderTokens);
-        
     }
 
     private void GuardPlayerUnit(int unitIndex, float amount)
@@ -502,20 +557,19 @@ public partial class BattleSystem : BaseSystem
         _battleMenu.UpdatePlayerCharacterGuardUI(unitIndex,_currentPlayerCharacters[unitIndex].statusEffects[StatusEffects.Guard]);
     }
 
-    private void ApplyPlayerBleed(float amount)
+    private void ApplyPlayerBleedRandom(int index, float amount)
     {
-        int playerIndex = Random.Range(0, _currentPlayerCharacters.Count);
         
-        if(_currentPlayerCharacters[playerIndex].statusEffects.ContainsKey(StatusEffects.Bleed))
+        if(_currentPlayerCharacters[index].statusEffects.ContainsKey(StatusEffects.Bleed))
         {
-            _currentPlayerCharacters[playerIndex].statusEffects[StatusEffects.Bleed] += amount;
+            _currentPlayerCharacters[index].statusEffects[StatusEffects.Bleed] += amount;
         }
         else
         {
-            _currentPlayerCharacters[playerIndex].statusEffects.Add(StatusEffects.Bleed,amount);
+            _currentPlayerCharacters[index].statusEffects.Add(StatusEffects.Bleed,amount);
         }
         
-        _battleMenu.UpdatePlayerCharacterBleedUI(playerIndex,_currentPlayerCharacters[playerIndex].statusEffects[StatusEffects.Bleed]);
+        _battleMenu.UpdatePlayerCharacterBleedUI(index,_currentPlayerCharacters[index].statusEffects[StatusEffects.Bleed]);
     }
     
     private void ApplyEnemyBleed(float amount)
@@ -547,7 +601,6 @@ public partial class BattleSystem : BaseSystem
     private void PlayerAttackEnemy(float num)
     {
         int enemyIndex = Random.Range(0, _currentEnemyCharacters.Count);
-
         num = CheckStatusEffectsForGuard(ref _currentEnemyCharacters[enemyIndex].statusEffects, num);
         
         EnemyTakeDamage(num);
