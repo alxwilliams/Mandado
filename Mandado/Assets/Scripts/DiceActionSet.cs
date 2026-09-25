@@ -39,7 +39,10 @@ public enum ActionType
     HealNearby,
     DamageSelf,
     GuardSelf,
-    Order
+    Order,
+    Bleed,
+    Empower,
+    Inspire
     //Sometimes We'll Need Specific IDs if, for example, the 3FP cast does something different. 
 }
 

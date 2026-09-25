@@ -11,10 +11,12 @@ public class BattleMenu : BaseMenu
 
     [SerializeField] private Button _rollDiceButton;
     [SerializeField] private Button _goButton;
+    [SerializeField] private EnemyCharacterUI _enemyCharacterUI;
     [SerializeField] private List<PlayerCharacterUI> _characterUIs = new List<PlayerCharacterUI>();
     [SerializeField] private float _trayOpeningWaitBetween = .1f;
     [SerializeField] private List<Button> _diceTrayButtons = new List<Button>();
     [SerializeField] private TMP_Text _rerollText;
+    [SerializeField] private TMP_Text _orderTokenText;
 
     
     [Header("Dice Sprites")] 
@@ -56,11 +58,39 @@ public class BattleMenu : BaseMenu
         _trayOpeningRoutine = StartCoroutine(TrayRoutine(true));
     }
 
-    public void UpdateCharacterGuardUI(int index, float guard)
+    public void UpdatePlayerCharacterGuardUI(int index, float guard)
     {
         _characterUIs[index].UpdateGuardUI(guard);
     }
 
+    public void UpdatePlayerCharacterBleedUI(int index, float newValue)
+    {
+        _characterUIs[index].UpdateBleedUI(newValue);
+    }
+
+    public void UpdateOrderTokenText(float num)
+    {
+        _orderTokenText.text = $"{num}";
+    }
+
+    public void UpdateEnemyBleedUI(float newValue)
+    {
+        _enemyCharacterUI.UpdateBleedUI(newValue);
+    }
+
+    public void ResetAllStatusEffects()
+    {
+        foreach (var character in _characterUIs)
+        {
+            character.UpdateBleedUI(0);
+            character.UpdateGuardUI(0);
+        }
+        
+        _enemyCharacterUI.UpdateBleedUI(0);
+        _enemyCharacterUI.UpdateGuardUI(0);
+    }
+
+    
     private IEnumerator TrayRoutine(bool opening)
     {
         int i = 1;
@@ -254,15 +284,31 @@ public class BattleMenu : BaseMenu
             button.gameObject.SetActive(false);
         }
     }
+
+    public void UpdateEnemyUI(EnemyCharacterData data)
+    {
+        _enemyCharacterUI.UpdateHealth(data.currentHealth/data.maxHealth);
+        _enemyCharacterUI.SetFocus(data.currentFocus);
+    }
     
     public void UpdatePlayerCharacters(List<PlayerCharacterData> characters)
     {
         for(int i = 0; i < characters.Count; i++)
         {
-            _characterUIs[i].UpdateHealth(characters[i].currentHealth / characters[i].maxHealth);
-            _characterUIs[i].SetFocus(characters[i].currentFocus);
+            UpdatePlayerCharacterHealth(characters[i]);
+            UpdatePlayerCharacterFocus(characters[i]);
         }
     }
+
+    public void UpdatePlayerCharacterHealth(PlayerCharacterData data)
+    {
+        _characterUIs[data.currentIndex].UpdateHealth(data.currentHealth / data.maxHealth);
+    }
+
+    public void UpdatePlayerCharacterFocus(PlayerCharacterData data)
+    {
+        _characterUIs[data.currentIndex].SetFocus(data.currentFocus);
+    } 
 
     public void UpdateEnemyDebugText(string text)
     {

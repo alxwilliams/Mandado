@@ -59,6 +59,14 @@ public class PlayerCharacterData
     public Sprite frontSprite;
     public Sprite backSprite;
     public int currentIndex;
+
+    public bool IsAlive
+    {
+        get
+        {
+            return currentHealth > 0;
+        }
+    }
 }
 
 public enum ClassType

@@ -23,19 +23,24 @@ MonoBehaviour:
       rollOneActions:
       - value: 2
         type: 0
+      - value: 5
+        type: 7
       rollTwoActions:
       - value: 4
         type: 0
+      - value: 4
+        type: 7
       rollThreeActions:
       - value: 6
-        type: 0
+        type: 7
       rollFourActions:
       - value: 8
-        type: 0
+        type: 7
       rollFiveActions:
       - value: 12
         type: 0
-      focusActions: []
+      focusValueDescription: 
+      focusValues: []
   - diceRollSpan: 2
     _diceActionSet:
       rollOneActions:
@@ -53,7 +58,8 @@ MonoBehaviour:
       rollFiveActions:
       - value: 15
         type: 2
-      focusActions: []
+      focusValueDescription: 
+      focusValues: []
   - diceRollSpan: 1
     _diceActionSet:
       rollOneActions:
@@ -71,4 +77,5 @@ MonoBehaviour:
       rollFiveActions:
       - value: 6
         type: 0
-      focusActions: []
+      focusValueDescription: 
+      focusValues: []

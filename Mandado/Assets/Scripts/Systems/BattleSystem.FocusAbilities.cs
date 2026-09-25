@@ -40,4 +40,28 @@ public partial class BattleSystem
     }
     
     #endregion
+
+    #region Pilgrim Checks
+
+    private void FocusPilgrimCheckForOrderTokens()
+    {
+        foreach (var character in _currentPlayerCharacters)
+        {
+            if (character.classType == ClassType.Pilgrim && character.currentFocus == 3)
+            {
+                UpdateOrder(2);
+            }
+        }
+    }
+
+    #endregion
+
+    #region Warrior Checks
+
+    private void FocusWarriorCheckCounterDamage(PlayerCharacterData data)
+    {
+        PlayerAttackEnemy(data.currentFocus * data.actionSet.focusValues[0]);
+    }
+
+    #endregion
 }

@@ -30,6 +30,7 @@ public partial class BattleSystem : BaseSystem
     private int _amountOfRerolls = 0;
 
     private int _diceInCharacterTrays = 0;
+    private float _currentOrderTokens = 0;
 
 
     public override void Initialize(GameManager gameManager)
@@ -40,11 +41,20 @@ public partial class BattleSystem : BaseSystem
     }
     private void Start()
     {
+        StartNewBattle();
+    }
+
+    private void StartNewBattle()
+    {
         LoadCharacters(_fakePlayerData, _fakeEnemyData);
         _battleMenu.OpenTrays();
         _diceInCharacterTrays = 0;
+        _currentOrderTokens = 0;
         _amountOfRerolls = 3;
+        
+        _battleMenu.UpdateOrderTokenText(_currentOrderTokens);
         _battleMenu.SetRerollNumber(_amountOfRerolls);
+        _battleMenu.ResetAllStatusEffects();
     }
 
     public void LoadCharacters(List<PlayerCharacter> playerCharacters, List<EnemyCharacter> enemyCharacters)
@@ -53,13 +63,14 @@ public partial class BattleSystem : BaseSystem
         List<EnemyCharacterData> enemyData = new List<EnemyCharacterData>(); 
         
         _fieldController.WipeCharacterDictionary();
+        _fieldController.WipeCharacterDictionary();
 
         int i = 0;
         foreach (var character in playerCharacters)
         {
             var data = character.GetFullHealthCharacterData();
             data.currentIndex = i;
-            playerData.Add(character.GetFullHealthCharacterData());
+            playerData.Add(data);
 
             i++;
         }
@@ -83,16 +94,9 @@ public partial class BattleSystem : BaseSystem
 
     public void UpdateUI()
     {
-        string testString = "";
         
         _battleMenu.UpdatePlayerCharacters(_currentPlayerCharacters);
-
-        foreach (var character in _currentEnemyCharacters)
-        {
-            testString += $"{character.name}: {character.currentHealth}\n";
-        }
-        
-        _battleMenu.UpdateEnemyDebugText(testString);
+        _battleMenu.UpdateEnemyUI(_currentEnemyCharacters[0]);
     }
 
     private void PlayerAttack()
@@ -122,7 +126,13 @@ public partial class BattleSystem : BaseSystem
         yield return new WaitForSeconds(_timeBeforeEnemyAttacks);
         yield return EnemyDiceActions();
         
+        EndEnemyTurn();
         StartPlayerTurn();
+    }
+
+    private void EndEnemyTurn()
+    {
+        DealWithEnemyBleedDamage();
     }
 
     private void StartPlayerTurn()
@@ -144,7 +154,35 @@ public partial class BattleSystem : BaseSystem
             if (_currentPlayerCharacters[i].statusEffects.ContainsKey(StatusEffects.Guard) && _currentPlayerCharacters[i].statusEffects[StatusEffects.Guard] != 0 )
             {
                 _currentPlayerCharacters[i].statusEffects[StatusEffects.Guard] = 0;
-                _battleMenu.UpdateCharacterGuardUI(i,0);
+                _battleMenu.UpdatePlayerCharacterGuardUI(i,0);
+            }
+        }
+    }
+
+    private void DealWithEnemyBleedDamage()
+    {
+        foreach (var character in _currentEnemyCharacters)
+        {
+            if (character.statusEffects.ContainsKey(StatusEffects.Bleed) && character.statusEffects[StatusEffects.Bleed] > 0)
+            {
+                EnemyTakeDamage(character.statusEffects[StatusEffects.Bleed]);
+                character.statusEffects[StatusEffects.Bleed]--;
+                
+                _battleMenu.UpdateEnemyBleedUI(character.statusEffects[StatusEffects.Bleed]);
+            }
+        }
+        
+    }
+    private void DealWithPlayerBleedDamage()
+    {
+        foreach (var character in _currentPlayerCharacters)
+        {
+            if (character.statusEffects.ContainsKey(StatusEffects.Bleed) && character.statusEffects[StatusEffects.Bleed] > 0)
+            {
+                PlayerTakeDamage(character.currentIndex,character.statusEffects[StatusEffects.Bleed]);
+                character.statusEffects[StatusEffects.Bleed]--;
+                
+                _battleMenu.UpdatePlayerCharacterBleedUI(character.currentIndex, character.statusEffects[StatusEffects.Bleed]);
             }
         }
     }
@@ -152,6 +190,10 @@ public partial class BattleSystem : BaseSystem
     private void EndPlayerTurn()
     {
         FocusSentinelCheckForHeals();
+        FocusPilgrimCheckForOrderTokens();
+        DealWithPlayerBleedDamage();
+        
+        UpdateUI();
         
         _battleMenu.CloseTrays();
         _cameraSystem.SwitchToEnemyView();
@@ -189,7 +231,10 @@ public partial class BattleSystem : BaseSystem
                         _currentPlayerCharacters[i],i, true);
                 }
 
+                ResetIndexedPlayerFocus(i);
+                
                 UpdateUI();
+                
                 yield return new WaitForSeconds(_waitTimeBetweenAttacks);
             }
             else if(_currentPlayerCharacters[i].currentFocus < 3 && _currentPlayerCharacters[i].currentHealth > 0)
@@ -197,6 +242,14 @@ public partial class BattleSystem : BaseSystem
                 _currentPlayerCharacters[i].currentFocus++;
                 UpdateUI();
             }
+        }
+    }
+
+    private void ResetIndexedPlayerFocus(int i)
+    {
+        if (_currentPlayerCharacters[i].currentFocus > 0)
+        {
+            _currentPlayerCharacters[i].currentFocus = 0;
         }
     }
 
@@ -217,8 +270,9 @@ public partial class BattleSystem : BaseSystem
         //if we make more enemies we will have to change this to account for each enemy instead of _currentEnemyCharacters[0]
 
         int currentDiceNumber = 0;
-        
-        for (int i = 0; i < _currentEnemyCharacters[0].actionSet.Count; i++)
+        yield return null;
+
+        /*for (int i = 0; i < _currentEnemyCharacters[0].actionSet.Count; i++)
         {
             int workingDiceTotal = 0;
             int iOriginalValue = i;
@@ -262,7 +316,7 @@ public partial class BattleSystem : BaseSystem
 
             currentDiceNumber++;
             
-        }
+        }*/
     }
 
     private IEnumerator DealWithEnemyAction(List<CharacterAction> actions, EnemyCharacterData data, bool maxRoll = false)
@@ -275,18 +329,23 @@ public partial class BattleSystem : BaseSystem
             {
                 if(!maxRoll)
                 {
-                    DealDamageToPlayer(action.value);
+                    EnemyAttackPlayer(action.value);
                 }
                 else
                 {
                     //yield return new WaitForSeconds(_fieldController.CharacterBigAttack(data));
-                    DealDamageToPlayer(action.value);
+                    EnemyAttackPlayer(action.value);
                 }
             }
 
             if (action.type == ActionType.HealSelf)
             {
                 HealEnemyUnit(action.value);
+            }
+            
+            if (action.type == ActionType.Bleed)
+            {
+                ApplyPlayerBleed(action.value);
             }
 
             yield return new WaitForSeconds(_waitTimeBetweenAttacks);
@@ -305,12 +364,17 @@ public partial class BattleSystem : BaseSystem
                 
                 if(!maxRoll)
                 {
-                    DealDamageToEnemy(action.value);
+                    PlayerAttackEnemy(action.value);
                 }
                 else
                 {
-                    DealDamageToEnemy(action.value);
+                    PlayerAttackEnemy(action.value);
                 }
+            }
+
+            if (action.type == ActionType.Bleed)
+            {
+                ApplyEnemyBleed(action.value);
             }
             
             if (action.type == ActionType.HealSelf)
@@ -335,11 +399,23 @@ public partial class BattleSystem : BaseSystem
             {
                 GuardPlayerUnit(castingUnitIndex, action.value);
             }
+
+            if (action.type == ActionType.Order)
+            {
+                UpdateOrder(action.value);
+            }
             
             
 
             yield return new WaitForSeconds(0.1f);
         }
+    }
+
+    private void UpdateOrder(float newValue)
+    {
+        _currentOrderTokens += newValue;
+        _battleMenu.UpdateOrderTokenText(_currentOrderTokens);
+        
     }
 
     private void GuardPlayerUnit(int unitIndex, float amount)
@@ -353,7 +429,37 @@ public partial class BattleSystem : BaseSystem
             _currentPlayerCharacters[unitIndex].statusEffects[StatusEffects.Guard] = amount;
         }
         
-        _battleMenu.UpdateCharacterGuardUI(unitIndex,_currentPlayerCharacters[unitIndex].statusEffects[StatusEffects.Guard]);
+        _battleMenu.UpdatePlayerCharacterGuardUI(unitIndex,_currentPlayerCharacters[unitIndex].statusEffects[StatusEffects.Guard]);
+    }
+
+    private void ApplyPlayerBleed(float amount)
+    {
+        int playerIndex = Random.Range(0, _currentPlayerCharacters.Count);
+        
+        if(_currentPlayerCharacters[playerIndex].statusEffects.ContainsKey(StatusEffects.Bleed))
+        {
+            _currentPlayerCharacters[playerIndex].statusEffects[StatusEffects.Bleed] += amount;
+        }
+        else
+        {
+            _currentPlayerCharacters[playerIndex].statusEffects.Add(StatusEffects.Bleed,amount);
+        }
+        
+        _battleMenu.UpdatePlayerCharacterBleedUI(playerIndex,_currentPlayerCharacters[playerIndex].statusEffects[StatusEffects.Bleed]);
+    }
+    
+    private void ApplyEnemyBleed(float amount)
+    {
+        if (_currentEnemyCharacters[0].statusEffects.ContainsKey(StatusEffects.Bleed))
+        {
+            _currentEnemyCharacters[0].statusEffects[StatusEffects.Bleed] += amount;
+        }
+        else
+        {
+            _currentEnemyCharacters[0].statusEffects.Add(StatusEffects.Bleed,amount);
+        }
+        
+        _battleMenu.UpdateEnemyBleedUI(_currentEnemyCharacters[0].statusEffects[StatusEffects.Bleed]);
     }
 
     private void HealPlayerUnit(int unitIndex, float amount)
@@ -368,17 +474,16 @@ public partial class BattleSystem : BaseSystem
         _fieldController.EnemyCharacterGetHealed(_currentEnemyCharacters[0],amount);
     }
 
-    private void DealDamageToEnemy(float num)
+    private void PlayerAttackEnemy(float num)
     {
         int enemyIndex = Random.Range(0, _currentEnemyCharacters.Count);
 
         num = CheckStatusEffectsForGuard(ref _currentEnemyCharacters[enemyIndex].statusEffects, num);
         
-        _currentEnemyCharacters[enemyIndex].currentHealth -= num;
-        _fieldController.EnemyTakeDamage(_currentEnemyCharacters[enemyIndex], num);
+        EnemyTakeDamage(num);
     }
     
-    private void DealDamageToPlayer(float num)
+    private void EnemyAttackPlayer(float num)
     {
         int playerIndex;
         int sentinelValue = FocusSentinelCheckForFullPoints();
@@ -392,15 +497,34 @@ public partial class BattleSystem : BaseSystem
             playerIndex = Random.Range(0, _currentPlayerCharacters.Count);
         }
 
+        if (_currentPlayerCharacters[playerIndex].classType == ClassType.Warrior &&
+            _currentPlayerCharacters[playerIndex].currentFocus > 0)
+        {
+            FocusWarriorCheckCounterDamage(_currentPlayerCharacters[playerIndex]);
+        }
+
         float newDamageNum = CheckStatusEffectsForGuard(ref _currentPlayerCharacters[playerIndex].statusEffects, num);
 
         if (num != newDamageNum)
         {
-            _battleMenu.UpdateCharacterGuardUI(playerIndex,_currentPlayerCharacters[playerIndex].statusEffects[StatusEffects.Guard]);
+            _battleMenu.UpdatePlayerCharacterGuardUI(playerIndex,_currentPlayerCharacters[playerIndex].statusEffects[StatusEffects.Guard]);
         }
         
-        _currentPlayerCharacters[playerIndex].currentHealth -= num;
-        _fieldController.PlayerTakeDamage(_currentPlayerCharacters[playerIndex], num);
+        PlayerTakeDamage(playerIndex, num);
+    }
+
+    private void EnemyTakeDamage(float num)
+    {
+        _currentEnemyCharacters[0].currentHealth -= num;
+        _fieldController.EnemyTakeDamage(_currentEnemyCharacters[0], num);
+        _battleMenu.UpdateEnemyUI(_currentEnemyCharacters[0]);
+    }
+    
+    private void PlayerTakeDamage(int index, float num)
+    {
+        _currentPlayerCharacters[index].currentHealth -= num;
+        _fieldController.PlayerTakeDamage(_currentPlayerCharacters[index], num);
+        _battleMenu.UpdatePlayerCharacterHealth(_currentPlayerCharacters[index]);
     }
 
     private float CheckStatusEffectsForGuard(ref Dictionary<StatusEffects,float> effects, float damage)
