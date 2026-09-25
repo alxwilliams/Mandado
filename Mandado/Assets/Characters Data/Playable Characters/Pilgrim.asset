@@ -41,20 +41,38 @@ MonoBehaviour:
       focusValues: []
   _baseActionSet:
     rollOneActions:
-    - value: 1
-      type: 0
-    rollTwoActions:
-    - value: 3
-      type: 0
-    rollThreeActions:
     - value: 5
-      type: 0
-    rollFourActions:
-    - value: 7
-      type: 0
-    rollFiveActions:
+      type: 2
     - value: 10
-      type: 0
-    focusValueDescription: 
-    focusValues: []
+      type: 9
+    rollTwoActions:
+    - value: 8
+      type: 2
+    - value: 10
+      type: 9
+    rollThreeActions:
+    - value: 12
+      type: 2
+    - value: 20
+      type: 9
+    - value: 1
+      type: 10
+    rollFourActions:
+    - value: 17
+      type: 2
+    - value: 20
+      type: 9
+    - value: 1
+      type: 10
+    rollFiveActions:
+    - value: 23
+      type: 2
+    - value: 30
+      type: 9
+    - value: 1
+      type: 10
+    focusValueDescription: Index 0 is the amount of Order gained at the end of turn
+      when the Pilgrim has 3 focus points
+    focusValues:
+    - 2
   _classType: 1

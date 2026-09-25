@@ -55,6 +55,7 @@ public class PlayerCharacterData
     public float currentFocus;
     public DiceActionSet actionSet;
     public Dictionary<StatusEffects, float> statusEffects;
+    public float currentDamageMultiplier = 1;
     public float width;
     public Sprite frontSprite;
     public Sprite backSprite;

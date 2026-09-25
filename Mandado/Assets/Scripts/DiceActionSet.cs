@@ -35,10 +35,11 @@ public enum ActionType
 {
     Damage,
     BigAttack,
+    Heal,
     HealSelf,
     HealNearby,
     DamageSelf,
-    GuardSelf,
+    Guard,
     Order,
     Bleed,
     Empower,

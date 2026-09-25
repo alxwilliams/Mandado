@@ -34,6 +34,7 @@ public class EnemyCharacterData
    public float currentHealth;
    public float maxHealth;
    public float currentFocus;
+   public float currentDamageMultiplier = 1;
    public List<CompoundDiceActionSet> actionSet;
    public Dictionary<StatusEffects, float> statusEffects;
    public float width;

@@ -370,11 +370,28 @@ public partial class BattleSystem : BaseSystem
                 {
                     PlayerAttackEnemy(action.value);
                 }
+                ResetPlayerEmpower(data.currentIndex);
             }
 
             if (action.type == ActionType.Bleed)
             {
                 ApplyEnemyBleed(action.value);
+            }
+
+
+            if (action.type == ActionType.Heal)
+            {
+                HealPlayerUnit(castingUnitIndex, action.value);
+                
+                if (castingUnitIndex > 0)
+                {
+                    HealPlayerUnit(castingUnitIndex -1, action.value);
+                }
+
+                if (castingUnitIndex < 5)
+                {
+                    HealPlayerUnit(castingUnitIndex + 1, action.value);
+                }
             }
             
             if (action.type == ActionType.HealSelf)
@@ -395,20 +412,73 @@ public partial class BattleSystem : BaseSystem
                 }
             }
 
-            if (action.type == ActionType.GuardSelf)
+            if (action.type == ActionType.Guard)
             {
                 GuardPlayerUnit(castingUnitIndex, action.value);
+                
+                if (castingUnitIndex > 0)
+                {
+                    GuardPlayerUnit(castingUnitIndex - 1, action.value);
+                }
+
+                if (castingUnitIndex < 5)
+                {
+                    GuardPlayerUnit(castingUnitIndex + 1, action.value);
+                }
             }
 
             if (action.type == ActionType.Order)
             {
                 UpdateOrder(action.value);
             }
-            
+
+            if (action.type == ActionType.Empower)
+            {
+                EmpowerPlayerUnit(castingUnitIndex, action.value);
+                
+                if (castingUnitIndex > 0)
+                {
+                    EmpowerPlayerUnit(castingUnitIndex -1, action.value);
+                }
+
+                if (castingUnitIndex < 5)
+                {
+                    EmpowerPlayerUnit(castingUnitIndex + 1, action.value);
+                }
+            }
+
+            if (action.type == ActionType.Inspire)
+            {
+                
+                _currentPlayerCharacters[castingUnitIndex].currentFocus++;
+                _battleMenu.UpdatePlayerCharacterFocus(_currentPlayerCharacters[castingUnitIndex]);
+                
+                if (castingUnitIndex > 0)
+                {
+                    _currentPlayerCharacters[castingUnitIndex - 1].currentFocus++;
+                    _battleMenu.UpdatePlayerCharacterFocus(_currentPlayerCharacters[castingUnitIndex-1]);
+                }
+
+                if (castingUnitIndex < 5)
+                {
+                    _currentPlayerCharacters[castingUnitIndex + 1].currentFocus++;
+                    _battleMenu.UpdatePlayerCharacterFocus(_currentPlayerCharacters[castingUnitIndex+1]);
+                }
+            }
             
 
             yield return new WaitForSeconds(0.1f);
         }
+    }
+
+    private void EmpowerPlayerUnit(int unitIndex, float amount)
+    {
+        _currentPlayerCharacters[unitIndex].currentDamageMultiplier += (amount / 100);
+    }
+
+    private void ResetPlayerEmpower(int unitIndex)
+    {
+        _currentPlayerCharacters[unitIndex].currentDamageMultiplier = 1;
     }
 
     private void UpdateOrder(float newValue)
