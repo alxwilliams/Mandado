@@ -53,7 +53,7 @@ public class GameManager : MonoBehaviour
             stringChars[i] = chars[tempRng.Next(chars.Length)];
         }
 
-        _mainDiceSeed= stringChars.ToString();
+        _mainDiceSeed = new string(stringChars);
     }
     
     private void GenerateRandomMachines()
@@ -76,8 +76,8 @@ public class GameManager : MonoBehaviour
             stringChars2[i] = chars[_mainRandom.Next(chars.Length)];
         }
         
-        _targetSeed= stringChars.ToString();
-        _miscSeed= stringChars2.ToString();
+        _targetSeed= new string(stringChars);
+        _miscSeed= new string(stringChars2);
 
         _targetRandom = new Random(StringToDeterministicHash(_targetSeed));
         _miscRandom = new Random(StringToDeterministicHash(_miscSeed));

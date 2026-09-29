@@ -722,7 +722,7 @@ PrefabInstance:
     - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
       propertyPath: _fakePlayerData.Array.data[3]
       value: 
-      objectReference: {fileID: 11400000, guid: ff3734a6ecbbfb94da5182d68cff05ca, type: 2}
+      objectReference: {fileID: 11400000, guid: 145a4ce6d18ee2d4eb2f45dfac6dc7c2, type: 2}
     - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
       propertyPath: _fakePlayerData.Array.data[4]
       value: 

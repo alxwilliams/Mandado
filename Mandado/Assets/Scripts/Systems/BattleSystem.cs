@@ -382,7 +382,9 @@ public partial class BattleSystem : BaseSystem
 
         yield return null;
 
-        if (_currentEnemyAttackSet == null || _currentEnemyAttackIndex >= _currentEnemyAttackSet.sequencedAttacks.Count)
+        if (_currentEnemyAttackSet == null ||
+            _currentEnemyAttackSet.sequencedAttacks == null
+            || _currentEnemyAttackIndex >= _currentEnemyAttackSet.sequencedAttacks.Count)
         {
             List<EnemyAttackSet> listOfAttacks = GetPotentialEnemyAttacks();
 
@@ -439,6 +441,12 @@ public partial class BattleSystem : BaseSystem
                 if (data.currentFocus < 3)
                 {
                     data.currentFocus+=action.value;
+
+                    if (data.currentFocus > 3)
+                    {
+                        data.currentFocus = 3;
+                    }
+                    
                     _battleMenu.UpdateEnemyUI(data);
                 }
             }
@@ -459,12 +467,13 @@ public partial class BattleSystem : BaseSystem
                 
                 if(!maxRoll)
                 {
-                    PlayerAttackEnemy(action.value);
+                    PlayerAttackEnemy(action.value * data.currentDamageMultiplier);
                 }
                 else
                 {
-                    PlayerAttackEnemy(action.value);
+                    PlayerAttackEnemy(action.value * data.currentDamageMultiplier);
                 }
+                
                 ResetPlayerEmpower(data.currentIndex);
             }
 
@@ -739,19 +748,28 @@ public partial class BattleSystem : BaseSystem
             return;
         }
 
-        int[] dice = new int[_amountOfDiceRolledPerTurn-_currentSaveState.diceInCharacterTrays];
+        int diceRolled = _amountOfDiceRolledPerTurn - _currentSaveState.diceInCharacterTrays;
+
+        int[] dice = new int[diceRolled];
         //_diceRolls = new[] { 0, 0, 0, 0, 0, 0};
         //string debugString = "";
 
         //only rolling 5 dice
-        for(int i =0; i < _amountOfDiceRolledPerTurn-_currentSaveState.diceInCharacterTrays; i++)
+        for(int i =0; i < diceRolled; i++)
         {
             dice[i] = _gameManager.GetNewMainRandom(1, 6);
         }
 
-        for(int i = 0; i < dice.Length; i++)
+        for(int i = 0; i < _amountOfDiceRolledPerTurn; i++)
         {
-            _battleMenu.SetDiceInTrayUI(i, dice[i]);
+            if(i < diceRolled)
+            {
+                _battleMenu.SetDiceInTrayUI(i, dice[i]);
+            }
+            else
+            {
+                _battleMenu.DisableDice(i);
+            }
         }
         
         _currentSaveState.canAttack = true;

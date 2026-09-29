@@ -274,6 +274,16 @@ public class BattleMenu : BaseMenu
         }
     }
 
+    public void DisableDice(int index)
+    {
+        var dice = _diceTrayButtons[index].gameObject;
+        
+        if(dice.activeSelf)
+        {
+            _diceTrayButtons[index].gameObject.SetActive(false);
+        }
+    }
+
     public void SetDiceInTrayUI(int index, int num)
     {
         Button button = _diceTrayButtons[index];
