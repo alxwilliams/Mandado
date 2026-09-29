@@ -10,9 +10,9 @@ public partial class BattleSystem
     {
         int highestIndexedSentinel = -1;
 
-        for (int i = 0; i < _currentPlayerCharacters.Count; i++)
+        for (int i = 0; i < _currentSaveState.playerCharacters.Count; i++)
         {
-            if (_currentPlayerCharacters[i].classType == ClassType.Sentinel && _currentPlayerCharacters[i].currentFocus == 3)
+            if (_currentSaveState.playerCharacters[i].classType == ClassType.Sentinel && _currentSaveState.playerCharacters[i].currentFocus == 3)
             {
                 highestIndexedSentinel = i;
             }
@@ -23,7 +23,7 @@ public partial class BattleSystem
 
     private void FocusSentinelCheckForHeals()
     {
-        foreach (var character in _currentPlayerCharacters)
+        foreach (var character in _currentSaveState.playerCharacters)
         {
             if (character.classType == ClassType.Sentinel && character.currentFocus > 0)
             {
@@ -45,7 +45,7 @@ public partial class BattleSystem
 
     private void FocusPilgrimCheckForOrderTokens()
     {
-        foreach (var character in _currentPlayerCharacters)
+        foreach (var character in _currentSaveState.playerCharacters)
         {
             if (character.classType == ClassType.Pilgrim && character.currentFocus == 3)
             {

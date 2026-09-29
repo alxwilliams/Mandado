@@ -59,10 +59,7 @@ public class SpriteBillboard : MonoBehaviour
     
     private void OnDestroy()
     {
-        if(targetCamera != null)
-        {
-            //targetCamera.OnCameraRotation -= UpdateBillboard;
-        }
+        GameManager.InitializedEvent -= Initialize;
     }
 
     public void ForceBillboardUpdate()
@@ -75,13 +72,12 @@ public class SpriteBillboard : MonoBehaviour
 
     private void UpdateBillboard(Transform cam)
     {
-        if (cam == null || targetCamera == null || !gameObject.activeSelf)
+        if (gameObject == null || cam == null || targetCamera == null || !gameObject.activeSelf)
         {
             return;
         }
 
-        
-        
         transform.eulerAngles = cam.transform.eulerAngles;
     }
+
 }

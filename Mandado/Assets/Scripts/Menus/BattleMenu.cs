@@ -78,16 +78,46 @@ public class BattleMenu : BaseMenu
         _enemyCharacterUI.UpdateBleedUI(newValue);
     }
 
-    public void ResetAllStatusEffects()
+    public void LoadInStatusEffects(BattleSystemState state)
     {
-        foreach (var character in _characterUIs)
+        for (int i = 0; i < state.playerCharacters.Count; i++)
         {
-            character.UpdateBleedUI(0);
-            character.UpdateGuardUI(0);
+            if(state.playerCharacters[i].statusEffects.ContainsKey(StatusEffects.Bleed))
+            {
+                _characterUIs[i].UpdateBleedUI(state.playerCharacters[i].statusEffects[StatusEffects.Bleed]);
+            }
+            else
+            {
+                _characterUIs[i].UpdateBleedUI(0);
+            }
+            
+            if(state.playerCharacters[i].statusEffects.ContainsKey(StatusEffects.Guard))
+            {
+                _characterUIs[i].UpdateGuardUI(state.playerCharacters[i].statusEffects[StatusEffects.Guard]);
+            }
+            else
+            {
+                _characterUIs[i].UpdateGuardUI(0);
+            }
+        }
+
+        if (state.enemyCharacters[0].statusEffects.ContainsKey(StatusEffects.Bleed))
+        {
+            _enemyCharacterUI.UpdateBleedUI(state.enemyCharacters[0].statusEffects[StatusEffects.Bleed]);
+        }
+        else
+        {
+            _enemyCharacterUI.UpdateBleedUI(0);
         }
         
-        _enemyCharacterUI.UpdateBleedUI(0);
-        _enemyCharacterUI.UpdateGuardUI(0);
+        if (state.enemyCharacters[0].statusEffects.ContainsKey(StatusEffects.Guard))
+        {
+            _enemyCharacterUI.UpdateGuardUI(state.enemyCharacters[0].statusEffects[StatusEffects.Guard]);
+        }
+        else
+        {
+            _enemyCharacterUI.UpdateGuardUI(0);
+        }
     }
 
     

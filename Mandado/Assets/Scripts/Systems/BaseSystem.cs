@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class BaseSystem : MonoBehaviour
 {
-    private bool _initialized = false;
+    protected bool _initialized = false;
     public Action InitializedAction;
     protected GameManager _gameManager;
 

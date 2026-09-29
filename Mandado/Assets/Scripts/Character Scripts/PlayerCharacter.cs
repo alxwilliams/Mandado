@@ -54,6 +54,7 @@ public class PlayerCharacterData
     public float maxHealth;
     public float currentFocus;
     public DiceActionSet actionSet;
+    public SerializableStatusDictionary statusEffectsSerialized;
     public Dictionary<StatusEffects, float> statusEffects;
     public float currentDamageMultiplier = 1;
     public float width;

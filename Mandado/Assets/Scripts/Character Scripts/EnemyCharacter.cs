@@ -35,6 +35,7 @@ public class EnemyCharacterData
    public float currentFocus;
    public float currentDamageMultiplier = 1;
    public List<EnemyAttackSet> enemyActions;
+   public SerializableStatusDictionary statusEffectsSerialized;
    public Dictionary<StatusEffects, float> statusEffects;
    public float width;
    public Sprite frontSprite;

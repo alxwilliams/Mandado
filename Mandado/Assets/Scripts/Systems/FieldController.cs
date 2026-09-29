@@ -27,6 +27,20 @@ public class FieldController : MonoBehaviour
         _playerControllerDictionary = new Dictionary<PlayerCharacterData, InGameCharacterController>();
         _enemyControllerDictionary = new Dictionary<EnemyCharacterData, InGameCharacterController>();
     }
+
+    public void DisableAllCurrentCharacters()
+    {
+        foreach (var pair in _playerControllerDictionary)
+        {
+            pair.Value.gameObject.SetActive(false);
+        }
+        
+        foreach (var pair in _enemyControllerDictionary)
+        {
+            pair.Value.gameObject.SetActive(false);
+        }
+    }
+    
     public void LoadPlayerCharacters(List<PlayerCharacterData> characters)
     {
         if (_playerLoadRoutine != null)
