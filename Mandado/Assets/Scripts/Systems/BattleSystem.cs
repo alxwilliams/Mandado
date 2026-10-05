@@ -140,7 +140,7 @@ public partial class BattleSystem : BaseSystem
 
     public void UpdateUI()
     {
-        
+        _battleMenu.SetRerollNumber(_currentSaveState.amountOfRerolls);
         _battleMenu.UpdatePlayerCharacters(_currentSaveState.playerCharacters);
         _battleMenu.UpdateEnemyUI(_currentSaveState.enemyCharacters[0]);
     }
@@ -165,7 +165,7 @@ public partial class BattleSystem : BaseSystem
     private IEnumerator AttackRoutine()
     {
         yield return PlayerDiceActions();
-        _currentSaveState.activeDiceRolls = new int[5];
+        _currentSaveState.activeDiceRolls = new int[6];
 
         //enemy attack
         EnemyRollDice();
@@ -187,11 +187,11 @@ public partial class BattleSystem : BaseSystem
 
     private void StartPlayerTurn()
     {
-        UpdateUI();
+        _currentSaveState.amountOfRerolls = 3;
         _currentSaveState.canAttack = false;
-        _currentSaveState.firstRoll = true;
         ResetPlayerGuard();
         ResetPlayerDiceTrays();
+        UpdateUI();
         
         _battleMenu.OpenTrays();
         _cameraSystem.SwitchToPlayerView();
@@ -252,7 +252,7 @@ public partial class BattleSystem : BaseSystem
     {
         for (int i = 0; i < _currentSaveState.playerCharacters.Count; i++)
         {
-            if (_currentSaveState.activeDiceRolls[i] > 0 && _currentSaveState.playerCharacters[i].currentHealth > 0)
+            if (_currentSaveState.activeDiceRolls[i] > 0 && _currentSaveState.playerCharacters[i].IsAlive)
             {
                 if (_currentSaveState.activeDiceRolls[i] == 1)
                 {
@@ -458,9 +458,10 @@ public partial class BattleSystem : BaseSystem
 
     private IEnumerator DealWithPlayerAction(List<PlayerCharacterAction> actions, PlayerCharacterData data, int castingUnitIndex, bool maxRoll = false)
     {
+        yield return new WaitForSeconds(_fieldController.PlayerCharacterMoveForward(data));
+        
         foreach (var action in actions)
         {
-            yield return new WaitForSeconds(_fieldController.PlayerCharacterMoveForward(data));
             
             if (action.type == PlayerActionType.Damage)
             {
@@ -738,7 +739,7 @@ public partial class BattleSystem : BaseSystem
 
     private bool CheckDiceButtonClickable()
     {
-        return !(!_currentSaveState.firstRoll && _currentSaveState.amountOfRerolls <= 0 && _amountOfDiceRolledPerTurn - _currentSaveState.diceInCharacterTrays <= 0);
+        return (_currentSaveState.amountOfRerolls > 0 && _amountOfDiceRolledPerTurn - _currentSaveState.diceInCharacterTrays > 0);
     }
     
     private void RollDice()
@@ -774,15 +775,9 @@ public partial class BattleSystem : BaseSystem
         
         _currentSaveState.canAttack = true;
         
-        if(_currentSaveState.firstRoll)
-        {
-            _currentSaveState.firstRoll = false;
-        }
-        else
-        {
-            _currentSaveState.amountOfRerolls--;
-            _battleMenu.SetRerollNumber(_currentSaveState.amountOfRerolls);
-        }
+        _currentSaveState.amountOfRerolls--;
+        _battleMenu.SetRerollNumber(_currentSaveState.amountOfRerolls);
+        
     }
     
     private void EnemyRollDice()

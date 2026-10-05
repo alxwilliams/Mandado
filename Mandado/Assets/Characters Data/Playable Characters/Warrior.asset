@@ -15,8 +15,9 @@ MonoBehaviour:
   _name: Warrior
   _width: 6
   _baseHealth: 12
-  _frontSprite: {fileID: 21300000, guid: 55afde0bbf99fa248a3aaae928231a6f, type: 3}
-  _backSprite: {fileID: 21300000, guid: 55afde0bbf99fa248a3aaae928231a6f, type: 3}
+  _frontSprite: {fileID: 21300000, guid: 9f5c870fc8dbc934d9d76721e6a38721, type: 3}
+  _backSprite: {fileID: 21300000, guid: 0eb7023e53ae80d45b8681db500a137b, type: 3}
+  _actionSprite: {fileID: 21300000, guid: d27fa5a3155cf39479d84e0ff65ce7e2, type: 3}
   _levelUpSets:
   - _id: Vanguard
     _levelTwoPrefixName: Double Vanguard

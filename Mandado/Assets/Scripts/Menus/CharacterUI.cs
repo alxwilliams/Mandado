@@ -8,11 +8,14 @@ public class CharacterUI : MonoBehaviour
 {
     
     [SerializeField] protected GameObject _uiParent;
-    [SerializeField] protected Image _healthBarFill;
+    [SerializeField] protected RectTransform _healthBarFill;
     [SerializeField] protected GameObject _focusStar1;
     [SerializeField] protected GameObject _focusStar2;
     [SerializeField] protected GameObject _focusStar3;
     
+    [Header("Health Bar Data")]
+    [SerializeField] private float _healthBarFullWidth = 675.4f;
+    [SerializeField] private float _healthBarEmptyWidth = 37.7f;
     
     [Header("Status Effects")] 
     [SerializeField] protected GameObject _guardSymbol;
@@ -23,7 +26,13 @@ public class CharacterUI : MonoBehaviour
     
     protected float _currentGuard = -1;
     protected float _currentBleed = -1;
-    
+
+    private float _healthDifference;
+
+    private void Awake()
+    {
+        _healthDifference = _healthBarFullWidth - _healthBarEmptyWidth;
+    }
     public void SetFocus(float amount)
     {
         if (amount > 3 || amount < 0)
@@ -76,7 +85,7 @@ public class CharacterUI : MonoBehaviour
 
     public void UpdateHealth(float healthPercentage)
     {
-        _healthBarFill.fillAmount = healthPercentage;
+        _healthBarFill.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,_healthDifference * healthPercentage + _healthBarEmptyWidth);
     }
 
     public void SetActive(bool on)

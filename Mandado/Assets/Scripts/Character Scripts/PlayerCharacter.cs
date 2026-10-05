@@ -22,6 +22,7 @@ public class PlayerCharacter : BaseCharacter
         
         data.frontSprite = _frontSprite;
         data.backSprite = _backSprite;
+        data.actionSprite = _actionSprite;
         data.statusEffects = new Dictionary<StatusEffects, float>();
         data.width = _width;
 
@@ -60,6 +61,7 @@ public class PlayerCharacterData
     public float width;
     public Sprite frontSprite;
     public Sprite backSprite;
+    public Sprite actionSprite;
     public int currentIndex;
 
     public bool IsAlive

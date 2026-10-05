@@ -101,11 +101,10 @@ public class BattleSystemState
 {
     public int turnNumber = 0;
     public float  currentOrderTokens =0;
-    public int[] activeDiceRolls = new int[5];
+    public int[] activeDiceRolls = new int[6];
     public int amountOfRerolls = 3;
     public int diceInCharacterTrays = 0;
     public bool playerHasHealed = false;
-    public bool firstRoll = true;
     public bool canAttack = false;
     public List<PlayerCharacterData> playerCharacters;
     public List<EnemyCharacterData> enemyCharacters;

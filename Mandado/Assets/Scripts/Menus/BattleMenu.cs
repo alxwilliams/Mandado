@@ -139,14 +139,14 @@ public class BattleMenu : BaseMenu
                 yield return new WaitForSeconds(_trayOpeningWaitBetween);
             }
 
-            if(opening)
+            /*if(opening)
             {
                 UI.OpenTray();
             }
             else
             {
                 UI.CloseTray();
-            }
+            }*/
 
             i++;
         }

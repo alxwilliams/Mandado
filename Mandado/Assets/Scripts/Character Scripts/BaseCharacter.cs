@@ -12,10 +12,11 @@ public class BaseCharacter : ScriptableObject
     [Header("Sprites")]
     [SerializeField] protected Sprite _frontSprite;
     [SerializeField] protected Sprite _backSprite;
+    [SerializeField] protected Sprite _actionSprite;
 }
 
 public enum StatusEffects
 {
     Guard,
-    Bleed,
+    Bleed
 }

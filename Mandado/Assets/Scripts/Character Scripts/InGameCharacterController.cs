@@ -5,7 +5,9 @@ using UnityEngine;
 
 public class InGameCharacterController : MonoBehaviour
 {
-    [SerializeField] private SpriteRenderer _sprite;
+    [SerializeField] private SpriteRenderer _idleSpriteRenderer;
+    [SerializeField] private SpriteRenderer _attackSpriteRenderer;
+    [SerializeField] private SpriteBillboard _spriteBillboard;
     [SerializeField] private Animator _animator;
     
     [Header("Effect Box")]
@@ -20,12 +22,25 @@ public class InGameCharacterController : MonoBehaviour
     private Sprite _frontSprite;
     private Sprite _backSprite;
 
-    public void SetSprites(Sprite frontSprite, Sprite backSprite)
+    public float TrueFacingDirection
+    {
+        set
+        {
+            _spriteBillboard.TrueLookDirection = value;
+            _spriteBillboard.ForceBillboardUpdate();
+        }
+    }
+
+    public void SetSprites(Sprite frontSprite, Sprite backSprite, Sprite attackSprite)
     {
         _frontSprite = frontSprite;
         _backSprite = backSprite;
 
-        _sprite.sprite = _frontSprite;
+        _spriteBillboard.FrontSprite = frontSprite;
+        _spriteBillboard.BackSprite = backSprite;
+
+        _attackSpriteRenderer.sprite = attackSprite;
+        _spriteBillboard.ForceBillboardUpdate();
     }
 
     public void TakeDamage(float damage)

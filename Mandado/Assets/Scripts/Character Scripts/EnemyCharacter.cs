@@ -20,6 +20,7 @@ public class EnemyCharacter : BaseCharacter
       data.statusEffects = new Dictionary<StatusEffects, float>();
       data.frontSprite = _frontSprite;
       data.backSprite = _backSprite;
+      data.actionSprite = _actionSprite;
       data.width = _width;
 
       return data;
@@ -40,4 +41,5 @@ public class EnemyCharacterData
    public float width;
    public Sprite frontSprite;
    public Sprite backSprite;
+   public Sprite actionSprite;
 }

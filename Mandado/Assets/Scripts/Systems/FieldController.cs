@@ -73,7 +73,7 @@ public class FieldController : MonoBehaviour
         
         foreach (var character in characters)
         {
-            yield return CreateCharacterController(true, character.width, character.frontSprite,character.backSprite);
+            yield return CreateCharacterController(true, character.width, character.frontSprite,character.backSprite, character.actionSprite);
             _playerControllerDictionary.TryAdd(character, _loadedController);
 
             i++;
@@ -96,8 +96,9 @@ public class FieldController : MonoBehaviour
         
         foreach (var character in characters)
         {
-            yield return CreateCharacterController(false, character.width, character.frontSprite,character.backSprite);
+            yield return CreateCharacterController(false, character.width, character.frontSprite,character.backSprite, character.actionSprite);
             _enemyControllerDictionary.TryAdd(character, _loadedController);
+            _loadedController.TrueFacingDirection = 180;
 
             i++;
         }
@@ -105,7 +106,7 @@ public class FieldController : MonoBehaviour
         _enemyLoadRoutine = null;
     }
 
-    private IEnumerator CreateCharacterController(bool player, float width, Sprite frontSprite, Sprite backSprite)
+    private IEnumerator CreateCharacterController(bool player, float width, Sprite frontSprite, Sprite backSprite, Sprite attackSprite)
     {
         GameObject obj = Instantiate(_characterPrefab, player?_playerStartLocation:_enemyStartLocation);
 
@@ -125,7 +126,7 @@ public class FieldController : MonoBehaviour
         InGameCharacterController controller = obj.GetComponent<InGameCharacterController>();
 
         yield return null;
-        controller.SetSprites(frontSprite, backSprite);
+        controller.SetSprites(frontSprite, backSprite, attackSprite);
 
         _loadedController = controller;
     }

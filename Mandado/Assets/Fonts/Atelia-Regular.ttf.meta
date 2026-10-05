@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 33e03afbc2258604a88ae4caed0d938e
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Atelia
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 50d1f3b1c8898304097e8b6b3bb7c5d4, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
