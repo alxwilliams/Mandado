@@ -21,6 +21,7 @@ public class EnemyCharacter : BaseCharacter
       data.frontSprite = _frontSprite;
       data.backSprite = _backSprite;
       data.actionSprite = _actionSprite;
+      data.characterLabel = _characterLabel;
       data.width = _width;
 
       return data;
@@ -42,4 +43,5 @@ public class EnemyCharacterData
    public Sprite frontSprite;
    public Sprite backSprite;
    public Sprite actionSprite;
+   public Sprite characterLabel;
 }

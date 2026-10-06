@@ -18,6 +18,7 @@ MonoBehaviour:
   _frontSprite: {fileID: 21300000, guid: 9f5c870fc8dbc934d9d76721e6a38721, type: 3}
   _backSprite: {fileID: 21300000, guid: 0eb7023e53ae80d45b8681db500a137b, type: 3}
   _actionSprite: {fileID: 21300000, guid: d27fa5a3155cf39479d84e0ff65ce7e2, type: 3}
+  _characterLabel: {fileID: 21300000, guid: 3f418a6e21d0e0f45ba24b77f37a8359, type: 3}
   _levelUpSets:
   - _id: Vanguard
     _levelTwoPrefixName: Double Vanguard

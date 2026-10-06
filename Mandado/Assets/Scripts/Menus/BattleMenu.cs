@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class BattleMenu : BaseMenu
 {
+    [SerializeField] private BattleSystem _battleSystem;
     [SerializeField] private TMP_Text _debugEnemyText;
 
     [SerializeField] private Button _rollDiceButton;
@@ -38,7 +39,7 @@ public class BattleMenu : BaseMenu
     
     
     
-    public void CloseTrays()
+    /*public void CloseTrays()
     {
         if (_trayOpeningRoutine != null)
         {
@@ -56,7 +57,7 @@ public class BattleMenu : BaseMenu
         }
 
         _trayOpeningRoutine = StartCoroutine(TrayRoutine(true));
-    }
+    }*/
 
     public void UpdatePlayerCharacterGuardUI(int index, float guard)
     {
@@ -156,6 +157,7 @@ public class BattleMenu : BaseMenu
     
     public virtual void Initialize(MenuSystem menuSystem, Action rollDice, Action attack, Action<int> increaseDiceRolls, Action<int> decreaseDiceRolls)
     {
+        _battleSystem = GameManager.Instance.BattleSystem;
         _attackAction = attack;
         _rollDiceAction = rollDice;
         _increaseDiceRollsAction = increaseDiceRolls;
@@ -188,13 +190,13 @@ public class BattleMenu : BaseMenu
     
     private void OnDiceButtonClicked(int index, Button button)
     {
+        if (_battleSystem.IsIndexCharacterEmpty(_diceTrayDictionary[button] - 1))
+        {
+            return;
+        }
+        
         button.gameObject.SetActive(false);
         SetDiceInCharacterUI(index, _diceTrayDictionary[button]);
-    }
-
-    private void Reroll()
-    {
-        _rollDiceAction?.Invoke();
     }
 
     private void ReturnDice(int diceNum)
@@ -236,22 +238,19 @@ public class BattleMenu : BaseMenu
         }
     }
 
-    public void SetPlayerAmount(int amount)
+    public void LoadInCharacterUI(List<PlayerCharacterData> characters)
     {
-        if (amount > 6 || amount < 0)
+        for (int i = 0; i < 6; i++)
         {
-            Debug.LogError($"amount is too low or too high, I don't care which one something is wrong: {amount}");
-        }
-        else
-        {
-            _characterUIs[0].SetActive(amount >= 1);
-            _characterUIs[1].SetActive(amount >= 2);
-            _characterUIs[2].SetActive(amount >= 3);
-            _characterUIs[3].SetActive(amount >= 4);
-            _characterUIs[4].SetActive(amount >= 5);
-            _characterUIs[5].SetActive(amount >= 6);
-
-            InitializeTrayAnimationSpeeds(amount);
+            if (characters[i].classType != ClassType.Empty)
+            {
+                _characterUIs[i].SetActive(true);
+                _characterUIs[i].SetLabel(characters[i].characterLabel);
+            }
+            else
+            {
+                _characterUIs[i].SetActive(false);
+            }
         }
     }
 
@@ -347,6 +346,10 @@ public class BattleMenu : BaseMenu
 
     public void UpdatePlayerCharacterFocus(PlayerCharacterData data)
     {
+        if (data.classType == ClassType.Empty)
+        {
+            return;
+        }
         _characterUIs[data.currentIndex].SetFocus(data.currentFocus);
     } 
 

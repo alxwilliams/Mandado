@@ -13,6 +13,7 @@ public class BaseCharacter : ScriptableObject
     [SerializeField] protected Sprite _frontSprite;
     [SerializeField] protected Sprite _backSprite;
     [SerializeField] protected Sprite _actionSprite;
+    [SerializeField] protected Sprite _characterLabel;
 }
 
 public enum StatusEffects

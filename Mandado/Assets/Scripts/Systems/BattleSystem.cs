@@ -53,7 +53,8 @@ public partial class BattleSystem : BaseSystem
         }
         
         _fieldController.LoadPlayerCharacters(playerData);
-        _battleMenu.SetPlayerAmount(i);
+        _battleMenu.LoadInCharacterUI(playerData);
+        
         _currentSaveState.playerCharacters = playerData;
         
         foreach (var data in state.enemyCharacters)
@@ -69,9 +70,14 @@ public partial class BattleSystem : BaseSystem
         UpdateUI();
     }
 
+    public bool IsIndexCharacterEmpty(int index)
+    {
+        return _currentSaveState.playerCharacters[index].classType == ClassType.Empty;
+    }
+
     public void LoadInBattleState(BattleSystemState state)
     {
-        _battleMenu.OpenTrays();
+        //_battleMenu.OpenTrays();
         _battleMenu.UpdateOrderTokenText(_currentSaveState.currentOrderTokens);
         _battleMenu.SetRerollNumber(_currentSaveState.amountOfRerolls);
         _battleMenu.LoadInStatusEffects(state);
@@ -105,7 +111,7 @@ public partial class BattleSystem : BaseSystem
         }
         
         _fieldController.LoadPlayerCharacters(playerData);
-        _battleMenu.SetPlayerAmount(playerCharacters.Count);
+        _battleMenu.LoadInCharacterUI(playerData);
         _currentSaveState.playerCharacters = playerData;
         
         foreach (var character in enemyCharacters)
@@ -193,7 +199,7 @@ public partial class BattleSystem : BaseSystem
         ResetPlayerDiceTrays();
         UpdateUI();
         
-        _battleMenu.OpenTrays();
+        //_battleMenu.OpenTrays();
         _cameraSystem.SwitchToPlayerView();
     }
 
@@ -245,14 +251,14 @@ public partial class BattleSystem : BaseSystem
         
         UpdateUI();
         
-        _battleMenu.CloseTrays();
+        //_battleMenu.CloseTrays();
     }
 
     private IEnumerator PlayerDiceActions()
     {
         for (int i = 0; i < _currentSaveState.playerCharacters.Count; i++)
         {
-            if (_currentSaveState.activeDiceRolls[i] > 0 && _currentSaveState.playerCharacters[i].IsAlive)
+            if (_currentSaveState.activeDiceRolls[i] > 0 && _currentSaveState.playerCharacters[i].IsAlive && _currentSaveState.playerCharacters[i].classType != ClassType.Empty)
             {
                 if (_currentSaveState.activeDiceRolls[i] == 1)
                 {
@@ -424,7 +430,7 @@ public partial class BattleSystem : BaseSystem
             
             if (action.type == EnemyActionType.BleedRandom)
             {
-                int playerIndex = _gameManager.GetNewTargetRandom(0, _currentSaveState.playerCharacters.Count);
+                int playerIndex = GetNewPlayerIndex();
                 ApplyPlayerBleedRandom(playerIndex, action.value);
             }
 
@@ -578,11 +584,21 @@ public partial class BattleSystem : BaseSystem
 
     private void EmpowerPlayerUnit(int unitIndex, float amount)
     {
+        if (_currentSaveState.playerCharacters[unitIndex].classType == ClassType.Empty)
+        {
+            return;
+        }
+        
         _currentSaveState.playerCharacters[unitIndex].currentDamageMultiplier += (amount / 100);
     }
 
     private void ResetPlayerEmpower(int unitIndex)
     {
+        if (_currentSaveState.playerCharacters[unitIndex].classType == ClassType.Empty)
+        {
+            return;
+        }
+        
         _currentSaveState.playerCharacters[unitIndex].currentDamageMultiplier = 1;
     }
 
@@ -594,6 +610,11 @@ public partial class BattleSystem : BaseSystem
 
     private void GuardPlayerUnit(int unitIndex, float amount)
     {
+        if (_currentSaveState.playerCharacters[unitIndex].classType == ClassType.Empty)
+        {
+            return;
+        }
+        
         if (_currentSaveState.playerCharacters[unitIndex].statusEffects.ContainsKey(StatusEffects.Guard))
         {
             _currentSaveState.playerCharacters[unitIndex].statusEffects[StatusEffects.Guard] += amount;
@@ -608,6 +629,10 @@ public partial class BattleSystem : BaseSystem
 
     private void ApplyPlayerBleedRandom(int index, float amount)
     {
+        if (_currentSaveState.playerCharacters[index].classType == ClassType.Empty)
+        {
+            return;
+        }
         
         if(_currentSaveState.playerCharacters[index].statusEffects.ContainsKey(StatusEffects.Bleed))
         {
@@ -637,6 +662,11 @@ public partial class BattleSystem : BaseSystem
 
     private void HealPlayerUnit(int unitIndex, float amount)
     {
+        if (_currentSaveState.playerCharacters[unitIndex].classType == ClassType.Empty)
+        {
+            return;
+        }
+        
         if (_currentSaveState.playerCharacters[unitIndex].currentHealth + amount >
             _currentSaveState.playerCharacters[unitIndex].maxHealth)
         {
@@ -668,6 +698,41 @@ public partial class BattleSystem : BaseSystem
         
         EnemyTakeDamage(num);
     }
+
+    private int GetNewPlayerIndex()
+    {
+        int playerIndex = -1;
+        bool foundNotEmpty = false;
+        bool allEmpty = true;
+
+        foreach (var characterData in _currentSaveState.playerCharacters)
+        {
+            if (characterData.classType != ClassType.Empty)
+            {
+                allEmpty = false;
+                break;
+            }
+        }
+
+        if (allEmpty)
+        {
+            Debug.LogError("SOmething is wrong. All are empty");
+            return -1;
+        }
+
+        while (!foundNotEmpty)
+        {
+            playerIndex = _gameManager.GetNewTargetRandom(0, _currentSaveState.playerCharacters.Count);
+
+            if (_currentSaveState.playerCharacters[playerIndex].classType != ClassType.Empty)
+            {
+                foundNotEmpty = true;
+                break;
+            }
+        }
+
+        return playerIndex;
+    }
     
     private void EnemyAttackPlayer(float num)
     {
@@ -680,7 +745,7 @@ public partial class BattleSystem : BaseSystem
         }
         else
         {
-            playerIndex = _gameManager.GetNewTargetRandom(0, _currentSaveState.playerCharacters.Count);
+            playerIndex = GetNewPlayerIndex();
         }
 
         if (_currentSaveState.playerCharacters[playerIndex].classType == ClassType.Warrior &&

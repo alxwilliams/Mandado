@@ -18,6 +18,7 @@ MonoBehaviour:
   _frontSprite: {fileID: 21300000, guid: 360f7b2e11240784e99e56791a37538a, type: 3}
   _backSprite: {fileID: 21300000, guid: 8252feab62a3dc840b7e178f5894a5ff, type: 3}
   _actionSprite: {fileID: 21300000, guid: 8252feab62a3dc840b7e178f5894a5ff, type: 3}
+  _characterLabel: {fileID: 21300000, guid: 43cf44cb80ee21c41a4cf2c399e48695, type: 3}
   _enemyActions:
   - conditionList: []
     sequencedAttacks:

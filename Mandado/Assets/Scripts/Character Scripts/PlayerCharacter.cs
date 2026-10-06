@@ -23,6 +23,8 @@ public class PlayerCharacter : BaseCharacter
         data.frontSprite = _frontSprite;
         data.backSprite = _backSprite;
         data.actionSprite = _actionSprite;
+        data.characterLabel = _characterLabel;
+        
         data.statusEffects = new Dictionary<StatusEffects, float>();
         data.width = _width;
 
@@ -62,8 +64,15 @@ public class PlayerCharacterData
     public Sprite frontSprite;
     public Sprite backSprite;
     public Sprite actionSprite;
+    public Sprite characterLabel;
     public int currentIndex;
 
+
+    public PlayerCharacterData()
+    {
+        classType = ClassType.Empty;
+    }
+    
     public bool IsAlive
     {
         get
@@ -77,7 +86,8 @@ public enum ClassType
 {
     Sentinel,
     Pilgrim,
-    Warrior
+    Warrior,
+    Empty
 }
 
 

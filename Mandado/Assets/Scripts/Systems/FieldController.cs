@@ -76,6 +76,15 @@ public class FieldController : MonoBehaviour
             yield return CreateCharacterController(true, character.width, character.frontSprite,character.backSprite, character.actionSprite);
             _playerControllerDictionary.TryAdd(character, _loadedController);
 
+            if (character.classType == ClassType.Empty)
+            {
+                _loadedController.gameObject.SetActive(false);
+            }
+            else
+            {
+                _loadedController.gameObject.SetActive(true);
+            }
+
             i++;
         }
 

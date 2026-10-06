@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class PlayerCharacterUI : CharacterUI
 {
     [SerializeField] private Animator _trayAnimator;
-
+    
     [Header("Dice Images/Sprites")] 
     
     [SerializeField] private Image _firstDice;
