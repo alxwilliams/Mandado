@@ -615,6 +615,9 @@ public partial class BattleSystem : BaseSystem
         }
         
         _currentSaveState.playerCharacters[unitIndex].currentDamageMultiplier += (amount / 100);
+        
+        _battleMenu.UpdatePlayerCharacterEmpowerUI(unitIndex,
+            (_currentSaveState.playerCharacters[unitIndex].currentDamageMultiplier - 1) * 100);
     }
 
     private void ResetPlayerEmpower(int unitIndex)
@@ -625,6 +628,9 @@ public partial class BattleSystem : BaseSystem
         }
         
         _currentSaveState.playerCharacters[unitIndex].currentDamageMultiplier = 1;
+        
+        _battleMenu.UpdatePlayerCharacterEmpowerUI(unitIndex,
+            (_currentSaveState.playerCharacters[unitIndex].currentDamageMultiplier - 1) * 100);
     }
 
     private void UpdateOrder(float newValue)

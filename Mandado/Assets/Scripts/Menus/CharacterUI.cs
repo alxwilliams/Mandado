@@ -17,16 +17,19 @@ public class CharacterUI : MonoBehaviour
     [Header("Health Bar Data")]
     [SerializeField] private float _healthBarFullWidth = 675.4f;
     [SerializeField] private float _healthBarEmptyWidth = 37.7f;
-    
+
     [Header("Status Effects")] 
+    [SerializeField] protected GameObject _empowerSymbol;
     [SerializeField] protected GameObject _guardSymbol;
     [SerializeField] protected TMP_Text _guardText;
-    
+
+    [SerializeField] protected TMP_Text _empowerText;
     [SerializeField] protected GameObject _bleedSymbol;
     [SerializeField] protected TMP_Text _bleedText;
     
     protected float _currentGuard = -1;
     protected float _currentBleed = -1;
+    protected float _currentEmpower = -1;
 
     private float _healthDifference;
 
@@ -76,6 +79,24 @@ public class CharacterUI : MonoBehaviour
             else
             {
                 _guardSymbol.SetActive(false);
+            }
+        }
+    }
+    
+    public void UpdateEmpowerUI(float num)
+    {
+        if (num != _currentEmpower)
+        {
+            _currentEmpower = num;
+
+            if (_currentEmpower > 0)
+            {
+                _empowerSymbol.SetActive(true);
+                _empowerText.text = $"{num}%";
+            }
+            else
+            {
+                _empowerSymbol.SetActive(false);
             }
         }
     }

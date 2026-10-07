@@ -50,6 +50,11 @@ public class BattleMenu : BaseMenu
     {
         _characterUIs[index].UpdateBleedUI(newValue);
     }
+    
+    public void UpdatePlayerCharacterEmpowerUI(int index, float newValue)
+    {
+        _characterUIs[index].UpdateEmpowerUI(newValue);
+    }
 
     public void UpdateOrderTokenText(float num)
     {
@@ -59,6 +64,11 @@ public class BattleMenu : BaseMenu
     public void UpdateEnemyBleedUI(float newValue)
     {
         _enemyCharacterUI.UpdateBleedUI(newValue);
+    }
+    
+    public void UpdateEnemyEmpowerUI(float newValue)
+    {
+        _enemyCharacterUI.UpdateEmpowerUI(newValue);
     }
 
     public void LoadInStatusEffects(BattleSystemState state)
@@ -81,6 +91,15 @@ public class BattleMenu : BaseMenu
             else
             {
                 _characterUIs[i].UpdateGuardUI(0);
+            }
+            
+            if(state.playerCharacters[i].currentDamageMultiplier > 1)
+            {
+                _characterUIs[i].UpdateEmpowerUI((state.playerCharacters[i].currentDamageMultiplier - 1)* 100);
+            }
+            else
+            {
+                _characterUIs[i].UpdateEmpowerUI(0);
             }
         }
 
