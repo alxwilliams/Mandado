@@ -49,7 +49,7 @@ public partial class BattleSystem
         {
             if (character.classType == ClassType.Pilgrim && character.currentFocus == 3)
             {
-                UpdateOrder(2);
+                AddOrder(2);
             }
         }
     }

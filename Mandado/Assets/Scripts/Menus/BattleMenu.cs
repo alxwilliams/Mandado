@@ -71,36 +71,41 @@ public class BattleMenu : BaseMenu
         _enemyCharacterUI.UpdateEmpowerUI(newValue);
     }
 
+    public void UpdatePlayerCharacterStatusEffects(BattleSystemState state, int characterIndex)
+    {
+        if(state.playerCharacters[characterIndex].statusEffects.ContainsKey(StatusEffects.Bleed))
+        {
+            _characterUIs[characterIndex].UpdateBleedUI(state.playerCharacters[characterIndex].statusEffects[StatusEffects.Bleed]);
+        }
+        else
+        {
+            _characterUIs[characterIndex].UpdateBleedUI(0);
+        }
+            
+        if(state.playerCharacters[characterIndex].statusEffects.ContainsKey(StatusEffects.Guard))
+        {
+            _characterUIs[characterIndex].UpdateGuardUI(state.playerCharacters[characterIndex].statusEffects[StatusEffects.Guard]);
+        }
+        else
+        {
+            _characterUIs[characterIndex].UpdateGuardUI(0);
+        }
+            
+        if(state.playerCharacters[characterIndex].currentDamageMultiplier > 1)
+        {
+            _characterUIs[characterIndex].UpdateEmpowerUI((state.playerCharacters[characterIndex].currentDamageMultiplier - 1)* 100);
+        }
+        else
+        {
+            _characterUIs[characterIndex].UpdateEmpowerUI(0);
+        }
+    }
+
     public void LoadInStatusEffects(BattleSystemState state)
     {
         for (int i = 0; i < state.playerCharacters.Count; i++)
         {
-            if(state.playerCharacters[i].statusEffects.ContainsKey(StatusEffects.Bleed))
-            {
-                _characterUIs[i].UpdateBleedUI(state.playerCharacters[i].statusEffects[StatusEffects.Bleed]);
-            }
-            else
-            {
-                _characterUIs[i].UpdateBleedUI(0);
-            }
-            
-            if(state.playerCharacters[i].statusEffects.ContainsKey(StatusEffects.Guard))
-            {
-                _characterUIs[i].UpdateGuardUI(state.playerCharacters[i].statusEffects[StatusEffects.Guard]);
-            }
-            else
-            {
-                _characterUIs[i].UpdateGuardUI(0);
-            }
-            
-            if(state.playerCharacters[i].currentDamageMultiplier > 1)
-            {
-                _characterUIs[i].UpdateEmpowerUI((state.playerCharacters[i].currentDamageMultiplier - 1)* 100);
-            }
-            else
-            {
-                _characterUIs[i].UpdateEmpowerUI(0);
-            }
+            UpdatePlayerCharacterStatusEffects(state, i);
         }
 
         if (state.enemyCharacters[0].statusEffects.ContainsKey(StatusEffects.Bleed))

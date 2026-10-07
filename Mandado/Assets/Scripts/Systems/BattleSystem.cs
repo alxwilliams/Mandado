@@ -79,7 +79,7 @@ public partial class BattleSystem : BaseSystem
 
     public void UseOrderToken()
     {
-        UpdateOrder(_currentSaveState.currentOrderTokens--);
+        AddOrder(_currentSaveState.currentOrderTokens-1);
     }
     
     public bool IsIndexCharacterEmpty(int index)
@@ -342,6 +342,9 @@ public partial class BattleSystem : BaseSystem
         (_currentSaveState.playerCharacters[character1], _currentSaveState.playerCharacters[character2]) = (_currentSaveState.playerCharacters[character2], _currentSaveState.playerCharacters[character1]);
         _fieldController.SwapCharacterPlaces(_currentSaveState.playerCharacters[character1],_currentSaveState.playerCharacters[character2]);
         
+        _battleMenu.UpdatePlayerCharacterStatusEffects(_currentSaveState, character1);
+        _battleMenu.UpdatePlayerCharacterStatusEffects(_currentSaveState, character2);
+        
         UseOrderToken();
     }
 
@@ -567,7 +570,7 @@ public partial class BattleSystem : BaseSystem
 
             if (action.type == PlayerActionType.Order)
             {
-                UpdateOrder(action.value);
+                AddOrder(action.value);
             }
 
             if (action.type == PlayerActionType.Empower)
@@ -633,9 +636,9 @@ public partial class BattleSystem : BaseSystem
             (_currentSaveState.playerCharacters[unitIndex].currentDamageMultiplier - 1) * 100);
     }
 
-    private void UpdateOrder(float newValue)
+    private void AddOrder(float newValue)
     {
-        _currentSaveState.currentOrderTokens += newValue;
+        _currentSaveState.currentOrderTokens = newValue;
         _battleMenu.UpdateOrderTokenText(_currentSaveState.currentOrderTokens);
     }
 
