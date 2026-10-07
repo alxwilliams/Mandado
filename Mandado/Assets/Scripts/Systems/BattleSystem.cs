@@ -15,6 +15,7 @@ public partial class BattleSystem : BaseSystem
     [Header("Wait Times")]
     [SerializeField] private float _waitTimeBetweenAttacks = .25f;
     [SerializeField] private float _timeBeforeEnemyAttacks = .5f;
+    [SerializeField] private float _timeAfterBleedDamage = .5f;
     [SerializeField] private float _timeAfterEnemyAttacks = .5f;
 
 
@@ -184,6 +185,13 @@ public partial class BattleSystem : BaseSystem
     
     private IEnumerator AttackRoutine()
     {
+        bool playerBled = DealWithPlayerBleedDamage();
+
+        if (playerBled)
+        {
+            yield return  new WaitForSeconds(_timeAfterBleedDamage);
+        }
+        
         yield return PlayerDiceActions();
         _currentSaveState.activeDiceRolls = new int[6];
 
@@ -245,8 +253,9 @@ public partial class BattleSystem : BaseSystem
         }
         
     }
-    private void DealWithPlayerBleedDamage()
+    private bool DealWithPlayerBleedDamage()
     {
+        bool playerBled = false;
         foreach (var character in _currentSaveState.playerCharacters)
         {
             if (character.statusEffects.ContainsKey(StatusEffects.Bleed) && character.statusEffects[StatusEffects.Bleed] > 0)
@@ -255,15 +264,17 @@ public partial class BattleSystem : BaseSystem
                 character.statusEffects[StatusEffects.Bleed]--;
                 
                 _battleMenu.UpdatePlayerCharacterBleedUI(character.currentIndex, character.statusEffects[StatusEffects.Bleed]);
+                playerBled = true;
             }
         }
+
+        return playerBled;
     }
 
     private void EndPlayerTurn()
     {
         FocusSentinelCheckForHeals();
         FocusPilgrimCheckForOrderTokens();
-        DealWithPlayerBleedDamage();
         
         UpdateUI();
         
@@ -276,31 +287,8 @@ public partial class BattleSystem : BaseSystem
         {
             if (_currentSaveState.activeDiceRolls[i] > 0 && _currentSaveState.playerCharacters[i].IsAlive && _currentSaveState.playerCharacters[i].classType != ClassType.Empty)
             {
-                if (_currentSaveState.activeDiceRolls[i] == 1)
-                {
-                    yield return DealWithPlayerAction(_currentSaveState.playerCharacters[i].actionSet.rollOneActions,
-                        _currentSaveState.playerCharacters[i],i);
-                }
-                else if (_currentSaveState.activeDiceRolls[i] == 2)
-                {
-                    yield return DealWithPlayerAction(_currentSaveState.playerCharacters[i].actionSet.rollTwoActions,
-                        _currentSaveState.playerCharacters[i],i);
-                }
-                else if (_currentSaveState.activeDiceRolls[i] == 3)
-                {
-                    yield return DealWithPlayerAction(_currentSaveState.playerCharacters[i].actionSet.rollThreeActions,
-                        _currentSaveState.playerCharacters[i],i);
-                }
-                else if (_currentSaveState.activeDiceRolls[i] == 4)
-                {
-                    yield return DealWithPlayerAction(_currentSaveState.playerCharacters[i].actionSet.rollFourActions,
-                        _currentSaveState.playerCharacters[i],i);
-                }
-                else if (_currentSaveState.activeDiceRolls[i] == 5)
-                {
-                    yield return DealWithPlayerAction(_currentSaveState.playerCharacters[i].actionSet.rollFiveActions,
-                        _currentSaveState.playerCharacters[i],i, true);
-                }
+                yield return DealWithPlayerAction(_currentSaveState.playerCharacters[i].actionSet.GetActionSetFromRollNumber(_currentSaveState.activeDiceRolls[i]),
+                    _currentSaveState.playerCharacters[i],i);
 
                 ResetIndexedPlayerFocus(i);
                 
@@ -328,12 +316,19 @@ public partial class BattleSystem : BaseSystem
     {
         _currentSaveState.activeDiceRolls[num]++;
         _currentSaveState.diceInCharacterTrays++;
+        ChangePlayerIntentStates();
     }
 
     private void DecreaseActiveDiceRolls(int num)
     {
         _currentSaveState.activeDiceRolls[num]--;
         _currentSaveState.diceInCharacterTrays--;
+        ChangePlayerIntentStates();
+    }
+
+    private void ChangePlayerIntentStates()
+    {
+        _fieldController.UpdatePlayerStates(_currentSaveState);
     }
 
     public void SwapCharacters(int character1, int character2)
@@ -346,6 +341,7 @@ public partial class BattleSystem : BaseSystem
         _battleMenu.UpdatePlayerCharacterStatusEffects(_currentSaveState, character2);
         
         UseOrderToken();
+        ChangePlayerIntentStates();
     }
 
     private List<EnemyAttackSet> GetPotentialEnemyAttacks()
@@ -442,12 +438,12 @@ public partial class BattleSystem : BaseSystem
             {
                 if(!maxRoll)
                 {
-                    EnemyAttackPlayer(action.value);
+                    EnemyAttackPlayer(GetNewPlayerIndex(),action.value);
                 }
                 else
                 {
                     //yield return new WaitForSeconds(_fieldController.CharacterBigAttack(data));
-                    EnemyAttackPlayer(action.value);
+                    EnemyAttackPlayer(GetNewPlayerIndex(),action.value);
                 }
             }
 
@@ -486,6 +482,18 @@ public partial class BattleSystem : BaseSystem
             }
 
             yield return new WaitForSeconds(_waitTimeBetweenAttacks);
+        }
+
+        if (data.currentFocus >= 3)
+        {
+            if (data.enemyFocusAbility == EnemyFocusAbility.Tragos)
+            {
+                yield return new WaitForSeconds(_fieldController.EnemyCharacterMoveForward(data));
+                TragosFocusAttack();
+            }
+
+            data.currentFocus = 0;
+            _battleMenu.UpdateEnemyUI(data);
         }
     }
     
@@ -741,7 +749,7 @@ public partial class BattleSystem : BaseSystem
 
         foreach (var characterData in _currentSaveState.playerCharacters)
         {
-            if (characterData.classType != ClassType.Empty)
+            if (characterData.classType != ClassType.Empty || !characterData.IsAlive)
             {
                 allEmpty = false;
                 break;
@@ -758,28 +766,22 @@ public partial class BattleSystem : BaseSystem
         {
             playerIndex = _gameManager.GetNewTargetRandom(0, _currentSaveState.playerCharacters.Count);
 
-            if (_currentSaveState.playerCharacters[playerIndex].classType != ClassType.Empty)
+            if (_currentSaveState.playerCharacters[playerIndex].classType != ClassType.Empty || !_currentSaveState.playerCharacters[playerIndex].IsAlive)
             {
                 foundNotEmpty = true;
-                break;
             }
         }
 
         return playerIndex;
     }
     
-    private void EnemyAttackPlayer(float num)
+    private void EnemyAttackPlayer(int playerIndex, float num)
     {
-        int playerIndex;
         int sentinelValue = FocusSentinelCheckForFullPoints();
 
         if (sentinelValue != -1)
         {
             playerIndex = sentinelValue;
-        }
-        else
-        {
-            playerIndex = GetNewPlayerIndex();
         }
 
         if (_currentSaveState.playerCharacters[playerIndex].classType == ClassType.Warrior &&
@@ -795,7 +797,7 @@ public partial class BattleSystem : BaseSystem
             _battleMenu.UpdatePlayerCharacterGuardUI(playerIndex,_currentSaveState.playerCharacters[playerIndex].statusEffects[StatusEffects.Guard]);
         }
         
-        PlayerTakeDamage(playerIndex, num);
+        PlayerTakeDamage(playerIndex, newDamageNum);
     }
 
     private void EnemyTakeDamage(float num)

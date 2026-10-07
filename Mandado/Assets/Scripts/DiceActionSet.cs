@@ -11,6 +11,25 @@ public class DiceActionSet
     public List<PlayerCharacterAction> rollFourActions;
     public List<PlayerCharacterAction> rollFiveActions;
 
+    public List<PlayerCharacterAction> GetActionSetFromRollNumber(int i)
+    {
+        switch (i)
+        {
+           case 1:
+               return rollOneActions;
+           case 2:
+               return rollTwoActions;
+           case 3:
+               return rollThreeActions;
+           case 4:
+               return rollFourActions;
+           case 5:
+               return rollFiveActions;
+           default:
+               return new List<PlayerCharacterAction>();
+        }
+    }
+    
     [Header("Focus")]
     public string focusValueDescription;
     public List<float> focusValues;

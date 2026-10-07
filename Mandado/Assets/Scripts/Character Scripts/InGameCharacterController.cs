@@ -5,8 +5,11 @@ using UnityEngine;
 
 public class InGameCharacterController : MonoBehaviour
 {
-    [SerializeField] private SpriteRenderer _idleSpriteRenderer;
-    [SerializeField] private SpriteRenderer _attackSpriteRenderer;
+    [SerializeField] private SpriteRenderer _idleSpriteRenderer1;
+    [SerializeField] private SpriteRenderer _idleSpriteRenderer2;
+    [SerializeField] private SpriteRenderer _attackSpriteRenderer1;
+    [SerializeField] private SpriteRenderer _attackSpriteRenderer2;
+    [SerializeField] private SpriteRenderer _attackSpriteRenderer3;
     [SerializeField] private SpriteBillboard _spriteBillboard;
     [SerializeField] private Animator _animator;
     
@@ -17,10 +20,12 @@ public class InGameCharacterController : MonoBehaviour
     [Header("Action Animations")]
     [SerializeField] private AnimationClip _genericAttackClip;
     [SerializeField] private AnimationClip _bigAttackClip;
-    
 
-    private Sprite _frontSprite;
-    private Sprite _backSprite;
+    private CharacterSpriteData _characterSpriteData;
+
+    private List<PlayerCharacterAction> _currentCharacterIntents = new List<PlayerCharacterAction>();
+
+    public List<PlayerCharacterAction> CurrentCharacterIntents => _currentCharacterIntents;
 
     public float TrueFacingDirection
     {
@@ -31,16 +36,26 @@ public class InGameCharacterController : MonoBehaviour
         }
     }
 
-    public void SetSprites(Sprite frontSprite, Sprite backSprite, Sprite attackSprite)
+    public void SetSprites(CharacterSpriteData spriteData)
     {
-        _frontSprite = frontSprite;
-        _backSprite = backSprite;
+        _characterSpriteData = spriteData;
 
-        _spriteBillboard.FrontSprite = frontSprite;
-        _spriteBillboard.BackSprite = backSprite;
+        /*_spriteBillboard.FrontSprite = frontSprite;
+        _spriteBillboard.BackSprite = backSprite;*/
 
-        _attackSpriteRenderer.sprite = attackSprite;
-        _spriteBillboard.ForceBillboardUpdate();
+        
+        //_spriteBillboard.ForceBillboardUpdate();
+        
+        _idleSpriteRenderer1.sprite = spriteData._frontIdleSprite1;
+        _idleSpriteRenderer2.sprite = spriteData._frontIdleSprite2;
+        _attackSpriteRenderer1.sprite = spriteData._frontAttackSprite1;
+        _attackSpriteRenderer2.sprite = spriteData._frontAttackSprite2;
+        _attackSpriteRenderer3.sprite = spriteData._frontAttackSprite3;
+    }
+
+    public void ChangeCharacterIntent(List<PlayerCharacterAction> newIntents)
+    {
+        
     }
 
     public void TakeDamage(float damage)

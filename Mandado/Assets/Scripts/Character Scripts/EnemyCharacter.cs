@@ -6,6 +6,7 @@ using UnityEngine;
 public class EnemyCharacter : BaseCharacter
 {
    [SerializeField] private List<EnemyAttackSet> _enemyActions;
+   [SerializeField] private EnemyFocusAbility _enemyFocusAbility;
 
    public EnemyCharacterData GetFullHealthCharacterData()
    {
@@ -13,15 +14,13 @@ public class EnemyCharacter : BaseCharacter
 
       data.name = _name;
       data.currentHealth = _baseHealth;
+      data.enemyFocusAbility = _enemyFocusAbility;
       data.enemyActions = _enemyActions;
       data.maxHealth = _baseHealth;
       data.currentFocus = 0;
 
       data.statusEffects = new Dictionary<StatusEffects, float>();
-      data.frontSprite = _frontSprite;
-      data.backSprite = _backSprite;
-      data.actionSprite = _actionSprite;
-      data.characterLabel = _characterLabel;
+      data.characterSpriteData = _characterSpriteData;
       data.width = _width;
 
       return data;
@@ -32,6 +31,7 @@ public class EnemyCharacter : BaseCharacter
 public class EnemyCharacterData
 {
    public string name;
+   public EnemyFocusAbility enemyFocusAbility;
    public float currentHealth;
    public float maxHealth;
    public float currentFocus;
@@ -40,8 +40,10 @@ public class EnemyCharacterData
    public SerializableStatusDictionary statusEffectsSerialized;
    public Dictionary<StatusEffects, float> statusEffects;
    public float width;
-   public Sprite frontSprite;
-   public Sprite backSprite;
-   public Sprite actionSprite;
-   public Sprite characterLabel;
+   public CharacterSpriteData characterSpriteData;
+}
+
+public enum EnemyFocusAbility
+{
+   Tragos
 }

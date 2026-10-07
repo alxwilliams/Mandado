@@ -44,11 +44,11 @@ public class SpriteBillboard : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (_initialized && targetCamera.transform.rotation != _lastRotation)
+        /*if (_initialized && targetCamera.transform.rotation != _lastRotation)
         {
             _lastRotation = targetCamera.transform.rotation;
             ForceBillboardUpdate();
-        }
+        }*/
     }
 
 

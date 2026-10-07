@@ -15,10 +15,13 @@ MonoBehaviour:
   _name: Tragos
   _width: 15
   _baseHealth: 30
-  _frontSprite: {fileID: 21300000, guid: 360f7b2e11240784e99e56791a37538a, type: 3}
-  _backSprite: {fileID: 21300000, guid: 360f7b2e11240784e99e56791a37538a, type: 3}
-  _actionSprite: {fileID: 21300000, guid: 360f7b2e11240784e99e56791a37538a, type: 3}
-  _characterLabel: {fileID: 21300000, guid: 43cf44cb80ee21c41a4cf2c399e48695, type: 3}
+  _characterSpriteData:
+    _frontIdleSprite1: {fileID: 21300000, guid: 360f7b2e11240784e99e56791a37538a, type: 3}
+    _frontIdleSprite2: {fileID: 21300000, guid: 360f7b2e11240784e99e56791a37538a, type: 3}
+    _frontAttackSprite1: {fileID: 21300000, guid: 360f7b2e11240784e99e56791a37538a, type: 3}
+    _frontAttackSprite2: {fileID: 21300000, guid: 360f7b2e11240784e99e56791a37538a, type: 3}
+    _frontAttackSprite3: {fileID: 21300000, guid: 360f7b2e11240784e99e56791a37538a, type: 3}
+    _characterLabel: {fileID: 21300000, guid: 43cf44cb80ee21c41a4cf2c399e48695, type: 3}
   _enemyActions:
   - conditionList: []
     sequencedAttacks:
@@ -48,3 +51,4 @@ MonoBehaviour:
     - actionSet:
       - value: 8
         type: 5
+  _enemyFocusAbility: 0

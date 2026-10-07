@@ -64,4 +64,34 @@ public partial class BattleSystem
     }
 
     #endregion
+
+    #region EnemyChecks
+
+    private void TragosFocusAttack()
+    {
+        List<PlayerCharacterData> bleedList = new List<PlayerCharacterData>();
+        int playerIndex;
+        
+        foreach (var data in _currentSaveState.playerCharacters)
+        {
+            if (data.statusEffects.ContainsKey(StatusEffects.Bleed) && data.statusEffects[StatusEffects.Bleed] > 0)
+            {
+                bleedList.Add(data);
+            }
+        }
+
+        if (bleedList.Count > 0)
+        {
+            playerIndex = _gameManager.GetNewTargetRandom(0, bleedList.Count);
+            
+            EnemyAttackPlayer(playerIndex, _currentSaveState.playerCharacters[playerIndex].statusEffects[StatusEffects.Bleed]);
+        }
+        else
+        {
+            playerIndex = GetNewPlayerIndex();
+            EnemyAttackPlayer(playerIndex,0);
+        }
+    }
+
+    #endregion
 }

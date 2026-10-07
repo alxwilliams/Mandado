@@ -42,6 +42,24 @@ public class FieldController : MonoBehaviour
         }
     }
 
+    public void UpdatePlayerStates(BattleSystemState state)
+    {
+        PlayerCharacterData data;
+        
+        for (int i = 0; i < 6; i++)
+        {
+            data = state.playerCharacters[i];
+            InGameCharacterController controller = _playerControllerDictionary[data];
+            
+            List<PlayerCharacterAction> actionSet = data.actionSet.GetActionSetFromRollNumber(state.activeDiceRolls[i]);
+
+            if (controller.CurrentCharacterIntents != actionSet)
+            {
+                controller.ChangeCharacterIntent(actionSet);
+            }
+        }
+    }
+
     public void SwapCharacterPlaces(PlayerCharacterData character1, PlayerCharacterData character2)
     {
         (_playerControllerDictionary[character1].gameObject.transform.position,
@@ -82,7 +100,7 @@ public class FieldController : MonoBehaviour
         
         foreach (var character in characters)
         {
-            yield return CreateCharacterController(true, character.width, character.frontSprite,character.backSprite, character.actionSprite);
+            yield return CreateCharacterController(true, character.width, character.characterSpriteData);
             _playerControllerDictionary.TryAdd(character, _loadedController);
 
             if (character.classType == ClassType.Empty)
@@ -114,7 +132,7 @@ public class FieldController : MonoBehaviour
         
         foreach (var character in characters)
         {
-            yield return CreateCharacterController(false, character.width, character.frontSprite,character.backSprite, character.actionSprite);
+            yield return CreateCharacterController(false, character.width, character.characterSpriteData);
             _enemyControllerDictionary.TryAdd(character, _loadedController);
             _loadedController.TrueFacingDirection = _enemyAttackAngle;
 
@@ -126,7 +144,7 @@ public class FieldController : MonoBehaviour
         _enemyLoadRoutine = null;
     }
 
-    private IEnumerator CreateCharacterController(bool player, float width, Sprite frontSprite, Sprite backSprite, Sprite attackSprite)
+    private IEnumerator CreateCharacterController(bool player, float width, CharacterSpriteData spriteData)
     {
         GameObject obj = Instantiate(_characterPrefab, player?_playerStartLocation:_enemyStartLocation);
 
@@ -146,7 +164,7 @@ public class FieldController : MonoBehaviour
         InGameCharacterController controller = obj.GetComponent<InGameCharacterController>();
 
         yield return null;
-        controller.SetSprites(frontSprite, backSprite, attackSprite);
+        controller.SetSprites(spriteData);
 
         _loadedController = controller;
     }

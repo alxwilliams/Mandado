@@ -19,11 +19,8 @@ public class PlayerCharacter : BaseCharacter
         data.maxHealth = _baseHealth;
         data.currentFocus = 0;
         data.actionSet = _baseActionSet;
-        
-        data.frontSprite = _frontSprite;
-        data.backSprite = _backSprite;
-        data.actionSprite = _actionSprite;
-        data.characterLabel = _characterLabel;
+
+        data.characterSpriteData = _characterSpriteData;
         
         data.statusEffects = new Dictionary<StatusEffects, float>();
         data.width = _width;
@@ -61,10 +58,7 @@ public class PlayerCharacterData
     public Dictionary<StatusEffects, float> statusEffects;
     public float currentDamageMultiplier = 1;
     public float width;
-    public Sprite frontSprite;
-    public Sprite backSprite;
-    public Sprite actionSprite;
-    public Sprite characterLabel;
+    public CharacterSpriteData characterSpriteData;
     public int currentIndex;
 
 

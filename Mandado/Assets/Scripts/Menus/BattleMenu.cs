@@ -199,7 +199,7 @@ public class BattleMenu : BaseMenu
             if (characters[i].classType != ClassType.Empty)
             {
                 _characterUIs[i].SetActive(true);
-                _characterUIs[i].SetLabel(characters[i].characterLabel);
+                _characterUIs[i].SetLabel(characters[i].characterSpriteData._characterLabel);
             }
             else
             {
@@ -209,7 +209,7 @@ public class BattleMenu : BaseMenu
             _characterUIs[i].ClassType = characters[i].classType;
         }
         
-        _enemyCharacterUI.SetLabel(enemy.characterLabel);
+        _enemyCharacterUI.SetLabel(enemy.characterSpriteData._characterLabel);
     }
 
     private void SwapCharacterUI(int index1, int index2)
