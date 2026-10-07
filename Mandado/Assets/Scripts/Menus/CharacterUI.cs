@@ -12,7 +12,7 @@ public class CharacterUI : MonoBehaviour
     [SerializeField] protected GameObject _focusStar1;
     [SerializeField] protected GameObject _focusStar2;
     [SerializeField] protected GameObject _focusStar3;
-    [SerializeField] private Image _labelImage;
+    [SerializeField] protected Image _labelImage;
     
     [Header("Health Bar Data")]
     [SerializeField] private float _healthBarFullWidth = 675.4f;
@@ -29,6 +29,14 @@ public class CharacterUI : MonoBehaviour
     protected float _currentBleed = -1;
 
     private float _healthDifference;
+
+    public GameObject UIParent => _uiParent;
+
+    public Image LabelImage
+    {
+        get => _labelImage;
+        set => _labelImage = value;
+    }
 
     private void Awake()
     {

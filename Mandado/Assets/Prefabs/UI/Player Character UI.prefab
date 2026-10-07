@@ -1725,6 +1725,7 @@ MonoBehaviour:
   _bleedSymbol: {fileID: 6673961300502227823}
   _bleedText: {fileID: 742258967738931764}
   _trayAnimator: {fileID: 9223142129836667538}
+  _diceSetImage: {fileID: 3557538063969456790}
   _orderLeftButton: {fileID: 5795179304834913608}
   _orderRightButton: {fileID: 8374976015334991427}
   _firstDice: {fileID: 5737555000421338124}

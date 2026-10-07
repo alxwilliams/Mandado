@@ -19,18 +19,24 @@ public partial class BattleSystem : BaseSystem
 
 
     private CameraSystem _cameraSystem;
-
     private Coroutine _attackRoutine;
-
     private EnemyAttackSet _currentEnemyAttackSet;
     private int _currentEnemyAttackIndex;
 
     private BattleSystemState _currentSaveState;
 
+    public bool IsOrderUsable
+    {
+        get
+        {
+            return _currentSaveState.currentOrderTokens > 0;
+        }
+    }
+
     public override void Initialize(GameManager gameManager)
     {
         _cameraSystem = gameManager.CameraSystem;
-        _battleMenu.Initialize(gameManager.MenuSystem, RollDice, PlayerAttack,IncreaseActiveDiceRolls, DecreaseActiveDiceRolls);
+        _battleMenu.Initialize(gameManager.MenuSystem, RollDice, PlayerAttack, IncreaseActiveDiceRolls, DecreaseActiveDiceRolls);
         base.Initialize(gameManager);
     }
     
@@ -71,6 +77,11 @@ public partial class BattleSystem : BaseSystem
         UpdateUI();
     }
 
+    public void UseOrderToken()
+    {
+        UpdateOrder(_currentSaveState.currentOrderTokens--);
+    }
+    
     public bool IsIndexCharacterEmpty(int index)
     {
         return _currentSaveState.playerCharacters[index].classType == ClassType.Empty;
@@ -323,6 +334,15 @@ public partial class BattleSystem : BaseSystem
     {
         _currentSaveState.activeDiceRolls[num]--;
         _currentSaveState.diceInCharacterTrays--;
+    }
+
+    public void SwapCharacters(int character1, int character2)
+    {
+        (_currentSaveState.activeDiceRolls[character1], _currentSaveState.activeDiceRolls[character2]) = (_currentSaveState.activeDiceRolls[character2], _currentSaveState.activeDiceRolls[character1]);
+        (_currentSaveState.playerCharacters[character1], _currentSaveState.playerCharacters[character2]) = (_currentSaveState.playerCharacters[character2], _currentSaveState.playerCharacters[character1]);
+        _fieldController.SwapCharacterPlaces(_currentSaveState.playerCharacters[character1],_currentSaveState.playerCharacters[character2]);
+        
+        UseOrderToken();
     }
 
     private List<EnemyAttackSet> GetPotentialEnemyAttacks()

@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class PlayerCharacterUI : CharacterUI
 {
     [SerializeField] private Animator _trayAnimator;
+    
     [SerializeField] private Button _orderLeftButton;
     [SerializeField] private Button _orderRightButton;
     
@@ -26,15 +27,29 @@ public class PlayerCharacterUI : CharacterUI
     [SerializeField] private Button _thirdButtons;
     [SerializeField] private Button _fourButtons;
     [SerializeField] private Button _fiveButtons;
-    
-    
+
+    private ClassType _classType;
+    private Action<int,int> _swapCharacterAction;
     
     private int _diceNumber;
     private float _amountOfActiveDice = 0;
 
     private Action<int> DiceButtonPressAction;
 
-    public void Initialize(int diceNum, Action<int> diceButtonPress)
+    public ClassType ClassType
+    {
+        get => _classType;
+        set => _classType = value;
+    }
+
+    public float AmountOfActiveDice
+    {
+        get => _amountOfActiveDice;
+        set => _amountOfActiveDice = value;
+    }
+
+
+    public void Initialize(int diceNum, Action<int> diceButtonPress, Action<int,int> swapCharacters)
     {
         _diceNumber = diceNum;
         DiceButtonPressAction = diceButtonPress;
@@ -44,6 +59,11 @@ public class PlayerCharacterUI : CharacterUI
         _thirdButtons.onClick.AddListener(OnDiceButtonPress);
         _fourButtons.onClick.AddListener(OnDiceButtonPress);
         _fiveButtons.onClick.AddListener(OnDiceButtonPress);
+        
+        _swapCharacterAction = swapCharacters;
+        
+        _orderLeftButton.onClick.AddListener(OnLeftOrderButtonClicked);
+        _orderRightButton.onClick.AddListener(OnRightOrderButtonClicked);
     }
 
     private void OnDiceButtonPress()
@@ -55,8 +75,8 @@ public class PlayerCharacterUI : CharacterUI
 
     public void SetOrderButtons(bool active)
     {
-        _orderLeftButton.gameObject.SetActive(active);
-        _orderRightButton.gameObject.SetActive(active);
+        _orderLeftButton.gameObject.SetActive(active && _diceNumber > 1);
+        _orderRightButton.gameObject.SetActive(active && _diceNumber < 6);
     }
 
     public void IncreaseActiveDice()
@@ -70,7 +90,27 @@ public class PlayerCharacterUI : CharacterUI
         SetActiveDice(0);
     }
 
-    public void SetActiveDice(float amount)
+    public void SwapCharacter(PlayerCharacterUI character2)
+    {
+        bool character2Empty = character2.ClassType == ClassType.Empty;
+        
+        if (character2Empty)
+        {
+            character2.UIParent.SetActive(true);
+            UIParent.SetActive(false);
+        }
+        
+        (character2.LabelImage.sprite, _labelImage.sprite) = (_labelImage.sprite, character2.LabelImage.sprite);
+        (character2.AmountOfActiveDice, _amountOfActiveDice) = (_amountOfActiveDice, character2.AmountOfActiveDice);
+        (character2.ClassType, _classType) = (_classType, character2.ClassType);
+        
+        SetActiveDice(_amountOfActiveDice);
+        character2.SetActiveDice(character2.AmountOfActiveDice);
+
+        
+    }
+
+    private void SetActiveDice(float amount)
     {
         if (amount > 5 || amount < 0)
         {
@@ -85,6 +125,16 @@ public class PlayerCharacterUI : CharacterUI
             _fourDice.gameObject.SetActive(amount >= 4);
             _fiveDice.gameObject.SetActive(amount >= 5);
         }
+    }
+
+    private void OnLeftOrderButtonClicked()
+    {
+        _swapCharacterAction(_diceNumber-1, _diceNumber - 2);
+    }
+    
+    private void OnRightOrderButtonClicked()
+    {
+        _swapCharacterAction(_diceNumber-1, _diceNumber);
     }
     
 }

@@ -41,6 +41,14 @@ public class FieldController : MonoBehaviour
             pair.Value.gameObject.SetActive(false);
         }
     }
+
+    public void SwapCharacterPlaces(PlayerCharacterData character1, PlayerCharacterData character2)
+    {
+        (_playerControllerDictionary[character1].gameObject.transform.position,
+            _playerControllerDictionary[character2].gameObject.transform.position) = (
+            _playerControllerDictionary[character2].gameObject.transform.position,
+            _playerControllerDictionary[character1].gameObject.transform.position);
+    }
     
     public void LoadPlayerCharacters(List<PlayerCharacterData> characters)
     {

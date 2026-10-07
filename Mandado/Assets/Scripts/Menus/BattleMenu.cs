@@ -117,13 +117,14 @@ public class BattleMenu : BaseMenu
 
         for (int i = 0; i < 6; i++)
         {
-            _characterUIs[i].Initialize(i+1,ReturnDice);
+            _characterUIs[i].Initialize(i+1,ReturnDice,SwapCharacterUI);
         }
 
         for (int i = 0; i < _diceTrayButtons.Count; i++)
         {
             int index = i;
             DiceTrayDiceButton button = _diceTrayButtons[i];
+            button.SetUpButton(DecreaseDiceValue,IncreaseDiceValue,DisableOrderScreen);
             
             _diceTrayButtons[i].MainButton.onClick.AddListener(() => OnDiceButtonClicked(index, button));
             _diceTrayDictionary.Add(_diceTrayButtons[i],0);
@@ -134,24 +135,11 @@ public class BattleMenu : BaseMenu
 
     public void OnOrderButtonClicked()
     {
-        _orderActivated = !_orderActivated;
-        SetOrderButtons(_orderActivated);
-    }
-
-    public void SetRerollNumber(int num)
-    {
-        _rerollText.text = $"{num}";
-    }
-    
-    private void OnDiceButtonClicked(int index, DiceTrayDiceButton button)
-    {
-        if (_battleSystem.IsIndexCharacterEmpty(_diceTrayDictionary[button] - 1))
+        if ((!_orderActivated && _battleSystem.IsOrderUsable) || _orderActivated)
         {
-            return;
+            _orderActivated = !_orderActivated;
+            SetOrderButtons(_orderActivated);
         }
-        
-        button.gameObject.SetActive(false);
-        SetDiceInCharacterUI(index, _diceTrayDictionary[button]);
     }
 
     private void ReturnDice(int diceNum)
@@ -171,7 +159,7 @@ public class BattleMenu : BaseMenu
     {
         foreach (var button in _diceTrayButtons)
         {
-            button.SetOrderButtons(active);
+            button.SetOrderButtonsActiveState(active);
         }
 
         foreach (var ui in _characterUIs)
@@ -193,9 +181,22 @@ public class BattleMenu : BaseMenu
             {
                 _characterUIs[i].SetActive(false);
             }
+            
+            _characterUIs[i].ClassType = characters[i].classType;
         }
         
         _enemyCharacterUI.SetLabel(enemy.characterLabel);
+    }
+
+    private void SwapCharacterUI(int index1, int index2)
+    {
+        PlayerCharacterUI character1 = _characterUIs[index1];
+        PlayerCharacterUI character2 = _characterUIs[index2];
+        
+        character1.SwapCharacter(character2);
+        _battleSystem.SwapCharacters(index1,index2);
+        
+        DisableOrderScreen();
     }
 
     public void SetDiceInCharacterUI(int index, int num)
@@ -208,70 +209,6 @@ public class BattleMenu : BaseMenu
     {
         SetOrderButtons(false);
         ResetDiceTrays();
-    }
-
-    public void ResetDiceTrays()
-    {
-        foreach (var button in _diceTrayButtons)
-        {
-            button.gameObject.SetActive(false);
-        }
-
-        foreach (var characterUI in _characterUIs)
-        {
-            characterUI.ResetDice();
-        }
-    }
-
-    public void DisableDice(int index)
-    {
-        var dice = _diceTrayButtons[index].gameObject;
-        
-        if(dice.activeSelf)
-        {
-            _diceTrayButtons[index].gameObject.SetActive(false);
-        }
-    }
-
-    public void SetDiceInTrayUI(int index, int num)
-    {
-        DiceTrayDiceButton button = _diceTrayButtons[index];
-        
-        if (num != -1)
-        {
-            button.gameObject.SetActive(true);
-
-            if (num == 1)
-            {
-                button.MainButton.image.sprite = _diceOne;
-            }
-            else if (num == 2)
-            {
-                button.MainButton.image.sprite = _diceTwo;
-            }
-            else if (num == 3)
-            {
-                button.MainButton.image.sprite = _diceThree;
-            }
-            else if (num == 4)
-            {
-                button.MainButton.image.sprite = _diceFour;
-            }
-            else if (num == 5)
-            {
-                button.MainButton.image.sprite = _diceFive;
-            }
-            else if (num == 6)
-            {
-                button.MainButton.image.sprite = _diceSix;
-            }
-
-            _diceTrayDictionary[button] = num;
-        }
-        else
-        {
-            button.gameObject.SetActive(false);
-        }
     }
 
     public void UpdateEnemyUI(EnemyCharacterData data)
@@ -301,11 +238,14 @@ public class BattleMenu : BaseMenu
             return;
         }
         _characterUIs[data.currentIndex].SetFocus(data.currentFocus);
-    } 
+    }
 
-    public void UpdateEnemyDebugText(string text)
+    
+
+    private void DisableOrderScreen()
     {
-        _debugEnemyText.text = text;
+        _orderActivated = false;
+        SetOrderButtons(_orderActivated);
     }
 
     private void RollDice()
@@ -317,4 +257,104 @@ public class BattleMenu : BaseMenu
     {
         _attackAction?.Invoke();
     }
+
+    #region Dice
+    
+    private void IncreaseDiceValue(int index, int value)
+    {
+        SetDiceInTrayUI(index, value + 1);
+        _battleSystem.UseOrderToken();
+    }
+
+    private void DecreaseDiceValue(int index, int value)
+    {
+        SetDiceInTrayUI(index, value - 1);
+        _battleSystem.UseOrderToken();
+    }
+    
+    public void ResetDiceTrays()
+    {
+        foreach (var button in _diceTrayButtons)
+        {
+            button.gameObject.SetActive(false);
+        }
+
+        foreach (var characterUI in _characterUIs)
+        {
+            characterUI.ResetDice();
+        }
+    }
+
+    public void DisableDice(int index)
+    {
+        var dice = _diceTrayButtons[index].gameObject;
+        
+        if(dice.activeSelf)
+        {
+            _diceTrayButtons[index].gameObject.SetActive(false);
+        }
+    }
+
+    public void SetDiceInTrayUI(int index, int value)
+    {
+        DiceTrayDiceButton button = _diceTrayButtons[index];
+        
+        if (value != -1)
+        {
+            if(!button.gameObject.activeSelf)
+            {
+                button.gameObject.SetActive(true);
+            }
+
+            if (value == 1)
+            {
+                button.MainButton.image.sprite = _diceOne;
+            }
+            else if (value == 2)
+            {
+                button.MainButton.image.sprite = _diceTwo;
+            }
+            else if (value == 3)
+            {
+                button.MainButton.image.sprite = _diceThree;
+            }
+            else if (value == 4)
+            {
+                button.MainButton.image.sprite = _diceFour;
+            }
+            else if (value == 5)
+            {
+                button.MainButton.image.sprite = _diceFive;
+            }
+            else if (value == 6)
+            {
+                button.MainButton.image.sprite = _diceSix;
+            }
+
+            button.SetDiceValue(index,value);
+            _diceTrayDictionary[button] = value;
+        }
+        else
+        {
+            button.gameObject.SetActive(false);
+        }
+    }
+
+    public void SetRerollNumber(int num)
+    {
+        _rerollText.text = $"{num}";
+    }
+    
+    private void OnDiceButtonClicked(int index, DiceTrayDiceButton button)
+    {
+        if (_battleSystem.IsIndexCharacterEmpty(_diceTrayDictionary[button] - 1))
+        {
+            return;
+        }
+        
+        button.gameObject.SetActive(false);
+        SetDiceInCharacterUI(index, _diceTrayDictionary[button]);
+    }
+    
+    #endregion
 }
