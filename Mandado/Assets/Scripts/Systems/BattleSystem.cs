@@ -12,9 +12,10 @@ public partial class BattleSystem : BaseSystem
     [SerializeField] private BattleMenu _battleMenu;
     [SerializeField] private int _maxFocusPoints = 3;
 
-    [Header("Wait Times")] 
+    [Header("Wait Times")]
     [SerializeField] private float _waitTimeBetweenAttacks = .25f;
     [SerializeField] private float _timeBeforeEnemyAttacks = .5f;
+    [SerializeField] private float _timeAfterEnemyAttacks = .5f;
 
 
     private CameraSystem _cameraSystem;
@@ -53,8 +54,6 @@ public partial class BattleSystem : BaseSystem
         }
         
         _fieldController.LoadPlayerCharacters(playerData);
-        _battleMenu.LoadInCharacterUI(playerData);
-        
         _currentSaveState.playerCharacters = playerData;
         
         foreach (var data in state.enemyCharacters)
@@ -63,6 +62,8 @@ public partial class BattleSystem : BaseSystem
             enemyData.Add(data);
         }
         
+        _battleMenu.LoadInCharacterUI(playerData,enemyData[0]);
+
         _fieldController.LoadEnemyCharacters(enemyData);
         _currentSaveState.enemyCharacters = enemyData;
         LoadInBattleState(state);
@@ -81,6 +82,7 @@ public partial class BattleSystem : BaseSystem
         _battleMenu.UpdateOrderTokenText(_currentSaveState.currentOrderTokens);
         _battleMenu.SetRerollNumber(_currentSaveState.amountOfRerolls);
         _battleMenu.LoadInStatusEffects(state);
+        _battleMenu.StartNewBattle();
     }
 
     public void StartNewBattle()
@@ -111,13 +113,14 @@ public partial class BattleSystem : BaseSystem
         }
         
         _fieldController.LoadPlayerCharacters(playerData);
-        _battleMenu.LoadInCharacterUI(playerData);
         _currentSaveState.playerCharacters = playerData;
         
         foreach (var character in enemyCharacters)
         {
             enemyData.Add(character.GetFullHealthCharacterData());
         }
+        
+        _battleMenu.LoadInCharacterUI(playerData, enemyData[0]);
         
         _fieldController.LoadEnemyCharacters(enemyData);
         _currentSaveState.enemyCharacters = enemyData;
@@ -180,6 +183,8 @@ public partial class BattleSystem : BaseSystem
         yield return new WaitForSeconds(_timeBeforeEnemyAttacks);
         
         yield return EnemyAttackActions();
+        
+        yield return new WaitForSeconds(_timeAfterEnemyAttacks);
         
         EndEnemyTurn();
         StartPlayerTurn();

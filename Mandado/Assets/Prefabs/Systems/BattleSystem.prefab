@@ -150,19 +150,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _amountOfDiceRolledPerTurn: 5
   _fakePlayerData:
-  - {fileID: 11400000, guid: 9c03139626c3a524483d8bd46e31fa92, type: 2}
+  - {fileID: 11400000, guid: 145a4ce6d18ee2d4eb2f45dfac6dc7c2, type: 2}
   - {fileID: 11400000, guid: 145a4ce6d18ee2d4eb2f45dfac6dc7c2, type: 2}
   - {fileID: 11400000, guid: 9c03139626c3a524483d8bd46e31fa92, type: 2}
-  - {fileID: 11400000, guid: ff3734a6ecbbfb94da5182d68cff05ca, type: 2}
   - {fileID: 11400000, guid: 2a50593e6201e7d438df0013ced6ba1b, type: 2}
-  - {fileID: 11400000, guid: 145a4ce6d18ee2d4eb2f45dfac6dc7c2, type: 2}
+  - {fileID: 11400000, guid: ff3734a6ecbbfb94da5182d68cff05ca, type: 2}
+  - {fileID: 11400000, guid: 9c03139626c3a524483d8bd46e31fa92, type: 2}
   _fakeEnemyData:
   - {fileID: 11400000, guid: 4d84b5ed09b96a146be7e28a70c8105a, type: 2}
   _fieldController: {fileID: 5060939282430848317}
   _battleMenu: {fileID: 3873711329574329186}
   _maxFocusPoints: 3
   _waitTimeBetweenAttacks: 0.5
-  _timeBeforeEnemyAttacks: 0.8
+  _timeBeforeEnemyAttacks: 1.48
+  _timeAfterEnemyAttacks: 0.5
 --- !u!1 &5182876516760726876
 GameObject:
   m_ObjectHideFlags: 0

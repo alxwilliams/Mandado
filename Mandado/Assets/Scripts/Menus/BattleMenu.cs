@@ -37,6 +37,8 @@ public class BattleMenu : BaseMenu
     private Action<int> _decreaseDiceRollsAction;
 
     private Coroutine _trayOpeningRoutine;
+
+    private bool _orderActivated = false;
     
 
     public void UpdatePlayerCharacterGuardUI(int index, float guard)
@@ -111,6 +113,7 @@ public class BattleMenu : BaseMenu
         
         _goButton.onClick.AddListener(Attack);
         _rollDiceButton.onClick.AddListener(RollDice);
+        _orderButton.onClick.AddListener(OnOrderButtonClicked);
 
         for (int i = 0; i < 6; i++)
         {
@@ -127,6 +130,12 @@ public class BattleMenu : BaseMenu
         }
         
         base.Initialize(menuSystem);
+    }
+
+    public void OnOrderButtonClicked()
+    {
+        _orderActivated = !_orderActivated;
+        SetOrderButtons(_orderActivated);
     }
 
     public void SetRerollNumber(int num)
@@ -158,7 +167,20 @@ public class BattleMenu : BaseMenu
         }
     }
 
-    public void LoadInCharacterUI(List<PlayerCharacterData> characters)
+    public void SetOrderButtons(bool active)
+    {
+        foreach (var button in _diceTrayButtons)
+        {
+            button.SetOrderButtons(active);
+        }
+
+        foreach (var ui in _characterUIs)
+        {
+            ui.SetOrderButtons(active);
+        }
+    }
+
+    public void LoadInCharacterUI(List<PlayerCharacterData> characters, EnemyCharacterData enemy)
     {
         for (int i = 0; i < 6; i++)
         {
@@ -172,12 +194,20 @@ public class BattleMenu : BaseMenu
                 _characterUIs[i].SetActive(false);
             }
         }
+        
+        _enemyCharacterUI.SetLabel(enemy.characterLabel);
     }
 
     public void SetDiceInCharacterUI(int index, int num)
     {
         _increaseDiceRollsAction?.Invoke(num-1);
         _characterUIs[num-1].IncreaseActiveDice();
+    }
+
+    public void StartNewBattle()
+    {
+        SetOrderButtons(false);
+        ResetDiceTrays();
     }
 
     public void ResetDiceTrays()

@@ -8,6 +8,9 @@ using UnityEngine.UI;
 public class PlayerCharacterUI : CharacterUI
 {
     [SerializeField] private Animator _trayAnimator;
+    [SerializeField] private Button _orderLeftButton;
+    [SerializeField] private Button _orderRightButton;
+    
     
     [Header("Dice Images/Sprites")] 
     
@@ -50,19 +53,10 @@ public class PlayerCharacterUI : CharacterUI
         DiceButtonPressAction?.Invoke(_diceNumber);
     }
 
-    public void SetAnimationSpeed(float animatorSpeed)
+    public void SetOrderButtons(bool active)
     {
-        _trayAnimator.speed = animatorSpeed;
-    }
-    
-    public void OpenTray()
-    {
-        _trayAnimator.SetBool("Opened", true);
-    }
-
-    public void CloseTray()
-    {
-        _trayAnimator.SetBool("Opened", false);
+        _orderLeftButton.gameObject.SetActive(active);
+        _orderRightButton.gameObject.SetActive(active);
     }
 
     public void IncreaseActiveDice()
