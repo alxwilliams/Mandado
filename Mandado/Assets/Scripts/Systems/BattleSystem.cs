@@ -11,6 +11,9 @@ public partial class BattleSystem : BaseSystem
     [SerializeField] private FieldController _fieldController;
     [SerializeField] private BattleMenu _battleMenu;
     [SerializeField] private int _maxFocusPoints = 3;
+    
+    [Header("Intent text Details")] 
+    [SerializeField] private List<IntentTextDetails> _intentTextDetails;
 
     [Header("Wait Times")]
     [SerializeField] private float _waitTimeBetweenAttacks = .25f;
@@ -19,8 +22,11 @@ public partial class BattleSystem : BaseSystem
     [SerializeField] private float _timeAfterEnemyAttacks = .5f;
 
 
+    private Dictionary<PlayerActionType, IntentTextDetails> _playerIntentDetailsDictionary = new Dictionary<PlayerActionType, IntentTextDetails>();
     private CameraSystem _cameraSystem;
     private Coroutine _attackRoutine;
+    private Coroutine _loadCharactersRoutine;
+    
     private EnemyAttackSet _currentEnemyAttackSet;
     private int _currentEnemyAttackIndex;
 
@@ -38,12 +44,36 @@ public partial class BattleSystem : BaseSystem
     {
         _cameraSystem = gameManager.CameraSystem;
         _battleMenu.Initialize(gameManager.MenuSystem, RollDice, PlayerAttack, IncreaseActiveDiceRolls, DecreaseActiveDiceRolls);
+
+        foreach (var details in _intentTextDetails)
+        {
+            if (!_playerIntentDetailsDictionary.TryAdd(details.type, details))
+            {
+                Debug.LogError($"Something wrong with: {details.type} when adding to dictionary");
+            }
+        }
+        _fieldController.Init(this,_currentSaveState);
         base.Initialize(gameManager);
     }
-    
+
+    public IntentTextDetails GetIntentTextDetails(PlayerActionType type)
+    {
+        return _playerIntentDetailsDictionary[type];
+    }
+
     public void LoadSavedBattle(BattleSystemState state)
     {
         _currentSaveState = state;
+        if (_loadCharactersRoutine != null)
+        {
+            StopCoroutine(_loadCharactersRoutine);
+        }
+
+        _loadCharactersRoutine = StartCoroutine(LoadSavedBattle());
+    }
+    
+    private IEnumerator LoadSavedBattle()
+    {
         List<PlayerCharacterData> playerData = new List<PlayerCharacterData>(); 
         List<EnemyCharacterData> enemyData = new List<EnemyCharacterData>();
 
@@ -51,7 +81,7 @@ public partial class BattleSystem : BaseSystem
         _fieldController.WipeCharacterDictionary();
 
         int i = 0;
-        foreach (var data in state.playerCharacters)
+        foreach (var data in _currentSaveState.playerCharacters)
         {
             data.statusEffects = data.statusEffectsSerialized.ToDictionary();
             data.currentIndex = i;
@@ -59,23 +89,26 @@ public partial class BattleSystem : BaseSystem
 
             i++;
         }
-        
-        _fieldController.LoadPlayerCharacters(playerData);
+        yield return StartCoroutine(_fieldController.LoadPlayerCharactersCoroutine(playerData));
         _currentSaveState.playerCharacters = playerData;
+        ChangePlayerIntentStates();
         
-        foreach (var data in state.enemyCharacters)
+        foreach (var data in _currentSaveState.enemyCharacters)
         {
             data.statusEffects = data.statusEffectsSerialized.ToDictionary();
             enemyData.Add(data);
         }
         
         _battleMenu.LoadInCharacterUI(playerData,enemyData[0]);
-
-        _fieldController.LoadEnemyCharacters(enemyData);
-        _currentSaveState.enemyCharacters = enemyData;
-        LoadInBattleState(state);
         
+        yield return StartCoroutine(_fieldController.LoadEnemyCharactersCoroutine(enemyData));
+        
+        _currentSaveState.enemyCharacters = enemyData;
+        LoadInBattleState(_currentSaveState);
         UpdateUI();
+        
+        _loadCharactersRoutine = null;
+
     }
 
     public void UseOrderToken()
@@ -100,11 +133,16 @@ public partial class BattleSystem : BaseSystem
     public void StartNewBattle()
     {
         BattleSystemState newState = new BattleSystemState();
-        LoadNewBattleCharacters(newState, _fakePlayerData, _fakeEnemyData);
-        LoadInBattleState(newState);
+
+        if (_loadCharactersRoutine != null)
+        {
+            StopCoroutine(_loadCharactersRoutine);
+        }
+
+        _loadCharactersRoutine = StartCoroutine(LoadNewBattleCharacters(newState, _fakePlayerData, _fakeEnemyData));
     }
 
-    public void LoadNewBattleCharacters(BattleSystemState state, List<PlayerCharacter> playerCharacters, List<EnemyCharacter> enemyCharacters)
+    public IEnumerator LoadNewBattleCharacters(BattleSystemState state, List<PlayerCharacter> playerCharacters, List<EnemyCharacter> enemyCharacters)
     {
         _currentSaveState = state;
         
@@ -124,8 +162,9 @@ public partial class BattleSystem : BaseSystem
             i++;
         }
         
-        _fieldController.LoadPlayerCharacters(playerData);
+        yield return _fieldController.LoadPlayerCharactersCoroutine(playerData);
         _currentSaveState.playerCharacters = playerData;
+        ChangePlayerIntentStates();
         
         foreach (var character in enemyCharacters)
         {
@@ -134,10 +173,12 @@ public partial class BattleSystem : BaseSystem
         
         _battleMenu.LoadInCharacterUI(playerData, enemyData[0]);
         
-        _fieldController.LoadEnemyCharacters(enemyData);
+        yield return _fieldController.LoadEnemyCharactersCoroutine(enemyData);
         _currentSaveState.enemyCharacters = enemyData;
         UpdateUI();
-        
+        LoadInBattleState(_currentSaveState);
+        _loadCharactersRoutine = null;
+
     }
 
     public BattleSystemState GetBattleSystemState()
@@ -616,6 +657,9 @@ public partial class BattleSystem : BaseSystem
 
             yield return new WaitForSeconds(0.1f);
         }
+
+        _fieldController.WipePlayerCharacterIntent(data);
+        _battleMenu.ResetDice(castingUnitIndex);
     }
 
     private void EmpowerPlayerUnit(int unitIndex, float amount)
@@ -917,4 +961,12 @@ public partial class BattleSystem : BaseSystem
             StopCoroutine(_attackRoutine);
         }
     }
+}
+
+[Serializable]
+public class IntentTextDetails
+{
+    public PlayerActionType type;
+    public string spriteIndex;
+    public Color textColor;
 }

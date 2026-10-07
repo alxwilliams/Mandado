@@ -556,6 +556,146 @@ PrefabInstance:
       propertyPath: _fakePlayerData.Array.data[1]
       value: 
       objectReference: {fileID: 11400000, guid: ff3734a6ecbbfb94da5182d68cff05ca, type: 2}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.size
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[1].type
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[2].type
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[3].type
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[4].type
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[5].type
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[6].type
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[0].spriteIndex
+      value: <sprite index=3>
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[0].textColor.b
+      value: 0.30588236
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[0].textColor.g
+      value: 0.69411767
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[0].textColor.r
+      value: 0.93725497
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[1].spriteIndex
+      value: <sprite index=4>
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[1].textColor.b
+      value: 0.7137255
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[1].textColor.g
+      value: 0.7137255
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[1].textColor.r
+      value: 0.91372555
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[2].spriteIndex
+      value: <sprite index=0>
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[2].textColor.b
+      value: 0.64705884
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[2].textColor.g
+      value: 0.7254902
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[2].textColor.r
+      value: 0.7607844
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[3].spriteIndex
+      value: <sprite index=5>
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[3].textColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[3].textColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[3].textColor.r
+      value: 0.36293197
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[4].spriteIndex
+      value: <sprite index=1>
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[4].textColor.b
+      value: 0.3803922
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[4].textColor.g
+      value: 0.52156866
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[4].textColor.r
+      value: 0.91372555
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[5].spriteIndex
+      value: <sprite index=2>
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[5].textColor.b
+      value: 0.5019608
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[5].textColor.g
+      value: 0.67058825
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[5].textColor.r
+      value: 0.28235295
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[6].spriteIndex
+      value: <sprite index=5>
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[6].textColor.b
+      value: 0.3921569
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[6].textColor.g
+      value: 0.7137255
+      objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _intentTextDetails.Array.data[6].textColor.r
+      value: 0.627451
+      objectReference: {fileID: 0}
     - target: {fileID: 989003693237279558, guid: 933a28806fdbca04da05100098e19242, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -671,6 +811,14 @@ PrefabInstance:
     - target: {fileID: 1683893278568234709, guid: 933a28806fdbca04da05100098e19242, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2013463737258967478, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -10.000122
+      objectReference: {fileID: 0}
+    - target: {fileID: 2013463737258967478, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -17
       objectReference: {fileID: 0}
     - target: {fileID: 2188231512130299693, guid: 933a28806fdbca04da05100098e19242, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1152,7 +1300,13 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1495633494}
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3043992192964314749, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
     - targetCorrespondingSourceObject: {fileID: 2175651211517853581, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
+    - targetCorrespondingSourceObject: {fileID: 2249928208844910477, guid: 933a28806fdbca04da05100098e19242, type: 3}
       insertIndex: -1
       addedObject: {fileID: 0}
     - targetCorrespondingSourceObject: {fileID: 3113746781960984189, guid: 933a28806fdbca04da05100098e19242, type: 3}

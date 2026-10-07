@@ -309,6 +309,12 @@ public class BattleMenu : BaseMenu
         }
     }
 
+    public void ResetDice(int index)
+    {
+        _characterUIs[index].ResetDice();
+    }
+    
+
     public void DisableDice(int index)
     {
         var dice = _diceTrayButtons[index].gameObject;

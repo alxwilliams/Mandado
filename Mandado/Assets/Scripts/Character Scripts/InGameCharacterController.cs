@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -12,6 +13,8 @@ public class InGameCharacterController : MonoBehaviour
     [SerializeField] private SpriteRenderer _attackSpriteRenderer3;
     [SerializeField] private SpriteBillboard _spriteBillboard;
     [SerializeField] private Animator _animator;
+
+    [SerializeField] private TMP_Text _intentDetails;
     
     [Header("Effect Box")]
     [SerializeField] private Animator _effectBoxAnimator;
@@ -27,6 +30,8 @@ public class InGameCharacterController : MonoBehaviour
 
     public List<PlayerCharacterAction> CurrentCharacterIntents => _currentCharacterIntents;
 
+    private BattleSystem _battleSystem;
+
     public float TrueFacingDirection
     {
         set
@@ -36,14 +41,15 @@ public class InGameCharacterController : MonoBehaviour
         }
     }
 
-    public void SetSprites(CharacterSpriteData spriteData)
+
+    public void Init(CharacterSpriteData spriteData, BattleSystem system)
     {
         _characterSpriteData = spriteData;
+        _battleSystem = system;
 
         /*_spriteBillboard.FrontSprite = frontSprite;
         _spriteBillboard.BackSprite = backSprite;*/
 
-        
         //_spriteBillboard.ForceBillboardUpdate();
         
         _idleSpriteRenderer1.sprite = spriteData._frontIdleSprite1;
@@ -53,9 +59,21 @@ public class InGameCharacterController : MonoBehaviour
         _attackSpriteRenderer3.sprite = spriteData._frontAttackSprite3;
     }
 
+    public void WipeIntent()
+    {
+        _intentDetails.text = "";
+    }
+    
     public void ChangeCharacterIntent(List<PlayerCharacterAction> newIntents)
     {
+        _intentDetails.text = "";
+        IntentTextDetails details;
         
+        foreach (var intent in newIntents)
+        {
+            details = _battleSystem.GetIntentTextDetails(intent.type);
+            _intentDetails.text += $"<color=#{ColorUtility.ToHtmlStringRGB(details.textColor)}> {intent.value} {details.spriteIndex} </color>\n";
+        }
     }
 
     public void TakeDamage(float damage)

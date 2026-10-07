@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8161423871314103775}
   - component: {fileID: 4859057284585749600}
   - component: {fileID: 6284867390965785060}
+  - component: {fileID: 9126768479215906714}
   m_Layer: 0
   m_Name: Effect Box
   m_TagString: Untagged
@@ -107,6 +108,20 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &9126768479215906714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3893434024929877140}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6211b9a2b71bf5a4e99a84d075277d23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _spriteRenderer: {fileID: 6284867390965785060}
+  _trueLookDirection: 0
 --- !u!1 &9156388303871696998
 GameObject:
   m_ObjectHideFlags: 0
@@ -164,7 +179,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  - {fileID: 2515731309142103739, guid: 3bf41a36fdf1fc74cbdf20b2f8dd6948, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -208,8 +223,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Test
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 3bf41a36fdf1fc74cbdf20b2f8dd6948, type: 2}
+  m_sharedMaterial: {fileID: 2515731309142103739, guid: 3bf41a36fdf1fc74cbdf20b2f8dd6948, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

@@ -17,12 +17,16 @@ public class FieldController : MonoBehaviour
     private float _currentPlayerSpawnOffset = 0;
     private float _currentEnemySpawnOffset = 0;
 
-    private Coroutine _playerLoadRoutine;
-    private Coroutine _enemyLoadRoutine;
 
     private Dictionary<PlayerCharacterData, InGameCharacterController> _playerControllerDictionary = new Dictionary<PlayerCharacterData, InGameCharacterController>();
     private Dictionary<EnemyCharacterData, InGameCharacterController> _enemyControllerDictionary = new Dictionary<EnemyCharacterData, InGameCharacterController>();
 
+    private BattleSystem _battleSystem;
+
+    public void Init(BattleSystem system, BattleSystemState state)
+    {
+        _battleSystem = system;
+    }
     public void WipeCharacterDictionary()
     {
         _playerControllerDictionary = new Dictionary<PlayerCharacterData, InGameCharacterController>();
@@ -46,11 +50,11 @@ public class FieldController : MonoBehaviour
     {
         PlayerCharacterData data;
         
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < state.playerCharacters.Count; i++)
         {
             data = state.playerCharacters[i];
-            InGameCharacterController controller = _playerControllerDictionary[data];
             
+            InGameCharacterController controller = _playerControllerDictionary[data];
             List<PlayerCharacterAction> actionSet = data.actionSet.GetActionSetFromRollNumber(state.activeDiceRolls[i]);
 
             if (controller.CurrentCharacterIntents != actionSet)
@@ -67,25 +71,7 @@ public class FieldController : MonoBehaviour
             _playerControllerDictionary[character2].gameObject.transform.position,
             _playerControllerDictionary[character1].gameObject.transform.position);
     }
-    
-    public void LoadPlayerCharacters(List<PlayerCharacterData> characters)
-    {
-        if (_playerLoadRoutine != null)
-        {
-            StopCoroutine(_playerLoadRoutine);
-        }
-        _playerLoadRoutine = StartCoroutine(LoadPlayerCharactersCoroutine(characters));
-    }
-    
-    public void LoadEnemyCharacters(List<EnemyCharacterData> characters)
-    {
-        if (_enemyLoadRoutine != null)
-        {
-            StopCoroutine(_enemyLoadRoutine);
-        }
-        StartCoroutine(LoadEnemyCharactersCoroutine(characters));
-    }
-    
+
     public IEnumerator LoadPlayerCharactersCoroutine(List<PlayerCharacterData> characters)
     {
         int i = 0;
@@ -114,8 +100,6 @@ public class FieldController : MonoBehaviour
 
             i++;
         }
-
-        _playerLoadRoutine = null;
     }
     
     public IEnumerator LoadEnemyCharactersCoroutine(List<EnemyCharacterData> characters)
@@ -138,10 +122,6 @@ public class FieldController : MonoBehaviour
 
             i++;
         }
-        
-        
-
-        _enemyLoadRoutine = null;
     }
 
     private IEnumerator CreateCharacterController(bool player, float width, CharacterSpriteData spriteData)
@@ -164,9 +144,14 @@ public class FieldController : MonoBehaviour
         InGameCharacterController controller = obj.GetComponent<InGameCharacterController>();
 
         yield return null;
-        controller.SetSprites(spriteData);
+        controller.Init(spriteData,_battleSystem);
 
         _loadedController = controller;
+    }
+
+    public void WipePlayerCharacterIntent(PlayerCharacterData data)
+    {
+        _playerControllerDictionary[data].WipeIntent();
     }
 
     public void PlayerCharacterGetHealed(PlayerCharacterData data, float num)

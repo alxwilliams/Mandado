@@ -106,8 +106,8 @@ public class BattleSystemState
     public int diceInCharacterTrays = 0;
     public bool playerHasHealed = false;
     public bool canAttack = false;
-    public List<PlayerCharacterData> playerCharacters;
-    public List<EnemyCharacterData> enemyCharacters;
+    public List<PlayerCharacterData> playerCharacters = new List<PlayerCharacterData>();
+    public List<EnemyCharacterData> enemyCharacters = new List<EnemyCharacterData>();
 }
 
 [System.Serializable]
