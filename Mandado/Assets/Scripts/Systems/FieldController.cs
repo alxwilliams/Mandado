@@ -8,6 +8,7 @@ public class FieldController : MonoBehaviour
     [SerializeField] private Transform _playerStartLocation;
     [SerializeField] private Transform _enemyStartLocation;
     [SerializeField] private GameObject _characterPrefab;
+    [SerializeField] private float _enemyAttackAngle = 220;
 
     [SerializeField] private float _sideBySideBufferValue = 2;
 
@@ -107,7 +108,7 @@ public class FieldController : MonoBehaviour
         {
             yield return CreateCharacterController(false, character.width, character.frontSprite,character.backSprite, character.actionSprite);
             _enemyControllerDictionary.TryAdd(character, _loadedController);
-            _loadedController.TrueFacingDirection = 180;
+            _loadedController.TrueFacingDirection = _enemyAttackAngle;
 
             i++;
         }

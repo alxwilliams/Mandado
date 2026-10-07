@@ -7,15 +7,15 @@ using UnityEngine.UI;
 
 public class BattleMenu : BaseMenu
 {
-    [SerializeField] private BattleSystem _battleSystem;
     [SerializeField] private TMP_Text _debugEnemyText;
 
     [SerializeField] private Button _rollDiceButton;
+    [SerializeField] private Button _orderButton;
     [SerializeField] private Button _goButton;
     [SerializeField] private EnemyCharacterUI _enemyCharacterUI;
     [SerializeField] private List<PlayerCharacterUI> _characterUIs = new List<PlayerCharacterUI>();
     [SerializeField] private float _trayOpeningWaitBetween = .1f;
-    [SerializeField] private List<Button> _diceTrayButtons = new List<Button>();
+    [SerializeField] private List<DiceTrayDiceButton> _diceTrayButtons = new List<DiceTrayDiceButton>();
     [SerializeField] private TMP_Text _rerollText;
     [SerializeField] private TMP_Text _orderTokenText;
 
@@ -28,7 +28,8 @@ public class BattleMenu : BaseMenu
     [SerializeField] private Sprite _diceFive;
     [SerializeField] private Sprite _diceSix;
     
-    private Dictionary<Button, int> _diceTrayDictionary = new Dictionary<Button, int>();
+    private Dictionary<DiceTrayDiceButton, int> _diceTrayDictionary = new Dictionary<DiceTrayDiceButton, int>();
+    private BattleSystem _battleSystem;
     
     private Action _rollDiceAction;
     private Action _attackAction;
@@ -37,27 +38,6 @@ public class BattleMenu : BaseMenu
 
     private Coroutine _trayOpeningRoutine;
     
-    
-    
-    /*public void CloseTrays()
-    {
-        if (_trayOpeningRoutine != null)
-        {
-            StopCoroutine(_trayOpeningRoutine);
-        }
-
-        _trayOpeningRoutine = StartCoroutine(TrayRoutine(false));
-    }
-
-    public void OpenTrays()
-    {
-        if (_trayOpeningRoutine != null)
-        {
-            StopCoroutine(_trayOpeningRoutine);
-        }
-
-        _trayOpeningRoutine = StartCoroutine(TrayRoutine(true));
-    }*/
 
     public void UpdatePlayerCharacterGuardUI(int index, float guard)
     {
@@ -121,40 +101,6 @@ public class BattleMenu : BaseMenu
         }
     }
 
-    
-    private IEnumerator TrayRoutine(bool opening)
-    {
-        int i = 1;
-        foreach (var UI in _characterUIs)
-        {
-            if (i == _characterUIs.Count)
-            {
-                yield return new WaitForSeconds(_trayOpeningWaitBetween * .65f);
-            }
-            else if (i == _characterUIs.Count - 1)
-            {
-                yield return new WaitForSeconds(_trayOpeningWaitBetween * .85f);
-            }
-            else
-            {
-                yield return new WaitForSeconds(_trayOpeningWaitBetween);
-            }
-
-            /*if(opening)
-            {
-                UI.OpenTray();
-            }
-            else
-            {
-                UI.CloseTray();
-            }*/
-
-            i++;
-        }
-
-        _trayOpeningRoutine = null;
-    }
-    
     public virtual void Initialize(MenuSystem menuSystem, Action rollDice, Action attack, Action<int> increaseDiceRolls, Action<int> decreaseDiceRolls)
     {
         _battleSystem = GameManager.Instance.BattleSystem;
@@ -174,9 +120,9 @@ public class BattleMenu : BaseMenu
         for (int i = 0; i < _diceTrayButtons.Count; i++)
         {
             int index = i;
-            Button button = _diceTrayButtons[i];
+            DiceTrayDiceButton button = _diceTrayButtons[i];
             
-            _diceTrayButtons[i].onClick.AddListener(() => OnDiceButtonClicked(index, button));
+            _diceTrayButtons[i].MainButton.onClick.AddListener(() => OnDiceButtonClicked(index, button));
             _diceTrayDictionary.Add(_diceTrayButtons[i],0);
         }
         
@@ -188,7 +134,7 @@ public class BattleMenu : BaseMenu
         _rerollText.text = $"{num}";
     }
     
-    private void OnDiceButtonClicked(int index, Button button)
+    private void OnDiceButtonClicked(int index, DiceTrayDiceButton button)
     {
         if (_battleSystem.IsIndexCharacterEmpty(_diceTrayDictionary[button] - 1))
         {
@@ -209,32 +155,6 @@ public class BattleMenu : BaseMenu
                 _decreaseDiceRollsAction?.Invoke(diceNum-1);
                 break;
             }
-        }
-    }
-
-    private void InitializeTrayAnimationSpeeds(int amount)
-    {
-        if (amount > 1)
-        {
-            for (int i = 0; i < amount; i++)
-            {
-                if (i == amount - 1)
-                {
-                    _characterUIs[i].SetAnimationSpeed(2.2f);
-                }else if (i == amount -2)
-                {
-                    _characterUIs[i].SetAnimationSpeed(1.8f);
-                }
-                else
-                {
-                    _characterUIs[i].SetAnimationSpeed(1);
-                }
-            }
-            
-        }
-        else
-        {
-            _characterUIs[0].SetAnimationSpeed(1);
         }
     }
 
@@ -285,7 +205,7 @@ public class BattleMenu : BaseMenu
 
     public void SetDiceInTrayUI(int index, int num)
     {
-        Button button = _diceTrayButtons[index];
+        DiceTrayDiceButton button = _diceTrayButtons[index];
         
         if (num != -1)
         {
@@ -293,27 +213,27 @@ public class BattleMenu : BaseMenu
 
             if (num == 1)
             {
-                button.image.sprite = _diceOne;
+                button.MainButton.image.sprite = _diceOne;
             }
             else if (num == 2)
             {
-                button.image.sprite = _diceTwo;
+                button.MainButton.image.sprite = _diceTwo;
             }
             else if (num == 3)
             {
-                button.image.sprite = _diceThree;
+                button.MainButton.image.sprite = _diceThree;
             }
             else if (num == 4)
             {
-                button.image.sprite = _diceFour;
+                button.MainButton.image.sprite = _diceFour;
             }
             else if (num == 5)
             {
-                button.image.sprite = _diceFive;
+                button.MainButton.image.sprite = _diceFive;
             }
             else if (num == 6)
             {
-                button.image.sprite = _diceSix;
+                button.MainButton.image.sprite = _diceSix;
             }
 
             _diceTrayDictionary[button] = num;
