@@ -33,6 +33,9 @@ public partial class BattleSystem : BaseSystem
 
     private BattleSystemState _currentSaveState;
 
+    public Action GameLoaded;
+    private Action SaveGame;
+
     public bool IsOrderUsable
     {
         get
@@ -41,8 +44,9 @@ public partial class BattleSystem : BaseSystem
         }
     }
 
-    public override void Initialize(GameManager gameManager)
+    public void Initialize(GameManager gameManager, Action saveGame)
     {
+        SaveGame = saveGame;
         _cameraSystem = gameManager.CameraSystem;
         _battleMenu.Initialize(gameManager.MenuSystem, RollDice, PlayerAttack, IncreaseActiveDiceRolls, DecreaseActiveDiceRolls);
 
@@ -113,13 +117,14 @@ public partial class BattleSystem : BaseSystem
         LoadInBattleState(_currentSaveState);
         UpdateUI();
         
+        GameLoaded?.Invoke();
         _loadCharactersRoutine = null;
-
     }
 
     public void UseOrderToken()
     {
         AddOrder(_currentSaveState.currentOrderTokens-1);
+        SaveGame?.Invoke();
     }
     
     public bool IsIndexCharacterEmpty(int index)
@@ -184,6 +189,8 @@ public partial class BattleSystem : BaseSystem
         _currentSaveState.enemyCharacters = enemyData;
         UpdateUI();
         LoadInBattleState(_currentSaveState);
+        
+        GameLoaded?.Invoke();
         _loadCharactersRoutine = null;
 
     }
@@ -220,7 +227,7 @@ public partial class BattleSystem : BaseSystem
         {
             return;
         }
-        
+
         EndPlayerTurn();
         
         if (_attackRoutine != null)
@@ -261,17 +268,18 @@ public partial class BattleSystem : BaseSystem
     {
         DealWithEnemyBleedDamage();
         _currentSaveState.turnNumber++;
+        SaveGame?.Invoke();
     }
 
     private void StartPlayerTurn(bool init = false)
     {
         _currentSaveState.amountOfRerolls = 3;
-        _currentSaveState.canAttack = false;
         ResetPlayerGuard();
         ResetPlayerDiceTrays();
         GenerateEnemyActions();
         
         UpdateUI();
+        SaveGame?.Invoke();
         //calculate enemy actions
         //show enemy intent
         
@@ -327,6 +335,7 @@ public partial class BattleSystem : BaseSystem
 
     private void EndPlayerTurn()
     {
+        _currentSaveState.canAttack = false;
         FocusSentinelCheckForHeals();
         FocusPilgrimCheckForOrderTokens();
         
@@ -395,6 +404,7 @@ public partial class BattleSystem : BaseSystem
         
         UseOrderToken();
         ChangePlayerIntentStates();
+        SaveGame?.Invoke();
     }
 
     private List<EnemyAttackSet> GetPotentialEnemyAttacks()
@@ -962,6 +972,7 @@ public partial class BattleSystem : BaseSystem
         
         _currentSaveState.amountOfRerolls--;
         _battleMenu.SetRerollNumber(_currentSaveState.amountOfRerolls);
+        SaveGame?.Invoke();
         
     }
     

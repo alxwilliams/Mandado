@@ -30,8 +30,26 @@ public class CharacterUI : MonoBehaviour
     protected float _currentGuard = -1;
     protected float _currentBleed = -1;
     protected float _currentEmpower = -1;
+    protected float _currentFocus = -1;
 
-    private float _healthDifference;
+    protected float _healthPercentage;
+    protected float _healthDifference;
+
+    public float CurrentFocus => _currentFocus;
+    public float CurrentBleed => _currentBleed;
+    public float CurrentGuard => _currentGuard;
+    public float CurrentEmpower => _currentEmpower;
+
+    public float HealthPercentage
+    {
+        get => _healthPercentage;
+        set => _healthPercentage = value;
+    }
+    public float HealthDifference
+    {
+        get => _healthDifference;
+        set => _healthDifference = value;
+    }
 
     public GameObject UIParent => _uiParent;
 
@@ -59,6 +77,7 @@ public class CharacterUI : MonoBehaviour
         }
         else
         {
+            _currentFocus = amount;
             _focusStar1.SetActive(amount >= 1);
             _focusStar2.SetActive(amount >= 2);
             _focusStar3.SetActive(amount >= 3);
@@ -121,6 +140,7 @@ public class CharacterUI : MonoBehaviour
 
     public void UpdateHealth(float healthPercentage)
     {
+        _healthPercentage = healthPercentage;
         _healthBarFill.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,_healthDifference * healthPercentage + _healthBarEmptyWidth);
     }
 

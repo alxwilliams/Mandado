@@ -40,7 +40,42 @@ public class GameManager : MonoBehaviour
 
     public string MainDiceSeed => _mainDiceSeed;
 
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
 
+            if (_initializationRoutine != null)
+            {
+                StopCoroutine(_initializationRoutine);
+            }
+            
+            _initializationRoutine = StartCoroutine(Initialize());
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
+    }
+
+    IEnumerator Initialize()
+    {
+        _menuSystem.Initialize(this, StartNewGame, LoadGameFromFile);
+        _battleSystem.Initialize(this,SaveGame);
+        _cameraSystem.Initialize(this);
+        _saveSystem.Initialize(this);
+        
+        _initialized = true;
+        InitializedEvent?.Invoke();
+        _initializationRoutine = null;
+
+        _battleSystem.GameLoaded += StartBattle;
+        
+        yield return null;
+        _menuSystem.ShowTitleScreen();
+    }
     
     private void GenerateNewSeed()
     {
@@ -114,12 +149,17 @@ public class GameManager : MonoBehaviour
         _currentSaveData.targetRandomCalls = 0;
         _currentSaveData.miscRandomCalls = 0;
 
-        StartBattle();
+        _battleSystem.StartNewBattle();
+        //StartBattle();
     }
 
-    [ContextMenu("Load")]
     public void LoadGameFromFile()
     {
+        if (!_saveSystem.LoadedGameFound)
+        {
+            return;
+        }
+        
         var data = _saveSystem.LoadGame();
         _mainDiceSeed = data.mainSeed;
         GenerateRandomMachines();
@@ -141,7 +181,6 @@ public class GameManager : MonoBehaviour
         _battleSystem.LoadSavedBattle(data.battleState);
     }
 
-    [ContextMenu("Save")]
     public void SaveGame()
     {
         _currentSaveData.battleState = _battleSystem.GetBattleSystemState();
@@ -161,47 +200,11 @@ public class GameManager : MonoBehaviour
             return hash;
         }
     }
-
-    void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-
-            if (_initializationRoutine != null)
-            {
-                StopCoroutine(_initializationRoutine);
-            }
-            
-            _initializationRoutine = StartCoroutine(Initialize());
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-
-    }
-
-    IEnumerator Initialize()
-    {
-        _menuSystem.Initialize(this, StartNewGame, LoadGameFromFile);
-        _battleSystem.Initialize(this);
-        _cameraSystem.Initialize(this);
-        _saveSystem.Initialize(this);
-        
-        _initialized = true;
-        //StartNewGame();
-        InitializedEvent?.Invoke();
-        _initializationRoutine = null;
-        
-        yield return null;
-        _menuSystem.ShowTitleScreen();
-    }
+    
 
     public void StartBattle()
     {
         _menuSystem.ShowBattleMenu();
-        _battleSystem.StartNewBattle();
     }
 
     private void OnDestroy()
@@ -211,5 +214,8 @@ public class GameManager : MonoBehaviour
             StopCoroutine(_initializationRoutine);
         }
         InitializedEvent = null;
+        
+        
+        _battleSystem.GameLoaded -= StartBattle;
     }
 }

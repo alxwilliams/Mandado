@@ -128,7 +128,28 @@ public class PlayerCharacterUI : CharacterUI
         (character2.LabelImage.sprite, _labelImage.sprite) = (_labelImage.sprite, character2.LabelImage.sprite);
         (character2.AmountOfActiveDice, _amountOfActiveDice) = (_amountOfActiveDice, character2.AmountOfActiveDice);
         (character2.ClassType, _classType) = (_classType, character2.ClassType);
+        (character2.HealthDifference, _healthDifference) = (_healthDifference, character2.HealthDifference);
+
+        float num = character2.HealthPercentage;
+        character2.UpdateHealth(_healthPercentage);
+        UpdateHealth(num);
+
+        num = character2.CurrentBleed;
+        character2.UpdateBleedUI(_currentBleed);
+        UpdateBleedUI(num);
         
+        num = character2.CurrentEmpower;
+        character2.UpdateEmpowerUI(_currentEmpower);
+        UpdateEmpowerUI(num);
+        
+        num = character2.CurrentFocus;
+        character2.UpdateBleedUI(_currentFocus);
+        SetFocus(num);
+        
+        num = character2.CurrentGuard;
+        character2.UpdateBleedUI(_currentGuard);
+        UpdateGuardUI(num);
+
         SetActiveDice(_amountOfActiveDice);
         character2.SetActiveDice(character2.AmountOfActiveDice);
 
