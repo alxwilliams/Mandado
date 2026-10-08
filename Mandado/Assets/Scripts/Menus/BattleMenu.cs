@@ -294,7 +294,7 @@ public class BattleMenu : BaseMenu
 
     public void UpdateEnemyUI(EnemyCharacterData data)
     {
-        _enemyCharacterUI.UpdateHealth(data.currentHealth/data.maxHealth);
+        _enemyCharacterUI.UpdateHealth(data.currentHealth,data.maxHealth);
         _enemyCharacterUI.SetFocus(data.currentFocus);
     }
     
@@ -309,7 +309,7 @@ public class BattleMenu : BaseMenu
 
     public void UpdatePlayerCharacterHealth(PlayerCharacterData data)
     {
-        _characterUIs[data.currentIndex].UpdateHealth(data.currentHealth / data.maxHealth);
+        _characterUIs[data.currentIndex].UpdateHealth(data.currentHealth,data.maxHealth);
     }
 
     public void UpdatePlayerCharacterFocus(PlayerCharacterData data)

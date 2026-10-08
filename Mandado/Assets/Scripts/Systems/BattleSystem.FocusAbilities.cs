@@ -21,20 +21,17 @@ public partial class BattleSystem
         return highestIndexedSentinel;
     }
 
-    private void FocusSentinelCheckForHeals()
+    private void FocusSentinelCheckForHeals(PlayerCharacterData character)
     {
-        foreach (var character in _currentSaveState.playerCharacters)
+        if (character.classType == ClassType.Sentinel && character.currentFocus > 0)
         {
-            if (character.classType == ClassType.Sentinel && character.currentFocus > 0)
+            if (character.actionSet.focusValues.Count == 0)
             {
-                if (character.actionSet.focusValues.Count == 0)
-                {
-                    Debug.LogError("Sentinel focus values not properly set");
-                }
-                else
-                {
-                    HealPlayerUnit(character.currentIndex, character.actionSet.focusValues[0] * character.currentFocus);
-                }
+                Debug.LogError("Sentinel focus values not properly set");
+            }
+            else
+            {
+                HealPlayerUnit(character.currentIndex, character.actionSet.focusValues[0] * character.currentFocus);
             }
         }
     }
@@ -43,14 +40,11 @@ public partial class BattleSystem
 
     #region Pilgrim Checks
 
-    private void FocusPilgrimCheckForOrderTokens()
+    private void FocusPilgrimCheckForOrderTokens(PlayerCharacterData character)
     {
-        foreach (var character in _currentSaveState.playerCharacters)
+        if (character.classType == ClassType.Pilgrim && character.currentFocus == 3)
         {
-            if (character.classType == ClassType.Pilgrim && character.currentFocus == 3)
-            {
-                AddOrder(2);
-            }
+            AddOrder(2);
         }
     }
 

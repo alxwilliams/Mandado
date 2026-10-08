@@ -38,7 +38,11 @@ public class PlayerCharacterUI : CharacterUI
 
     private Action<int> DiceButtonPressAction;
 
-    public bool IsDead => _isDead;
+    public bool IsDead
+    {
+        get => _isDead;
+        set => _isDead = value;
+    }
 
     public ClassType ClassType
     {
@@ -117,7 +121,7 @@ public class PlayerCharacterUI : CharacterUI
 
     public void SwapCharacter(PlayerCharacterUI character2)
     {
-        bool character2Empty = character2.ClassType == ClassType.Empty || !character2.IsDead;
+        bool character2Empty = character2.ClassType == ClassType.Empty || character2.IsDead;
         
         if (character2Empty)
         {
@@ -125,14 +129,16 @@ public class PlayerCharacterUI : CharacterUI
             UIParent.SetActive(false);
         }
         
+        (character2.IsDead, _isDead) = (_isDead, character2.IsDead);
         (character2.LabelImage.sprite, _labelImage.sprite) = (_labelImage.sprite, character2.LabelImage.sprite);
         (character2.AmountOfActiveDice, _amountOfActiveDice) = (_amountOfActiveDice, character2.AmountOfActiveDice);
         (character2.ClassType, _classType) = (_classType, character2.ClassType);
-        (character2.HealthDifference, _healthDifference) = (_healthDifference, character2.HealthDifference);
 
-        float num = character2.HealthPercentage;
-        character2.UpdateHealth(_healthPercentage);
-        UpdateHealth(num);
+        float num = character2.CurrentHealth;
+        float num2 = character2.MaxHealth;
+        
+        character2.UpdateHealth(_currentHealth,_maxHealth);
+        UpdateHealth(num, num2);
 
         num = character2.CurrentBleed;
         character2.UpdateBleedUI(_currentBleed);

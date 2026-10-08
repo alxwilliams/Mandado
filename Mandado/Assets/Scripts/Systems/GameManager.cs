@@ -118,23 +118,23 @@ public class GameManager : MonoBehaviour
         _miscRandom = new Random(StringToDeterministicHash(_miscSeed));
     }
 
-    public int GetNewMainRandom(int floor, int ceiling)
+    public int GetNewMainRandom(int inclusiveFloor, int exclusiveCeiling)
     {
-        int num = _mainRandom.Next(floor, ceiling);
+        int num = _mainRandom.Next(inclusiveFloor, exclusiveCeiling);
         _currentSaveData.mainRandomCalls++;
         return num;
     }
     
-    public int GetNewTargetRandom(int floor, int ceiling)
+    public int GetNewTargetRandom(int inclusiveFloor, int exclusiveCeiling)
     {
-        int num = _mainRandom.Next(floor, ceiling);
+        int num = _mainRandom.Next(inclusiveFloor, exclusiveCeiling);
         _currentSaveData.targetRandomCalls++;
         return num;
     }
     
-    public int GetNewMiscRandom(int floor, int ceiling)
+    public int GetNewMiscRandom(int inclusiveFloor, int exclusiveCeiling)
     {
-        int num = _mainRandom.Next(floor, ceiling);
+        int num = _mainRandom.Next(inclusiveFloor, exclusiveCeiling);
         _currentSaveData.miscRandomCalls++;
         return num;
     }

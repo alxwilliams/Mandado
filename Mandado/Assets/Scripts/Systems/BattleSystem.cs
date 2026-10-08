@@ -129,7 +129,7 @@ public partial class BattleSystem : BaseSystem
     
     public bool IsIndexCharacterEmpty(int index)
     {
-        return _currentSaveState.playerCharacters[index].classType == ClassType.Empty;
+        return _currentSaveState.playerCharacters[index].classType == ClassType.Empty || !_currentSaveState.playerCharacters[index].IsAlive;
     }
 
     public void LoadInBattleState(BattleSystemState state)
@@ -336,11 +336,7 @@ public partial class BattleSystem : BaseSystem
     private void EndPlayerTurn()
     {
         _currentSaveState.canAttack = false;
-        FocusSentinelCheckForHeals();
-        FocusPilgrimCheckForOrderTokens();
-        
         UpdateUI();
-        
     }
 
     private IEnumerator PlayerDiceActions()
@@ -361,6 +357,8 @@ public partial class BattleSystem : BaseSystem
             else if(_currentSaveState.playerCharacters[i].currentFocus < 3 && _currentSaveState.playerCharacters[i].currentHealth > 0)
             {
                 _currentSaveState.playerCharacters[i].currentFocus++;
+                FocusSentinelCheckForHeals(_currentSaveState.playerCharacters[i]);
+                FocusPilgrimCheckForOrderTokens(_currentSaveState.playerCharacters[i]);
                 UpdateUI();
             }
         }
@@ -479,7 +477,7 @@ public partial class BattleSystem : BaseSystem
             List<EnemyAttackSet> listOfAttacks = GetPotentialEnemyAttacks();
 
             _currentEnemyAttackIndex = 0;
-            _currentEnemyAttackSet = listOfAttacks[_gameManager.GetNewMainRandom(0,listOfAttacks.Count-1)];
+            _currentEnemyAttackSet = listOfAttacks[_gameManager.GetNewMainRandom(0,listOfAttacks.Count)];
         }
 
         foreach (var action in _currentEnemyAttackSet.sequencedAttacks[_currentEnemyAttackIndex].actionSet)
@@ -947,13 +945,10 @@ public partial class BattleSystem : BaseSystem
         int diceRolled = _amountOfDiceRolledPerTurn - _currentSaveState.diceInCharacterTrays;
 
         int[] dice = new int[diceRolled];
-        //_diceRolls = new[] { 0, 0, 0, 0, 0, 0};
-        //string debugString = "";
-
-        //only rolling 5 dice
+        
         for(int i =0; i < diceRolled; i++)
         {
-            dice[i] = _gameManager.GetNewMainRandom(1, 6);
+            dice[i] = _gameManager.GetNewMainRandom(1, 7);
         }
 
         for(int i = 0; i < _amountOfDiceRolledPerTurn; i++)
@@ -986,7 +981,7 @@ public partial class BattleSystem : BaseSystem
         //only rolling 5 dice
         for(int i =0; i < _amountOfDiceRolledPerTurn; i++)
         {
-            dice[i] = _gameManager.GetNewMainRandom(1, 6);
+            dice[i] = _gameManager.GetNewMainRandom(1, 7);
             _currentSaveState.activeDiceRolls[dice[i] - 1]++;
             debugString += $"{i + 1}: {dice[i]}\n";
         }

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class CharacterUI : MonoBehaviour
 {
-    
+    [SerializeField] private TMP_Text _healthText;
     [SerializeField] protected GameObject _uiParent;
     [SerializeField] protected RectTransform _healthBarFill;
     [SerializeField] protected GameObject _focusStar1;
@@ -31,6 +31,8 @@ public class CharacterUI : MonoBehaviour
     protected float _currentBleed = -1;
     protected float _currentEmpower = -1;
     protected float _currentFocus = -1;
+    protected float _currentHealth = -1;
+    protected float _maxHealth = -1;
 
     protected float _healthPercentage;
     protected float _healthDifference;
@@ -39,6 +41,18 @@ public class CharacterUI : MonoBehaviour
     public float CurrentBleed => _currentBleed;
     public float CurrentGuard => _currentGuard;
     public float CurrentEmpower => _currentEmpower;
+
+    public float CurrentHealth
+    {
+        get => _currentHealth;
+        set => _currentHealth = value;
+    }
+
+    public float MaxHealth
+    {
+        get => _maxHealth;
+        set => _maxHealth = value;
+    }
 
     public float HealthPercentage
     {
@@ -138,10 +152,14 @@ public class CharacterUI : MonoBehaviour
         }
     }
 
-    public void UpdateHealth(float healthPercentage)
+    public void UpdateHealth(float currentHealth, float maxHealth)
     {
-        _healthPercentage = healthPercentage;
-        _healthBarFill.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,_healthDifference * healthPercentage + _healthBarEmptyWidth);
+        _currentHealth = currentHealth;
+        _maxHealth = maxHealth;
+        _healthText.text = $"{currentHealth}/{maxHealth}";
+        _healthPercentage = currentHealth/maxHealth;
+        
+        _healthBarFill.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,_healthDifference * _healthPercentage + _healthBarEmptyWidth);
     }
 
     public void SetActive(bool on)
