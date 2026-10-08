@@ -80,6 +80,7 @@ public class EnemyCharacterAction
 {
     public float value;
     public EnemyActionType type;
+    public int targetIndex;
 }
 
 [Serializable]

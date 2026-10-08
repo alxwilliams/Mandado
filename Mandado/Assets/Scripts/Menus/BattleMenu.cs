@@ -18,6 +18,7 @@ public class BattleMenu : BaseMenu
     [SerializeField] private List<DiceTrayDiceButton> _diceTrayButtons = new List<DiceTrayDiceButton>();
     [SerializeField] private TMP_Text _rerollText;
     [SerializeField] private TMP_Text _orderTokenText;
+    [SerializeField] private TMP_Text _enemyIntentDebugText;
 
     
     [Header("Dice Sprites")] 
@@ -179,6 +180,15 @@ public class BattleMenu : BaseMenu
         }
     }
 
+    public void ResetTargetIndicators()
+    {
+        foreach (var ui in _characterUIs)
+        {
+            ui.SetTargetIndicator(false);
+        }
+        _enemyIntentDebugText.text = "";
+    }
+
     public void SetOrderButtons(bool active)
     {
         foreach (var button in _diceTrayButtons)
@@ -192,18 +202,66 @@ public class BattleMenu : BaseMenu
         }
     }
 
+    public void KillPlayer(int index)
+    {
+        _characterUIs[index].SetDead();
+    }
+
+    public void ShowEnemyIntent(List<EnemyCharacterAction> actions)
+    {
+        _enemyIntentDebugText.text = "";
+        
+        foreach (var action in actions)
+        {
+            if (action.type == EnemyActionType.DamageRandom)
+            {
+                _enemyIntentDebugText.text += "Dealing Damage ";
+                _characterUIs[action.targetIndex].SetTargetIndicator(true);
+            }
+            
+            if (action.type == EnemyActionType.BleedRandom)
+            {
+                _enemyIntentDebugText.text += "Bleeding Enemy ";
+                _characterUIs[action.targetIndex].SetTargetIndicator(true);
+            }
+
+            if (action.type == EnemyActionType.Heal)
+            {
+                _enemyIntentDebugText.text += "Healing Self ";
+            }
+
+            if (action.type == EnemyActionType.BleedAll)
+            {
+                _enemyIntentDebugText.text += "Bleeding All ";
+                foreach (var ui in _characterUIs)
+                {
+                    ui.SetTargetIndicator(true);
+                }
+            }
+
+            if (action.type == EnemyActionType.Focus)
+            {
+                _enemyIntentDebugText.text += "Gaining Focus ";
+            }
+        }
+
+    }
+
     public void LoadInCharacterUI(List<PlayerCharacterData> characters, EnemyCharacterData enemy)
     {
         for (int i = 0; i < 6; i++)
         {
-            if (characters[i].classType != ClassType.Empty)
+            if (characters[i].classType != ClassType.Empty && characters[i].IsAlive)
             {
                 _characterUIs[i].SetActive(true);
                 _characterUIs[i].SetLabel(characters[i].characterSpriteData._characterLabel);
+            }else if(!characters[i].IsAlive)
+            {
+                _characterUIs[i].SetDead();
             }
             else
             {
-                _characterUIs[i].SetActive(false);
+                _characterUIs[i].SetEmpty();
             }
             
             _characterUIs[i].ClassType = characters[i].classType;
@@ -257,7 +315,7 @@ public class BattleMenu : BaseMenu
 
     public void UpdatePlayerCharacterFocus(PlayerCharacterData data)
     {
-        if (data.classType == ClassType.Empty)
+        if (data.classType == ClassType.Empty || !data.IsAlive)
         {
             return;
         }

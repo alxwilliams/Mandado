@@ -33,7 +33,7 @@ public partial class BattleSystem
                 }
                 else
                 {
-                    HealPlayerUnit(character.currentIndex, character.actionSet.focusValues[0]);
+                    HealPlayerUnit(character.currentIndex, character.actionSet.focusValues[0] * character.currentFocus);
                 }
             }
         }
@@ -83,8 +83,7 @@ public partial class BattleSystem
         if (bleedList.Count > 0)
         {
             playerIndex = _gameManager.GetNewTargetRandom(0, bleedList.Count);
-            
-            EnemyAttackPlayer(playerIndex, _currentSaveState.playerCharacters[playerIndex].statusEffects[StatusEffects.Bleed]);
+            EnemyAttackPlayer(playerIndex, bleedList[playerIndex].statusEffects[StatusEffects.Bleed]);
         }
         else
         {

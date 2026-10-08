@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class PlayerCharacterUI : CharacterUI
 {
     [SerializeField] private Animator _trayAnimator;
+    [SerializeField] private GameObject _targetIndicator;
     
     [SerializeField] private Button _orderLeftButton;
     [SerializeField] private Button _orderRightButton;
@@ -30,11 +31,14 @@ public class PlayerCharacterUI : CharacterUI
 
     private ClassType _classType;
     private Action<int,int> _swapCharacterAction;
+    private bool _isDead = false;
     
     private int _diceNumber;
     private float _amountOfActiveDice = 0;
 
     private Action<int> DiceButtonPressAction;
+
+    public bool IsDead => _isDead;
 
     public ClassType ClassType
     {
@@ -64,6 +68,27 @@ public class PlayerCharacterUI : CharacterUI
         
         _orderLeftButton.onClick.AddListener(OnLeftOrderButtonClicked);
         _orderRightButton.onClick.AddListener(OnRightOrderButtonClicked);
+        _targetIndicator.SetActive(false);
+    }
+
+    public void SetEmpty()
+    {
+        _uiParent.SetActive(false);
+    }
+    
+    
+    public void SetTargetIndicator(bool active)
+    {
+        if (_targetIndicator.activeSelf != active)
+        {
+            _targetIndicator.SetActive(active);
+        }
+    }
+
+    public void SetDead()
+    {
+        _isDead = true;
+        _uiParent.SetActive(false);
     }
 
     private void OnDiceButtonPress()
@@ -92,7 +117,7 @@ public class PlayerCharacterUI : CharacterUI
 
     public void SwapCharacter(PlayerCharacterUI character2)
     {
-        bool character2Empty = character2.ClassType == ClassType.Empty;
+        bool character2Empty = character2.ClassType == ClassType.Empty || !character2.IsDead;
         
         if (character2Empty)
         {

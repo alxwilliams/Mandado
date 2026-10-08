@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public partial class BattleSystem : BaseSystem
@@ -128,6 +129,7 @@ public partial class BattleSystem : BaseSystem
         _battleMenu.SetRerollNumber(_currentSaveState.amountOfRerolls);
         _battleMenu.LoadInStatusEffects(state);
         _battleMenu.StartNewBattle();
+        StartPlayerTurn(true);
     }
 
     public void StartNewBattle()
@@ -238,7 +240,7 @@ public partial class BattleSystem : BaseSystem
 
         //enemy attack
         EnemyRollDice();
-        
+
         _cameraSystem.SwitchToEnemyView();
         yield return new WaitForSeconds(_timeBeforeEnemyAttacks);
         
@@ -256,16 +258,22 @@ public partial class BattleSystem : BaseSystem
         _currentSaveState.turnNumber++;
     }
 
-    private void StartPlayerTurn()
+    private void StartPlayerTurn(bool init = false)
     {
         _currentSaveState.amountOfRerolls = 3;
         _currentSaveState.canAttack = false;
         ResetPlayerGuard();
         ResetPlayerDiceTrays();
-        UpdateUI();
+        GenerateEnemyActions();
         
-        //_battleMenu.OpenTrays();
-        _cameraSystem.SwitchToPlayerView();
+        UpdateUI();
+        //calculate enemy actions
+        //show enemy intent
+        
+        if(!init)
+        {
+            _cameraSystem.SwitchToPlayerView();
+        }
     }
 
     private void ResetPlayerGuard()
@@ -319,7 +327,6 @@ public partial class BattleSystem : BaseSystem
         
         UpdateUI();
         
-        //_battleMenu.CloseTrays();
     }
 
     private IEnumerator PlayerDiceActions()
@@ -447,12 +454,9 @@ public partial class BattleSystem : BaseSystem
 
         return _potentialAttackSets;
     }
-    
-    private IEnumerator EnemyAttackActions()
+
+    private void GenerateEnemyActions()
     {
-
-        yield return null;
-
         if (_currentEnemyAttackSet == null ||
             _currentEnemyAttackSet.sequencedAttacks == null
             || _currentEnemyAttackIndex >= _currentEnemyAttackSet.sequencedAttacks.Count)
@@ -460,9 +464,27 @@ public partial class BattleSystem : BaseSystem
             List<EnemyAttackSet> listOfAttacks = GetPotentialEnemyAttacks();
 
             _currentEnemyAttackIndex = 0;
-            _currentEnemyAttackSet = listOfAttacks[_gameManager.GetNewMainRandom(0, listOfAttacks.Count)];
+            _currentEnemyAttackSet = listOfAttacks[_gameManager.GetNewMainRandom(0,listOfAttacks.Count-1)];
         }
 
+        foreach (var action in _currentEnemyAttackSet.sequencedAttacks[_currentEnemyAttackIndex].actionSet)
+        {
+            if (action.type == EnemyActionType.DamageRandom)
+            {
+                action.targetIndex = GetNewPlayerIndex();
+            }
+
+            if (action.type == EnemyActionType.BleedRandom)
+            {
+                action.targetIndex = GetNewPlayerIndex();
+            }
+        }
+        
+        _battleMenu.ShowEnemyIntent(_currentEnemyAttackSet.sequencedAttacks[_currentEnemyAttackIndex].actionSet);
+    }
+    
+    private IEnumerator EnemyAttackActions()
+    {
         yield return DealWithEnemyAction(_currentEnemyAttackSet.sequencedAttacks[_currentEnemyAttackIndex].actionSet,
             _currentSaveState.enemyCharacters[0]);
         
@@ -479,12 +501,12 @@ public partial class BattleSystem : BaseSystem
             {
                 if(!maxRoll)
                 {
-                    EnemyAttackPlayer(GetNewPlayerIndex(),action.value);
+                    EnemyAttackPlayer(action.targetIndex,action.value);
                 }
                 else
                 {
                     //yield return new WaitForSeconds(_fieldController.CharacterBigAttack(data));
-                    EnemyAttackPlayer(GetNewPlayerIndex(),action.value);
+                    EnemyAttackPlayer(action.targetIndex,action.value);
                 }
             }
 
@@ -495,8 +517,7 @@ public partial class BattleSystem : BaseSystem
             
             if (action.type == EnemyActionType.BleedRandom)
             {
-                int playerIndex = GetNewPlayerIndex();
-                ApplyPlayerBleedRandom(playerIndex, action.value);
+                ApplyPlayerBleedRandom(action.targetIndex, action.value);
             }
 
             if (action.type == EnemyActionType.BleedAll)
@@ -524,6 +545,8 @@ public partial class BattleSystem : BaseSystem
 
             yield return new WaitForSeconds(_waitTimeBetweenAttacks);
         }
+
+        _battleMenu.ResetTargetIndicators();
 
         if (data.currentFocus >= 3)
         {
@@ -664,7 +687,7 @@ public partial class BattleSystem : BaseSystem
 
     private void EmpowerPlayerUnit(int unitIndex, float amount)
     {
-        if (_currentSaveState.playerCharacters[unitIndex].classType == ClassType.Empty)
+        if (_currentSaveState.playerCharacters[unitIndex].classType == ClassType.Empty || !_currentSaveState.playerCharacters[unitIndex].IsAlive)
         {
             return;
         }
@@ -677,7 +700,7 @@ public partial class BattleSystem : BaseSystem
 
     private void ResetPlayerEmpower(int unitIndex)
     {
-        if (_currentSaveState.playerCharacters[unitIndex].classType == ClassType.Empty)
+        if (_currentSaveState.playerCharacters[unitIndex].classType == ClassType.Empty || !_currentSaveState.playerCharacters[unitIndex].IsAlive)
         {
             return;
         }
@@ -696,7 +719,7 @@ public partial class BattleSystem : BaseSystem
 
     private void GuardPlayerUnit(int unitIndex, float amount)
     {
-        if (_currentSaveState.playerCharacters[unitIndex].classType == ClassType.Empty)
+        if (_currentSaveState.playerCharacters[unitIndex].classType == ClassType.Empty || !_currentSaveState.playerCharacters[unitIndex].IsAlive)
         {
             return;
         }
@@ -715,7 +738,7 @@ public partial class BattleSystem : BaseSystem
 
     private void ApplyPlayerBleedRandom(int index, float amount)
     {
-        if (_currentSaveState.playerCharacters[index].classType == ClassType.Empty)
+        if (_currentSaveState.playerCharacters[index].classType == ClassType.Empty || !_currentSaveState.playerCharacters[index].IsAlive)
         {
             return;
         }
@@ -748,12 +771,12 @@ public partial class BattleSystem : BaseSystem
 
     private void HealPlayerUnit(int unitIndex, float amount)
     {
-        if (_currentSaveState.playerCharacters[unitIndex].classType == ClassType.Empty)
+        if (_currentSaveState.playerCharacters[unitIndex].classType == ClassType.Empty || !_currentSaveState.playerCharacters[unitIndex].IsAlive)
         {
             return;
         }
         
-        if (_currentSaveState.playerCharacters[unitIndex].currentHealth + amount >
+        if (_currentSaveState.playerCharacters[unitIndex].currentHealth + amount >=
             _currentSaveState.playerCharacters[unitIndex].maxHealth)
         {
             amount = _currentSaveState.playerCharacters[unitIndex].maxHealth -
@@ -793,7 +816,7 @@ public partial class BattleSystem : BaseSystem
 
         foreach (var characterData in _currentSaveState.playerCharacters)
         {
-            if (characterData.classType != ClassType.Empty || !characterData.IsAlive)
+            if (characterData.classType != ClassType.Empty && characterData.IsAlive)
             {
                 allEmpty = false;
                 break;
@@ -810,7 +833,7 @@ public partial class BattleSystem : BaseSystem
         {
             playerIndex = _gameManager.GetNewTargetRandom(0, _currentSaveState.playerCharacters.Count);
 
-            if (_currentSaveState.playerCharacters[playerIndex].classType != ClassType.Empty || !_currentSaveState.playerCharacters[playerIndex].IsAlive)
+            if (_currentSaveState.playerCharacters[playerIndex].classType != ClassType.Empty && _currentSaveState.playerCharacters[playerIndex].IsAlive)
             {
                 foundNotEmpty = true;
             }
@@ -856,6 +879,18 @@ public partial class BattleSystem : BaseSystem
         _currentSaveState.playerCharacters[index].currentHealth -= num;
         _fieldController.PlayerTakeDamage(_currentSaveState.playerCharacters[index], num);
         _battleMenu.UpdatePlayerCharacterHealth(_currentSaveState.playerCharacters[index]);
+
+        if (!_currentSaveState.playerCharacters[index].IsAlive)
+        {
+            PlayerDead(index);
+        }
+        
+    }
+
+    private void PlayerDead(int unitIndex)
+    {
+        _battleMenu.KillPlayer(unitIndex);
+        _fieldController.KillPlayer(_currentSaveState.playerCharacters[unitIndex]);
     }
 
     private float CheckStatusEffectsForGuard(ref Dictionary<StatusEffects,float> effects, float damage)

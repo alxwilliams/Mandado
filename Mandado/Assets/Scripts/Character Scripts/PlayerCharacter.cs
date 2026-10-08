@@ -71,7 +71,7 @@ public class PlayerCharacterData
     {
         get
         {
-            return currentHealth > 0;
+            return currentHealth > 0 && classType != ClassType.Empty;
         }
     }
 }

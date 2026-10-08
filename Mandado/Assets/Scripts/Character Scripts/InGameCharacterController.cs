@@ -59,6 +59,11 @@ public class InGameCharacterController : MonoBehaviour
         _attackSpriteRenderer3.sprite = spriteData._frontAttackSprite3;
     }
 
+    public void KillPlayer()
+    {
+        gameObject.SetActive(false);
+    }
+    
     public void WipeIntent()
     {
         _intentDetails.text = "";

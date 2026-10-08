@@ -89,7 +89,7 @@ public class FieldController : MonoBehaviour
             yield return CreateCharacterController(true, character.width, character.characterSpriteData);
             _playerControllerDictionary.TryAdd(character, _loadedController);
 
-            if (character.classType == ClassType.Empty)
+            if (character.classType == ClassType.Empty || !character.IsAlive)
             {
                 _loadedController.gameObject.SetActive(false);
             }
@@ -187,6 +187,11 @@ public class FieldController : MonoBehaviour
     public void EnemyTakeDamage(EnemyCharacterData data, float num)
     {
         _enemyControllerDictionary[data].TakeDamage(num);
+    }
+
+    public void KillPlayer(PlayerCharacterData data)
+    {
+        _playerControllerDictionary[data].KillPlayer();
     }
 
 
