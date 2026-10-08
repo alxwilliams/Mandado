@@ -104,6 +104,7 @@ public class GameManager : MonoBehaviour
         return num;
     }
 
+    [ContextMenu("Start New Game")]
     private void StartNewGame()
     {
         GenerateNewSeed();
@@ -183,22 +184,23 @@ public class GameManager : MonoBehaviour
 
     IEnumerator Initialize()
     {
-        _menuSystem.Initialize(this);
+        _menuSystem.Initialize(this, StartNewGame, LoadGameFromFile);
         _battleSystem.Initialize(this);
         _cameraSystem.Initialize(this);
         _saveSystem.Initialize(this);
         
         _initialized = true;
-        StartNewGame();
+        //StartNewGame();
         InitializedEvent?.Invoke();
         _initializationRoutine = null;
         
         yield return null;
+        _menuSystem.ShowTitleScreen();
     }
 
     public void StartBattle()
     {
-        _battleSystem.ShowBattleMenu();
+        _menuSystem.ShowBattleMenu();
         _battleSystem.StartNewBattle();
     }
 

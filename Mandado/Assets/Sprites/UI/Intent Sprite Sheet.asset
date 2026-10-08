@@ -117,6 +117,12 @@ MonoBehaviour:
     m_Scale: 1
     m_Name: Intent Sprite Sheet_4
     m_HashCode: -310400863
+  - m_ElementType: 2
+    m_Unicode: 65534
+    m_GlyphIndex: 6
+    m_Scale: 1
+    m_Name: Intent Sprite Sheet_6
+    m_HashCode: -310400861
   m_SpriteGlyphTable:
   - m_Index: 0
     m_Metrics:
@@ -214,5 +220,21 @@ MonoBehaviour:
     m_AtlasIndex: 0
     m_ClassDefinitionType: 0
     sprite: {fileID: -1256439021, guid: 4693eca7e3702da4ca3204b21cb5d47e, type: 3}
+  - m_Index: 6
+    m_Metrics:
+      m_Width: 295.83765
+      m_Height: 295.8867
+      m_HorizontalBearingX: 31.8
+      m_HorizontalBearingY: 284.5
+      m_HorizontalAdvance: 348.5
+    m_GlyphRect:
+      m_X: 691
+      m_Y: 1417
+      m_Width: 295
+      m_Height: 295
+    m_Scale: 1
+    m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
+    sprite: {fileID: -521014769, guid: 4693eca7e3702da4ca3204b21cb5d47e, type: 3}
   spriteInfoList: []
   fallbackSpriteAssets: []

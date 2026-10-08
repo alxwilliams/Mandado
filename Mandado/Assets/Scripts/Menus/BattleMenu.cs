@@ -7,7 +7,6 @@ using UnityEngine.UI;
 
 public class BattleMenu : BaseMenu
 {
-    [SerializeField] private TMP_Text _debugEnemyText;
 
     [SerializeField] private Button _rollDiceButton;
     [SerializeField] private Button _orderButton;
@@ -215,13 +214,13 @@ public class BattleMenu : BaseMenu
         {
             if (action.type == EnemyActionType.DamageRandom)
             {
-                _enemyIntentDebugText.text += "Dealing Damage ";
+                _enemyIntentDebugText.text += "Damaging Target ";
                 _characterUIs[action.targetIndex].SetTargetIndicator(true);
             }
             
             if (action.type == EnemyActionType.BleedRandom)
             {
-                _enemyIntentDebugText.text += "Bleeding Enemy ";
+                _enemyIntentDebugText.text += "Bleeding Target ";
                 _characterUIs[action.targetIndex].SetTargetIndicator(true);
             }
 
@@ -287,7 +286,7 @@ public class BattleMenu : BaseMenu
         _characterUIs[num-1].IncreaseActiveDice();
     }
 
-    public void StartNewBattle()
+    public void StartBattle()
     {
         SetOrderButtons(false);
         ResetDiceTrays();

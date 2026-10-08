@@ -23,6 +23,7 @@ public class BaseMenu : MonoBehaviour
             return;
         }
         _menuSystem = menuSystem;
+        gameObject.SetActive(false);
         InitializedAction?.Invoke();
         _initialized = true;
     }

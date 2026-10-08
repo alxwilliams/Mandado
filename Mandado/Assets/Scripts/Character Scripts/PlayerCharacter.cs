@@ -8,6 +8,11 @@ public class PlayerCharacter : BaseCharacter
     [SerializeField] private List<LevelUpActionSet> _levelUpSets;
     [SerializeField] private DiceActionSet _baseActionSet;
     [SerializeField] private ClassType _classType;
+
+    public ClassType GetClassType()
+    {
+        return _classType;
+    }
     
     public PlayerCharacterData GetFullHealthCharacterData()
     {

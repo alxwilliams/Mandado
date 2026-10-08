@@ -7,7 +7,6 @@ using UnityEngine;
 public partial class BattleSystem : BaseSystem
 {
     [SerializeField] private int _amountOfDiceRolledPerTurn = 5;
-    [SerializeField] private List<PlayerCharacter> _fakePlayerData = new List<PlayerCharacter>();
     [SerializeField] private List<EnemyCharacter> _fakeEnemyData = new List<EnemyCharacter>();
     [SerializeField] private FieldController _fieldController;
     [SerializeField] private BattleMenu _battleMenu;
@@ -22,7 +21,8 @@ public partial class BattleSystem : BaseSystem
     [SerializeField] private float _timeAfterBleedDamage = .5f;
     [SerializeField] private float _timeAfterEnemyAttacks = .5f;
 
-
+    
+    private List<PlayerCharacter> _newGamePlayerCharacters = new List<PlayerCharacter>();
     private Dictionary<PlayerActionType, IntentTextDetails> _playerIntentDetailsDictionary = new Dictionary<PlayerActionType, IntentTextDetails>();
     private CameraSystem _cameraSystem;
     private Coroutine _attackRoutine;
@@ -55,6 +55,11 @@ public partial class BattleSystem : BaseSystem
         }
         _fieldController.Init(this,_currentSaveState);
         base.Initialize(gameManager);
+    }
+
+    public void SetNewGamePlayerCharacters(List<PlayerCharacter> list)
+    {
+        _newGamePlayerCharacters = list;
     }
 
     public IntentTextDetails GetIntentTextDetails(PlayerActionType type)
@@ -128,7 +133,7 @@ public partial class BattleSystem : BaseSystem
         _battleMenu.UpdateOrderTokenText(_currentSaveState.currentOrderTokens);
         _battleMenu.SetRerollNumber(_currentSaveState.amountOfRerolls);
         _battleMenu.LoadInStatusEffects(state);
-        _battleMenu.StartNewBattle();
+        _battleMenu.StartBattle();
         StartPlayerTurn(true);
     }
 
@@ -141,7 +146,7 @@ public partial class BattleSystem : BaseSystem
             StopCoroutine(_loadCharactersRoutine);
         }
 
-        _loadCharactersRoutine = StartCoroutine(LoadNewBattleCharacters(newState, _fakePlayerData, _fakeEnemyData));
+        _loadCharactersRoutine = StartCoroutine(LoadNewBattleCharacters(newState, _newGamePlayerCharacters, _fakeEnemyData));
     }
 
     public IEnumerator LoadNewBattleCharacters(BattleSystemState state, List<PlayerCharacter> playerCharacters, List<EnemyCharacter> enemyCharacters)
@@ -985,10 +990,6 @@ public partial class BattleSystem : BaseSystem
         _battleMenu.ResetDiceTrays();
     }
 
-    public void ShowBattleMenu()
-    {
-        _battleMenu.Show(true);
-    }
     private void OnDestroy()
     {
         if (_attackRoutine != null)
