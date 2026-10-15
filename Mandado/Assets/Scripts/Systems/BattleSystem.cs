@@ -605,22 +605,28 @@ public partial class BattleSystem : BaseSystem
 
             if (action.type == PlayerActionType.Heal)
             {
-                HealPlayerUnit(castingUnitIndex, action.value);
-                
-                if (castingUnitIndex > 0)
-                {
-                    HealPlayerUnit(castingUnitIndex -1, action.value);
-                }
 
-                if (castingUnitIndex < 5 && castingUnitIndex + 1 < _currentSaveState.playerCharacters.Count)
+                for (int i = 0; i < 6;i++) 
                 {
-                    HealPlayerUnit(castingUnitIndex + 1, action.value);
+                    HealPlayerUnit(i, action.value);
                 }
+                    
+                    /*HealPlayerUnit(castingUnitIndex, action.value);
+                    
+                    if (castingUnitIndex > 0)
+                    {
+                        HealPlayerUnit(castingUnitIndex -1, action.value);
+                    }
+    
+                    if (castingUnitIndex < 5 && castingUnitIndex + 1 < _currentSaveState.playerCharacters.Count)
+                    {
+                        HealPlayerUnit(castingUnitIndex + 1, action.value);
+                    }*/
 
                 _currentSaveState.playerHasHealed = true;
             }
             
-            if (action.type == PlayerActionType.HealSelf)
+            /*if (action.type == PlayerActionType.HealSelf)
             {
                 HealPlayerUnit(castingUnitIndex, action.value);
             }
@@ -636,13 +642,18 @@ public partial class BattleSystem : BaseSystem
                 {
                     HealPlayerUnit(castingUnitIndex + 1, action.value);
                 }
-            }
+            }*/
 
             if (action.type == PlayerActionType.Guard)
             {
+                for (int i = 0; i < 6;i++) 
+                {
+                    GuardPlayerUnit(i, action.value);
+                }
+                
                 GuardPlayerUnit(castingUnitIndex, action.value);
                 
-                if (castingUnitIndex > 0)
+                /*if (castingUnitIndex > 0)
                 {
                     GuardPlayerUnit(castingUnitIndex - 1, action.value);
                 }
@@ -650,7 +661,7 @@ public partial class BattleSystem : BaseSystem
                 if (castingUnitIndex < 5 && castingUnitIndex + 1 < _currentSaveState.playerCharacters.Count)
                 {
                     GuardPlayerUnit(castingUnitIndex + 1, action.value);
-                }
+                }*/
             }
 
             if (action.type == PlayerActionType.Order)
@@ -660,7 +671,12 @@ public partial class BattleSystem : BaseSystem
 
             if (action.type == PlayerActionType.Empower)
             {
-                EmpowerPlayerUnit(castingUnitIndex, action.value);
+                for (int i = 0; i < 6;i++) 
+                {
+                    EmpowerPlayerUnit(i, action.value);
+                }
+                
+                /*EmpowerPlayerUnit(castingUnitIndex, action.value);
                 
                 if (castingUnitIndex > 0)
                 {
@@ -670,12 +686,19 @@ public partial class BattleSystem : BaseSystem
                 if (castingUnitIndex < 5 && castingUnitIndex + 1 < _currentSaveState.playerCharacters.Count)
                 {
                     EmpowerPlayerUnit(castingUnitIndex + 1, action.value);
-                }
+                }*/
             }
 
             if (action.type == PlayerActionType.Inspire)
             {
-                _currentSaveState.playerCharacters[castingUnitIndex].currentFocus++;
+                for (int i = 0; i < 6;i++) 
+                {
+                    _currentSaveState.playerCharacters[i].currentFocus++;
+                    _battleMenu.UpdatePlayerCharacterFocus(_currentSaveState.playerCharacters[i]);
+                }
+                
+                
+                /*_currentSaveState.playerCharacters[castingUnitIndex].currentFocus++;
                 _battleMenu.UpdatePlayerCharacterFocus(_currentSaveState.playerCharacters[castingUnitIndex]);
                 
                 if (castingUnitIndex > 0)
@@ -688,7 +711,7 @@ public partial class BattleSystem : BaseSystem
                 {
                     _currentSaveState.playerCharacters[castingUnitIndex + 1].currentFocus++;
                     _battleMenu.UpdatePlayerCharacterFocus(_currentSaveState.playerCharacters[castingUnitIndex+1]);
-                }
+                }*/
             }
 
             yield return new WaitForSeconds(0.1f);

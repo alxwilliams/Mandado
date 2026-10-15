@@ -16,11 +16,11 @@ MonoBehaviour:
   _width: 6
   _baseHealth: 19
   _characterSpriteData:
-    _frontIdleSprite1: {fileID: 21300000, guid: 7d9ede3963c9cb44485ebabe9a76001a, type: 3}
-    _frontIdleSprite2: {fileID: 21300000, guid: 7d9ede3963c9cb44485ebabe9a76001a, type: 3}
-    _frontAttackSprite1: {fileID: 21300000, guid: 38d3031ab42ddf444867d8f48b5ade4f, type: 3}
-    _frontAttackSprite2: {fileID: 21300000, guid: 38d3031ab42ddf444867d8f48b5ade4f, type: 3}
-    _frontAttackSprite3: {fileID: 21300000, guid: 38d3031ab42ddf444867d8f48b5ade4f, type: 3}
+    _frontIdleSprite1: {fileID: 21300000, guid: 919d10585999edc4c95ead51bbcaa2c2, type: 3}
+    _frontIdleSprite2: {fileID: 21300000, guid: 242122bcf79d13d488b74114c879c7ea, type: 3}
+    _frontAttackSprite1: {fileID: 21300000, guid: 919d10585999edc4c95ead51bbcaa2c2, type: 3}
+    _frontAttackSprite2: {fileID: 21300000, guid: 7d91497a1546ff24f833f19fdd26390d, type: 3}
+    _frontAttackSprite3: {fileID: 21300000, guid: 74590d246433c3141820f7ee837cc666, type: 3}
     _characterLabel: {fileID: 21300000, guid: 671fdceb3a4203c428eb64549cef3462, type: 3}
   _levelUpSets:
   - _id: Vanguard

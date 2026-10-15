@@ -16,11 +16,11 @@ MonoBehaviour:
   _width: 15
   _baseHealth: 30
   _characterSpriteData:
-    _frontIdleSprite1: {fileID: 21300000, guid: e28846435d2392944ad4f32df3026a9e, type: 3}
-    _frontIdleSprite2: {fileID: 21300000, guid: e28846435d2392944ad4f32df3026a9e, type: 3}
-    _frontAttackSprite1: {fileID: 21300000, guid: e28846435d2392944ad4f32df3026a9e, type: 3}
-    _frontAttackSprite2: {fileID: 21300000, guid: 7f3b6b6709fdd9047833031ff602bb31, type: 3}
-    _frontAttackSprite3: {fileID: 21300000, guid: 8516ed2f29a5ae64894c41f07ebba9ee, type: 3}
+    _frontIdleSprite1: {fileID: 21300000, guid: 44d529ba937636842894b73e50b40c3d, type: 3}
+    _frontIdleSprite2: {fileID: 21300000, guid: 45e615ba3fcd9ac459feefdeb3c85f0d, type: 3}
+    _frontAttackSprite1: {fileID: 21300000, guid: 3877ea88de1707741a6914b22d43b712, type: 3}
+    _frontAttackSprite2: {fileID: 21300000, guid: 86df01447949f37439db3ab86f2e7cb1, type: 3}
+    _frontAttackSprite3: {fileID: 21300000, guid: f258d0705aeac5941a9821eb28ae32e7, type: 3}
     _characterLabel: {fileID: 21300000, guid: 43cf44cb80ee21c41a4cf2c399e48695, type: 3}
   _enemyActions:
   - conditionList: []
@@ -28,11 +28,11 @@ MonoBehaviour:
     - actionSet:
       - value: 5
         type: 1
-        targetIndex: 3
+        targetIndex: 2
     - actionSet:
       - value: 3
         type: 1
-        targetIndex: 4
+        targetIndex: 1
       - value: 1
         type: 0
         targetIndex: 0
