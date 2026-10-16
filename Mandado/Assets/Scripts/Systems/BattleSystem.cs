@@ -266,6 +266,7 @@ public partial class BattleSystem : BaseSystem
 
     private void EndEnemyTurn()
     {
+        //ResetEnemyGuard();
         DealWithEnemyBleedDamage();
         _currentSaveState.turnNumber++;
         SaveGame?.Invoke();
@@ -288,6 +289,17 @@ public partial class BattleSystem : BaseSystem
         }
     }
 
+    private void ResetEnemyGuard()
+    {
+        if (_currentSaveState.enemyCharacters[0].statusEffects.ContainsKey(StatusEffects.Guard) &&
+            _currentSaveState.enemyCharacters[0].statusEffects[StatusEffects.Guard] != 0)
+        {
+            _currentSaveState.enemyCharacters[0].statusEffects[StatusEffects.Guard] = 0;
+            _battleMenu.UpdateEnemyGuardUI(0);
+        }
+    }
+    
+    
     private void ResetPlayerGuard()
     {
         for (int i = 0; i < _currentSaveState.playerCharacters.Count; i++)
@@ -356,8 +368,7 @@ public partial class BattleSystem : BaseSystem
             else if(_currentSaveState.playerCharacters[i].currentFocus < 3 && _currentSaveState.playerCharacters[i].currentHealth > 0)
             {
                 _currentSaveState.playerCharacters[i].currentFocus++;
-                FocusSentinelCheckForHeals(_currentSaveState.playerCharacters[i]);
-                FocusPilgrimCheckForOrderTokens(_currentSaveState.playerCharacters[i]);
+                CheckForPassiveFocusAbilities(i);
                 UpdateUI();
             }
         }
@@ -522,6 +533,11 @@ public partial class BattleSystem : BaseSystem
                 }
             }
 
+            if (action.type == EnemyActionType.Guard)
+            {
+                GuardEnemyUnit(action.value);
+            }
+
             if (action.type == EnemyActionType.Heal)
             {
                 HealEnemyUnit(action.value);
@@ -529,14 +545,14 @@ public partial class BattleSystem : BaseSystem
             
             if (action.type == EnemyActionType.BleedRandom)
             {
-                ApplyPlayerBleedRandom(action.targetIndex, action.value);
+                ApplyPlayerBleed(action.targetIndex, action.value);
             }
 
             if (action.type == EnemyActionType.BleedAll)
             {
                 for (int i = 0; i < _currentSaveState.playerCharacters.Count; i++)
                 {
-                    ApplyPlayerBleedRandom(i,action.value);
+                    ApplyPlayerBleed(i,action.value);
                 }
             }
 
@@ -592,7 +608,7 @@ public partial class BattleSystem : BaseSystem
                     damage += data.statusEffects[StatusEffects.Empower];
 
                     data.statusEffects[StatusEffects.Empower] = 0;
-                    EmpowerPlayerUnit(data.currentIndex,0);
+                    _battleMenu.UpdatePlayerCharacterEmpowerUI(castingUnitIndex, 0);
                 }
                 
                 if(!maxRoll)
@@ -620,38 +636,9 @@ public partial class BattleSystem : BaseSystem
                     HealPlayerUnit(i, action.value);
                 }
                     
-                    /*HealPlayerUnit(castingUnitIndex, action.value);
-                    
-                    if (castingUnitIndex > 0)
-                    {
-                        HealPlayerUnit(castingUnitIndex -1, action.value);
-                    }
-    
-                    if (castingUnitIndex < 5 && castingUnitIndex + 1 < _currentSaveState.playerCharacters.Count)
-                    {
-                        HealPlayerUnit(castingUnitIndex + 1, action.value);
-                    }*/
-
                 _currentSaveState.playerHasHealed = true;
             }
             
-            /*if (action.type == PlayerActionType.HealSelf)
-            {
-                HealPlayerUnit(castingUnitIndex, action.value);
-            }
-            
-            if (action.type == PlayerActionType.HealNearby)
-            {
-                if (castingUnitIndex > 0)
-                {
-                    HealPlayerUnit(castingUnitIndex -1, action.value);
-                }
-
-                if (castingUnitIndex < 5 && castingUnitIndex + 1 < _currentSaveState.playerCharacters.Count)
-                {
-                    HealPlayerUnit(castingUnitIndex + 1, action.value);
-                }
-            }*/
 
             if (action.type == PlayerActionType.Guard)
             {
@@ -660,17 +647,6 @@ public partial class BattleSystem : BaseSystem
                     GuardPlayerUnit(i, action.value);
                 }
                 
-                GuardPlayerUnit(castingUnitIndex, action.value);
-                
-                /*if (castingUnitIndex > 0)
-                {
-                    GuardPlayerUnit(castingUnitIndex - 1, action.value);
-                }
-
-                if (castingUnitIndex < 5 && castingUnitIndex + 1 < _currentSaveState.playerCharacters.Count)
-                {
-                    GuardPlayerUnit(castingUnitIndex + 1, action.value);
-                }*/
             }
 
             if (action.type == PlayerActionType.Order)
@@ -685,17 +661,6 @@ public partial class BattleSystem : BaseSystem
                     EmpowerPlayerUnit(i, action.value);
                 }
                 
-                /*EmpowerPlayerUnit(castingUnitIndex, action.value);
-                
-                if (castingUnitIndex > 0)
-                {
-                    EmpowerPlayerUnit(castingUnitIndex -1, action.value);
-                }
-
-                if (castingUnitIndex < 5 && castingUnitIndex + 1 < _currentSaveState.playerCharacters.Count)
-                {
-                    EmpowerPlayerUnit(castingUnitIndex + 1, action.value);
-                }*/
             }
 
             if (action.type == PlayerActionType.Inspire)
@@ -706,21 +671,6 @@ public partial class BattleSystem : BaseSystem
                     _battleMenu.UpdatePlayerCharacterFocus(_currentSaveState.playerCharacters[i]);
                 }
                 
-                
-                /*_currentSaveState.playerCharacters[castingUnitIndex].currentFocus++;
-                _battleMenu.UpdatePlayerCharacterFocus(_currentSaveState.playerCharacters[castingUnitIndex]);
-                
-                if (castingUnitIndex > 0)
-                {
-                    _currentSaveState.playerCharacters[castingUnitIndex - 1].currentFocus++;
-                    _battleMenu.UpdatePlayerCharacterFocus(_currentSaveState.playerCharacters[castingUnitIndex-1]);
-                }
-
-                if (castingUnitIndex < 5 && castingUnitIndex + 1 < _currentSaveState.playerCharacters.Count)
-                {
-                    _currentSaveState.playerCharacters[castingUnitIndex + 1].currentFocus++;
-                    _battleMenu.UpdatePlayerCharacterFocus(_currentSaveState.playerCharacters[castingUnitIndex+1]);
-                }*/
             }
 
             yield return new WaitForSeconds(0.1f);
@@ -776,7 +726,7 @@ public partial class BattleSystem : BaseSystem
         _battleMenu.UpdatePlayerCharacterGuardUI(unitIndex,_currentSaveState.playerCharacters[unitIndex].statusEffects[StatusEffects.Guard]);
     }
 
-    private void ApplyPlayerBleedRandom(int index, float amount)
+    private void ApplyPlayerBleed(int index, float amount)
     {
         if (_currentSaveState.playerCharacters[index].classType == ClassType.Empty || !_currentSaveState.playerCharacters[index].IsAlive)
         {
@@ -792,6 +742,8 @@ public partial class BattleSystem : BaseSystem
             _currentSaveState.playerCharacters[index].statusEffects.Add(StatusEffects.Bleed,amount);
         }
         
+        
+        _fieldController.PlayerGainBleedDebuff(_currentSaveState.playerCharacters[index]);
         _battleMenu.UpdatePlayerCharacterBleedUI(index,_currentSaveState.playerCharacters[index].statusEffects[StatusEffects.Bleed]);
     }
     
@@ -806,6 +758,7 @@ public partial class BattleSystem : BaseSystem
             _currentSaveState.enemyCharacters[0].statusEffects.Add(StatusEffects.Bleed,amount);
         }
         
+        _fieldController.EnemyGainBleedDebuff(_currentSaveState.enemyCharacters[0]);
         _battleMenu.UpdateEnemyBleedUI(_currentSaveState.enemyCharacters[0].statusEffects[StatusEffects.Bleed]);
     }
 
@@ -826,6 +779,21 @@ public partial class BattleSystem : BaseSystem
         _currentSaveState.playerCharacters[unitIndex].currentHealth += amount;
         _fieldController.PlayerCharacterGetHealed(_currentSaveState.playerCharacters[unitIndex], amount);
     }
+    
+    private void GuardEnemyUnit(float amount)
+    {
+
+        if (_currentSaveState.enemyCharacters[0].statusEffects.ContainsKey(StatusEffects.Guard))
+        {
+            _currentSaveState.enemyCharacters[0].statusEffects[StatusEffects.Guard] += amount;
+        }
+        else
+        {
+            _currentSaveState.enemyCharacters[0].statusEffects[StatusEffects.Guard] = amount;
+        }
+        
+        _battleMenu.UpdateEnemyGuardUI(_currentSaveState.enemyCharacters[0].statusEffects[StatusEffects.Guard]);
+    }
 
     private void HealEnemyUnit(float amount)
     {
@@ -842,10 +810,15 @@ public partial class BattleSystem : BaseSystem
 
     private void PlayerAttackEnemy(float num)
     {
-        int enemyIndex = _gameManager.GetNewTargetRandom(0, _currentSaveState.enemyCharacters.Count);
-        num = CheckStatusEffectsForGuard(ref _currentSaveState.enemyCharacters[enemyIndex].statusEffects, num);
+        int enemyIndex = 0;
+        float newDamageNum = CheckStatusEffectsForGuard(ref _currentSaveState.enemyCharacters[enemyIndex].statusEffects, num);
+
+        if (num != newDamageNum)
+        {
+            _battleMenu.UpdateEnemyGuardUI(_currentSaveState.enemyCharacters[0].statusEffects[StatusEffects.Guard]);
+        }
         
-        EnemyTakeDamage(num);
+        EnemyTakeDamage(newDamageNum);
     }
 
     private int GetNewPlayerIndex()
@@ -964,7 +937,7 @@ public partial class BattleSystem : BaseSystem
             }
             else
             {
-                float newDamage = effects[StatusEffects.Guard];
+                float newDamage = Mathf.Abs(effects[StatusEffects.Guard]);
                 effects[StatusEffects.Guard] = 0;
                 
                 return newDamage;

@@ -54,26 +54,26 @@ MonoBehaviour:
     rollTwoActions:
     - value: 8
       type: 2
-    - value: 3
+    - value: 2
       type: 9
     rollThreeActions:
     - value: 12
       type: 2
-    - value: 4
+    - value: 3
       type: 9
     - value: 1
       type: 10
     rollFourActions:
     - value: 17
       type: 2
-    - value: 5
+    - value: 3
       type: 9
     - value: 1
       type: 10
     rollFiveActions:
     - value: 23
       type: 2
-    - value: 7
+    - value: 4
       type: 9
     - value: 1
       type: 10

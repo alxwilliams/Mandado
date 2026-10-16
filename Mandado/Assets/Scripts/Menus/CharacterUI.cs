@@ -85,17 +85,10 @@ public class CharacterUI : MonoBehaviour
     
     public void SetFocus(float amount)
     {
-        if (amount > 3 || amount < 0)
-        {
-            Debug.LogError($"amount is too low or too high, I don't care which one something is wrong: {amount}");
-        }
-        else
-        {
-            _currentFocus = amount;
-            _focusStar1.SetActive(amount >= 1);
-            _focusStar2.SetActive(amount >= 2);
-            _focusStar3.SetActive(amount >= 3);
-        }
+        _currentFocus = amount;
+        _focusStar1.SetActive(amount >= 1);
+        _focusStar2.SetActive(amount >= 2);
+        _focusStar3.SetActive(amount >= 3);
     }
 
     public void UpdateGuardUI(float num)

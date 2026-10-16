@@ -66,6 +66,11 @@ public class BattleMenu : BaseMenu
         _enemyCharacterUI.UpdateBleedUI(newValue);
     }
     
+    public void UpdateEnemyGuardUI(float newValue)
+    {
+        _enemyCharacterUI.UpdateGuardUI(newValue);
+    }
+    
     public void UpdateEnemyEmpowerUI(float newValue)
     {
         _enemyCharacterUI.UpdateEmpowerUI(newValue);
@@ -225,6 +230,11 @@ public class BattleMenu : BaseMenu
                 _enemyIntentDebugText.text += "Bleeding Target ";
                 _characterUIs[action.targetIndex].SetTargetIndicator(true);
             }
+            
+            if (action.type == EnemyActionType.Guard)
+            {
+                _enemyIntentDebugText.text += "Guarding";
+            }
 
             if (action.type == EnemyActionType.Heal)
             {
@@ -320,6 +330,12 @@ public class BattleMenu : BaseMenu
         {
             return;
         }
+
+        if (data.currentFocus > 3)
+        {
+            data.currentFocus = 3;
+        }
+        
         _characterUIs[data.currentIndex].SetFocus(data.currentFocus);
     }
 

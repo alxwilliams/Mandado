@@ -4,6 +4,12 @@ using UnityEngine;
 
 public partial class BattleSystem
 {
+    private void CheckForPassiveFocusAbilities(int index)
+    {
+        FocusSentinelCheckForHeals(_currentSaveState.playerCharacters[index]);
+        FocusPilgrimCheckForOrderTokens(_currentSaveState.playerCharacters[index]);
+    }
+    
     #region Sentinel Checks
     
     private int FocusSentinelCheckForFullPoints()
@@ -77,7 +83,7 @@ public partial class BattleSystem
         if (bleedList.Count > 0)
         {
             playerIndex = _gameManager.GetNewTargetRandom(0, bleedList.Count);
-            EnemyAttackPlayer(playerIndex, bleedList[playerIndex].statusEffects[StatusEffects.Bleed]);
+            EnemyAttackPlayer(bleedList[playerIndex].currentIndex, bleedList[playerIndex].statusEffects[StatusEffects.Bleed]);
         }
         else
         {

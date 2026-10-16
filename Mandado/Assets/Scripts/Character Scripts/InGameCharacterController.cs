@@ -98,6 +98,11 @@ public class InGameCharacterController : MonoBehaviour
         }
     }
 
+    public void ApplyBleedDebuff()
+    {
+        _animator.SetTrigger("BleedDamage");
+    }
+
     public void TakeDamageDamage(float damage)
     {
         _animator.SetTrigger("HurtDamage");

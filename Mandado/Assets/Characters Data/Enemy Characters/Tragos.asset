@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 090e94e55b33624449471849d902cf55, type: 3}
+  m_Name: Tragos
+  m_EditorClassIdentifier: 
+  _name: Tragos
+  _width: 15
+  _baseHealth: 30
+  _characterSpriteData:
+    _frontIdleSprite1: {fileID: 21300000, guid: d0973cd194cdf6942ad0aa679f5cabf0, type: 3}
+    _frontIdleSprite2: {fileID: 21300000, guid: e9ae68f1a9e0fde4d848cd2cbf7ea75b, type: 3}
+    _frontIdleSprite3: {fileID: 21300000, guid: 4764138541b75ec4da7b89b6848b8411, type: 3}
+    _frontAttackSprite1: {fileID: 21300000, guid: 28688532e1bbb2c40b7f5d2d297bb37f, type: 3}
+    _frontAttackSprite2: {fileID: 21300000, guid: 98c46c8cb2a255b4e9ff9123c45fa192, type: 3}
+    _frontAttackSprite3: {fileID: 21300000, guid: 4f268f6cf0e9ef34b9311480142ab800, type: 3}
+    _characterLabel: {fileID: 21300000, guid: 43cf44cb80ee21c41a4cf2c399e48695, type: 3}
+  _enemyActions:
+  - conditionList: []
+    sequencedAttacks:
+    - actionSet:
+      - value: 5
+        type: 1
+        targetIndex: 2
+    - actionSet:
+      - value: 3
+        type: 1
+        targetIndex: 1
+      - value: 1
+        type: 0
+        targetIndex: 0
+  - conditionList: []
+    sequencedAttacks:
+    - actionSet:
+      - value: 4
+        type: 2
+        targetIndex: 0
+    - actionSet:
+      - value: 2
+        type: 0
+        targetIndex: 0
+  - conditionList:
+    - condition: 0
+      value: 25
+    sequencedAttacks:
+    - actionSet:
+      - value: 20
+        type: 6
+        targetIndex: 0
+    - actionSet:
+      - value: 8
+        type: 5
+        targetIndex: 0
+  _enemyFocusAbility: 0

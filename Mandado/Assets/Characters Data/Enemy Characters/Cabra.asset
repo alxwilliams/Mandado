@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 090e94e55b33624449471849d902cf55, type: 3}
-  m_Name: Fish Demon
+  m_Name: Cabra
   m_EditorClassIdentifier: 
   _name: Tragos
   _width: 15

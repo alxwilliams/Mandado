@@ -369,6 +369,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 898995414816468153, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: _timeAfterBleedDamage
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 962171521350594357, guid: 933a28806fdbca04da05100098e19242, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -748,6 +752,10 @@ PrefabInstance:
     - target: {fileID: 4047712492956678408, guid: 933a28806fdbca04da05100098e19242, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4432447479181729683, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -17.000244
       objectReference: {fileID: 0}
     - target: {fileID: 4641614484566577783, guid: 933a28806fdbca04da05100098e19242, type: 3}
       propertyPath: m_AnchorMax.y

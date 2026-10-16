@@ -199,6 +199,16 @@ public class FieldController : MonoBehaviour
         _enemyControllerDictionary[data].BleedDamage(num);
     }
 
+    public void PlayerGainBleedDebuff(PlayerCharacterData data)
+    {
+        _playerControllerDictionary[data].ApplyBleedDebuff();
+    }
+    
+    public void EnemyGainBleedDebuff(EnemyCharacterData data)
+    {
+        _enemyControllerDictionary[data].ApplyBleedDebuff();
+    }
+
     public void KillPlayer(PlayerCharacterData data)
     {
         _playerControllerDictionary[data].KillPlayer();
