@@ -277,7 +277,8 @@ public partial class BattleSystem : BaseSystem
         ResetPlayerGuard();
         ResetPlayerDiceTrays();
         GenerateEnemyActions();
-        
+
+        RollDice();
         UpdateUI();
         SaveGame?.Invoke();
         
@@ -414,13 +415,13 @@ public partial class BattleSystem : BaseSystem
             
             foreach (var condition in attackSet.conditionList)
             {
-                if (condition.condition == EnemyAttackCondition.HealthLowerThan && currentEnemy.currentHealth < condition.value)
+                if (condition.condition == EnemyAttackCondition.HealthLowerThan && currentEnemy.currentHealth > condition.value)
                 {
                     conditionPass = false;
                     break;
                 }
                 
-                if (condition.condition == EnemyAttackCondition.HealthGreaterThan && currentEnemy.currentHealth > condition.value)
+                if (condition.condition == EnemyAttackCondition.HealthGreaterThan && currentEnemy.currentHealth < condition.value)
                 {
                     conditionPass = false;
                     break;
@@ -432,13 +433,13 @@ public partial class BattleSystem : BaseSystem
                     break;
                 }
                 
-                if (condition.condition == EnemyAttackCondition.TurnCountGreaterThan && _currentSaveState.turnNumber > condition.value)
+                if (condition.condition == EnemyAttackCondition.TurnCountGreaterThan && _currentSaveState.turnNumber < condition.value)
                 {
                     conditionPass = false;
                     break;
                 }
                 
-                if (condition.condition == EnemyAttackCondition.TurnCountLessThan && _currentSaveState.turnNumber < condition.value)
+                if (condition.condition == EnemyAttackCondition.TurnCountLessThan && _currentSaveState.turnNumber > condition.value)
                 {
                     conditionPass = false;
                     break;
