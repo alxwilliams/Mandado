@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class BattleMenu : BaseMenu
 {
-
+    [SerializeField] private Animator _diceTrayAnimation;
     [SerializeField] private Button _rollDiceButton;
     [SerializeField] private Button _orderButton;
     [SerializeField] private Button _goButton;
@@ -339,7 +339,10 @@ public class BattleMenu : BaseMenu
         _characterUIs[data.currentIndex].SetFocus(data.currentFocus);
     }
 
-    
+    public void ShakeDiceTray()
+    {
+        _diceTrayAnimation.SetTrigger("Shake");
+    }
 
     private void DisableOrderScreen()
     {

@@ -960,6 +960,8 @@ public partial class BattleSystem : BaseSystem
         {
             return;
         }
+        
+        _battleMenu.ShakeDiceTray();
 
         int diceRolled = _amountOfDiceRolledPerTurn - _currentSaveState.diceInCharacterTrays;
 
