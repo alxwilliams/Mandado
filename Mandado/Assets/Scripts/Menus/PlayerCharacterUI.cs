@@ -73,6 +73,7 @@ public class PlayerCharacterUI : CharacterUI
         _orderLeftButton.onClick.AddListener(OnLeftOrderButtonClicked);
         _orderRightButton.onClick.AddListener(OnRightOrderButtonClicked);
         _targetIndicator.SetActive(false);
+        Initialize();
     }
 
     public void SetEmpty()

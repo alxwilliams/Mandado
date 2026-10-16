@@ -83,10 +83,10 @@ public class FieldController : MonoBehaviour
         }
 
         yield return null;
-        
+
         foreach (var character in characters)
         {
-            yield return CreateCharacterController(true, character.width, character.characterSpriteData);
+            yield return CreateCharacterController(true, character.width, character.characterSpriteData,i);
             _playerControllerDictionary.TryAdd(character, _loadedController);
 
             if (character.classType == ClassType.Empty || !character.IsAlive)
@@ -116,7 +116,7 @@ public class FieldController : MonoBehaviour
         
         foreach (var character in characters)
         {
-            yield return CreateCharacterController(false, character.width, character.characterSpriteData);
+            yield return CreateCharacterController(false, character.width, character.characterSpriteData,-1);
             _enemyControllerDictionary.TryAdd(character, _loadedController);
             _loadedController.TrueFacingDirection = _enemyAttackAngle;
 
@@ -124,11 +124,11 @@ public class FieldController : MonoBehaviour
         }
     }
 
-    private IEnumerator CreateCharacterController(bool player, float width, CharacterSpriteData spriteData)
+    private IEnumerator CreateCharacterController(bool player, float width, CharacterSpriteData spriteData, int index)
     {
         GameObject obj = Instantiate(_characterPrefab, player?_playerStartLocation:_enemyStartLocation);
 
-        yield return null;
+        yield return new WaitForSeconds(.1f); //I'm doing this so the animation times are not all in sync
 
         if(player)
         {
@@ -144,7 +144,7 @@ public class FieldController : MonoBehaviour
         InGameCharacterController controller = obj.GetComponent<InGameCharacterController>();
 
         yield return null;
-        controller.Init(spriteData,_battleSystem);
+        controller.Init(spriteData,_battleSystem, index);
 
         _loadedController = controller;
     }

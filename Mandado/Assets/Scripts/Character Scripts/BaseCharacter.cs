@@ -18,6 +18,7 @@ public class CharacterSpriteData
 {
     public Sprite _frontIdleSprite1;
     public Sprite _frontIdleSprite2;
+    public Sprite _frontIdleSprite3;
     public Sprite _frontAttackSprite1;
     public Sprite _frontAttackSprite2;
     public Sprite _frontAttackSprite3;
@@ -27,5 +28,6 @@ public class CharacterSpriteData
 public enum StatusEffects
 {
     Guard,
-    Bleed
+    Bleed,
+    Empower
 }

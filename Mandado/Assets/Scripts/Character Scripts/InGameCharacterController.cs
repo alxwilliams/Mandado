@@ -8,6 +8,7 @@ public class InGameCharacterController : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer _idleSpriteRenderer1;
     [SerializeField] private SpriteRenderer _idleSpriteRenderer2;
+    [SerializeField] private SpriteRenderer _idleSpriteRenderer3;
     [SerializeField] private SpriteRenderer _attackSpriteRenderer1;
     [SerializeField] private SpriteRenderer _attackSpriteRenderer2;
     [SerializeField] private SpriteRenderer _attackSpriteRenderer3;
@@ -42,7 +43,7 @@ public class InGameCharacterController : MonoBehaviour
     }
 
 
-    public void Init(CharacterSpriteData spriteData, BattleSystem system)
+    public void Init(CharacterSpriteData spriteData, BattleSystem system, int index)
     {
         _characterSpriteData = spriteData;
         _battleSystem = system;
@@ -53,10 +54,25 @@ public class InGameCharacterController : MonoBehaviour
         //_spriteBillboard.ForceBillboardUpdate();
         
         _idleSpriteRenderer1.sprite = spriteData._frontIdleSprite1;
+        _idleSpriteRenderer1.sortingOrder = index;
+        
         _idleSpriteRenderer2.sprite = spriteData._frontIdleSprite2;
+        _idleSpriteRenderer2.sortingOrder = index;
+        
+        _idleSpriteRenderer3.sprite = spriteData._frontIdleSprite3;
+        _idleSpriteRenderer3.sortingOrder = index;
+        
         _attackSpriteRenderer1.sprite = spriteData._frontAttackSprite1;
+        _attackSpriteRenderer1.sortingOrder = index;
+        
         _attackSpriteRenderer2.sprite = spriteData._frontAttackSprite2;
+        _attackSpriteRenderer2.sortingOrder = index;
+        
         _attackSpriteRenderer3.sprite = spriteData._frontAttackSprite3;
+        _attackSpriteRenderer3.sortingOrder = index;
+        
+        
+        
         WipeIntent();
     }
 

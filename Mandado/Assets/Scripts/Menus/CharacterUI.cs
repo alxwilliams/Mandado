@@ -35,7 +35,7 @@ public class CharacterUI : MonoBehaviour
     protected float _maxHealth = -1;
 
     protected float _healthPercentage;
-    protected float _healthDifference;
+    protected float _healthDifference = -1;
 
     public float CurrentFocus => _currentFocus;
     public float CurrentBleed => _currentBleed;
@@ -73,7 +73,7 @@ public class CharacterUI : MonoBehaviour
         set => _labelImage = value;
     }
 
-    private void Awake()
+    public void Initialize()
     {
         _healthDifference = _healthBarFullWidth - _healthBarEmptyWidth;
     }
@@ -125,7 +125,7 @@ public class CharacterUI : MonoBehaviour
             if (_currentEmpower > 0)
             {
                 _empowerSymbol.SetActive(true);
-                _empowerText.text = $"{num}%";
+                _empowerText.text = $"{num}";
             }
             else
             {

@@ -16,11 +16,12 @@ MonoBehaviour:
   _width: 6
   _baseHealth: 19
   _characterSpriteData:
-    _frontIdleSprite1: {fileID: 21300000, guid: 919d10585999edc4c95ead51bbcaa2c2, type: 3}
-    _frontIdleSprite2: {fileID: 21300000, guid: 242122bcf79d13d488b74114c879c7ea, type: 3}
-    _frontAttackSprite1: {fileID: 21300000, guid: 919d10585999edc4c95ead51bbcaa2c2, type: 3}
-    _frontAttackSprite2: {fileID: 21300000, guid: 7d91497a1546ff24f833f19fdd26390d, type: 3}
-    _frontAttackSprite3: {fileID: 21300000, guid: 74590d246433c3141820f7ee837cc666, type: 3}
+    _frontIdleSprite1: {fileID: 21300000, guid: ca876c40b6b6d7b4893412b112051e9b, type: 3}
+    _frontIdleSprite2: {fileID: 21300000, guid: 7d8831c8a4d83414380a4a87d19484b0, type: 3}
+    _frontIdleSprite3: {fileID: 21300000, guid: aa23603a6785e77428e32f226155e694, type: 3}
+    _frontAttackSprite1: {fileID: 21300000, guid: ca876c40b6b6d7b4893412b112051e9b, type: 3}
+    _frontAttackSprite2: {fileID: 21300000, guid: bfa23267769b26c40a8858d096591787, type: 3}
+    _frontAttackSprite3: {fileID: 21300000, guid: f7c43df79b927da4bbf38e4b745627df, type: 3}
     _characterLabel: {fileID: 21300000, guid: 671fdceb3a4203c428eb64549cef3462, type: 3}
   _levelUpSets:
   - _id: Vanguard

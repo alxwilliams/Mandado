@@ -144,6 +144,8 @@ public class BattleMenu : BaseMenu
             _characterUIs[i].Initialize(i+1,ReturnDice,SwapCharacterUI);
         }
 
+        _enemyCharacterUI.Initialize();
+
         for (int i = 0; i < _diceTrayButtons.Count; i++)
         {
             int index = i;

@@ -280,8 +280,6 @@ public partial class BattleSystem : BaseSystem
         
         UpdateUI();
         SaveGame?.Invoke();
-        //calculate enemy actions
-        //show enemy intent
         
         if(!init)
         {
@@ -584,17 +582,27 @@ public partial class BattleSystem : BaseSystem
             
             if (action.type == PlayerActionType.Damage)
             {
+
+                float damage = action.value;
+                
+                if (data.statusEffects.ContainsKey(StatusEffects.Empower) &&
+                    data.statusEffects[StatusEffects.Empower] > 0)
+                {
+                    damage += data.statusEffects[StatusEffects.Empower];
+
+                    data.statusEffects[StatusEffects.Empower] = 0;
+                    EmpowerPlayerUnit(data.currentIndex,0);
+                }
                 
                 if(!maxRoll)
                 {
-                    PlayerAttackEnemy(action.value * data.currentDamageMultiplier);
+                    PlayerAttackEnemy(damage);
                 }
                 else
                 {
-                    PlayerAttackEnemy(action.value * data.currentDamageMultiplier);
+                    PlayerAttackEnemy(damage);
                 }
                 
-                ResetPlayerEmpower(data.currentIndex);
             }
 
             if (action.type == PlayerActionType.Bleed)
@@ -728,23 +736,18 @@ public partial class BattleSystem : BaseSystem
             return;
         }
         
-        _currentSaveState.playerCharacters[unitIndex].currentDamageMultiplier += (amount / 100);
-        
-        _battleMenu.UpdatePlayerCharacterEmpowerUI(unitIndex,
-            (_currentSaveState.playerCharacters[unitIndex].currentDamageMultiplier - 1) * 100);
-    }
-
-    private void ResetPlayerEmpower(int unitIndex)
-    {
-        if (_currentSaveState.playerCharacters[unitIndex].classType == ClassType.Empty || !_currentSaveState.playerCharacters[unitIndex].IsAlive)
+        if (_currentSaveState.playerCharacters[unitIndex].statusEffects.ContainsKey(StatusEffects.Empower))
         {
-            return;
+            _currentSaveState.playerCharacters[unitIndex].statusEffects[StatusEffects.Empower] += amount;
+        }
+        else
+        {
+            _currentSaveState.playerCharacters[unitIndex].statusEffects[StatusEffects.Empower] = amount;
         }
         
-        _currentSaveState.playerCharacters[unitIndex].currentDamageMultiplier = 1;
         
         _battleMenu.UpdatePlayerCharacterEmpowerUI(unitIndex,
-            (_currentSaveState.playerCharacters[unitIndex].currentDamageMultiplier - 1) * 100);
+            (_currentSaveState.playerCharacters[unitIndex].statusEffects[StatusEffects.Empower]));
     }
 
     private void AddOrder(float newValue)
