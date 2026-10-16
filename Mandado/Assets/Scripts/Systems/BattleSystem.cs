@@ -306,7 +306,7 @@ public partial class BattleSystem : BaseSystem
         {
             if (character.statusEffects.ContainsKey(StatusEffects.Bleed) && character.statusEffects[StatusEffects.Bleed] > 0)
             {
-                EnemyTakeDamage(character.statusEffects[StatusEffects.Bleed]);
+                EnemyTakeDamage(character.statusEffects[StatusEffects.Bleed], StatusEffects.Bleed);
                 character.statusEffects[StatusEffects.Bleed]--;
                 
                 _battleMenu.UpdateEnemyBleedUI(character.statusEffects[StatusEffects.Bleed]);
@@ -321,7 +321,7 @@ public partial class BattleSystem : BaseSystem
         {
             if (character.statusEffects.ContainsKey(StatusEffects.Bleed) && character.statusEffects[StatusEffects.Bleed] > 0)
             {
-                PlayerTakeDamage(character.currentIndex,character.statusEffects[StatusEffects.Bleed]);
+                PlayerTakeDamage(character.currentIndex,character.statusEffects[StatusEffects.Bleed], StatusEffects.Bleed);
                 character.statusEffects[StatusEffects.Bleed]--;
                 
                 _battleMenu.UpdatePlayerCharacterBleedUI(character.currentIndex, character.statusEffects[StatusEffects.Bleed]);
@@ -907,17 +907,36 @@ public partial class BattleSystem : BaseSystem
         PlayerTakeDamage(playerIndex, newDamageNum);
     }
 
-    private void EnemyTakeDamage(float num)
+    private void EnemyTakeDamage(float num, StatusEffects effect = StatusEffects.Guard)
     {
         _currentSaveState.enemyCharacters[0].currentHealth -= num;
-        _fieldController.EnemyTakeDamage(_currentSaveState.enemyCharacters[0], num);
+
+        if (effect == StatusEffects.Bleed)
+        {
+            _fieldController.EnemyTakeBleedDamage(_currentSaveState.enemyCharacters[0], num);
+        }
+        else
+        {
+            _fieldController.EnemyTakeDamageDamage(_currentSaveState.enemyCharacters[0], num);
+        }
+        
+        
         _battleMenu.UpdateEnemyUI(_currentSaveState.enemyCharacters[0]);
     }
     
-    private void PlayerTakeDamage(int index, float num)
+    private void PlayerTakeDamage(int index, float num, StatusEffects effect = StatusEffects.Guard)
     {
         _currentSaveState.playerCharacters[index].currentHealth -= num;
-        _fieldController.PlayerTakeDamage(_currentSaveState.playerCharacters[index], num);
+
+        if (effect == StatusEffects.Bleed)
+        {
+            _fieldController.PlayerTakeBleedDamage(_currentSaveState.playerCharacters[index], num);
+        }
+        else
+        {
+            _fieldController.PlayerTakeDamageDamage(_currentSaveState.playerCharacters[index], num);
+        }
+        
         _battleMenu.UpdatePlayerCharacterHealth(_currentSaveState.playerCharacters[index]);
 
         if (!_currentSaveState.playerCharacters[index].IsAlive)

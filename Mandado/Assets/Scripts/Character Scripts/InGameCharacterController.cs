@@ -98,7 +98,18 @@ public class InGameCharacterController : MonoBehaviour
         }
     }
 
-    public void TakeDamage(float damage)
+    public void TakeDamageDamage(float damage)
+    {
+        _animator.SetTrigger("HurtDamage");
+        DamageText(damage);
+    }
+
+    public void BleedDamage(float damage)
+    {
+        _animator.SetTrigger("BleedDamage");
+        DamageText(damage);
+    }
+    public void DamageText(float damage)
     {
         _effectBoxText.text = $"{damage}";
         _effectBoxAnimator.SetTrigger("Damage");

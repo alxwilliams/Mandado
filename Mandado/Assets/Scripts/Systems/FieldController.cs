@@ -179,14 +179,24 @@ public class FieldController : MonoBehaviour
         return _playerControllerDictionary[data].MoveForwardFullDiceRoll();
     }
 
-    public void PlayerTakeDamage(PlayerCharacterData data, float num)
+    public void PlayerTakeDamageDamage(PlayerCharacterData data, float num)
     {
-        _playerControllerDictionary[data].TakeDamage(num);
+        _playerControllerDictionary[data].TakeDamageDamage(num);
     }
     
-    public void EnemyTakeDamage(EnemyCharacterData data, float num)
+    public void EnemyTakeDamageDamage(EnemyCharacterData data, float num)
     {
-        _enemyControllerDictionary[data].TakeDamage(num);
+        _enemyControllerDictionary[data].TakeDamageDamage(num);
+    }
+    
+    public void PlayerTakeBleedDamage(PlayerCharacterData data, float num)
+    {
+        _playerControllerDictionary[data].BleedDamage(num);
+    }
+    
+    public void EnemyTakeBleedDamage(EnemyCharacterData data, float num)
+    {
+        _enemyControllerDictionary[data].BleedDamage(num);
     }
 
     public void KillPlayer(PlayerCharacterData data)
