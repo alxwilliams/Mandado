@@ -107,6 +107,8 @@ public enum EnemyActionType
     BleedAll,
     DamageRandom,
     DamageAll,
+    DamageAndDamageNearby,
+    Cripple,
     Guard,
     Heal
 }

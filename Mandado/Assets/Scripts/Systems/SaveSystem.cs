@@ -106,6 +106,7 @@ public class BattleSystemState
     public int diceInCharacterTrays = 0;
     public bool playerHasHealed = false;
     public bool canAttack = false;
+    public int amountOfCripple = 0;
     public List<PlayerCharacterData> playerCharacters = new List<PlayerCharacterData>();
     public List<EnemyCharacterData> enemyCharacters = new List<EnemyCharacterData>();
 }

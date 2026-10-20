@@ -67,6 +67,14 @@ public partial class BattleSystem
 
     #region EnemyChecks
 
+    private void CabraFocusAttack()
+    {
+        foreach (var data in _currentSaveState.playerCharacters)
+        {
+            EnemyAttackPlayer(data.currentIndex,10);
+        }
+    }
+    
     private void TragosFocusAttack()
     {
         List<PlayerCharacterData> bleedList = new List<PlayerCharacterData>();

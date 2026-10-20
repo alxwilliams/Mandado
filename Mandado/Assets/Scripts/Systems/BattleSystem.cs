@@ -219,6 +219,7 @@ public partial class BattleSystem : BaseSystem
         _battleMenu.SetRerollNumber(_currentSaveState.amountOfRerolls);
         _battleMenu.UpdatePlayerCharacters(_currentSaveState.playerCharacters);
         _battleMenu.UpdateEnemyUI(_currentSaveState.enemyCharacters[0]);
+        _battleMenu.UpdateCrippledState(_currentSaveState.amountOfCripple);
     }
 
     private void PlayerAttack()
@@ -347,6 +348,7 @@ public partial class BattleSystem : BaseSystem
     private void EndPlayerTurn()
     {
         _currentSaveState.canAttack = false;
+        _currentSaveState.amountOfCripple = 0;
         UpdateUI();
     }
 
@@ -492,15 +494,13 @@ public partial class BattleSystem : BaseSystem
 
         foreach (var action in _currentEnemyAttackSet.sequencedAttacks[_currentEnemyAttackIndex].actionSet)
         {
-            if (action.type == EnemyActionType.DamageRandom)
+            if (action.type == EnemyActionType.DamageRandom ||
+                action.type == EnemyActionType.BleedRandom ||
+                action.type == EnemyActionType.DamageAndDamageNearby)
             {
                 action.targetIndex = GetNewPlayerIndex();
             }
-
-            if (action.type == EnemyActionType.BleedRandom)
-            {
-                action.targetIndex = GetNewPlayerIndex();
-            }
+            
         }
         
         _battleMenu.ShowEnemyIntent(_currentEnemyAttackSet.sequencedAttacks[_currentEnemyAttackIndex].actionSet);
@@ -532,6 +532,29 @@ public partial class BattleSystem : BaseSystem
                     EnemyAttackPlayer(action.targetIndex,action.value);
                 }
             }
+            
+            if (action.type == EnemyActionType.DamageAndDamageNearby)
+            {
+                if(!maxRoll)
+                {
+                    EnemyAttackPlayer(action.targetIndex,action.value);
+                    EnemyAttackPlayer(action.targetIndex-1,action.value);
+                    EnemyAttackPlayer(action.targetIndex+1,action.value);
+                }
+                else
+                {
+                    //yield return new WaitForSeconds(_fieldController.CharacterBigAttack(data));
+                    EnemyAttackPlayer(action.targetIndex,action.value);
+                    EnemyAttackPlayer(action.targetIndex-1,action.value);
+                    EnemyAttackPlayer(action.targetIndex+1,action.value);
+                }
+            }
+
+            if (action.type == EnemyActionType.Cripple)
+            {
+                PlayerGainCripple(action.value);
+            }
+
 
             if (action.type == EnemyActionType.Guard)
             {
@@ -584,11 +607,23 @@ public partial class BattleSystem : BaseSystem
                 TragosFocusAttack();
             }
 
+            if (data.enemyFocusAbility == EnemyFocusAbility.Cabra)
+            {
+                yield return new WaitForSeconds(_fieldController.EnemyCharacterMoveForward(data));
+                CabraFocusAttack();
+            }
+
             data.currentFocus = 0;
             _battleMenu.UpdateEnemyUI(data);
         }
     }
-    
+
+    private void PlayerGainCripple(float amountOfCripple)
+    {
+        _currentSaveState.amountOfCripple += (int)amountOfCripple;
+        _battleMenu.UpdateCrippledState(_currentSaveState.amountOfCripple);
+        //player rolls less dice
+    }
 
     private IEnumerator DealWithPlayerAction(List<PlayerCharacterAction> actions, PlayerCharacterData data, int castingUnitIndex, bool maxRoll = false)
     {
@@ -857,13 +892,12 @@ public partial class BattleSystem : BaseSystem
     
     private void EnemyAttackPlayer(int playerIndex, float num)
     {
-        int sentinelValue = FocusSentinelCheckForFullPoints();
-
-        if (sentinelValue != -1)
+        if (playerIndex < 0 || playerIndex >= 6)
         {
-            playerIndex = sentinelValue;
+            return;
         }
-
+        
+        
         if (_currentSaveState.playerCharacters[playerIndex].classType == ClassType.Warrior &&
             _currentSaveState.playerCharacters[playerIndex].currentFocus > 0)
         {
@@ -963,7 +997,7 @@ public partial class BattleSystem : BaseSystem
         
         _battleMenu.ShakeDiceTray();
 
-        int diceRolled = _amountOfDiceRolledPerTurn - _currentSaveState.diceInCharacterTrays;
+        int diceRolled = _amountOfDiceRolledPerTurn - _currentSaveState.diceInCharacterTrays - _currentSaveState.amountOfCripple;
 
         int[] dice = new int[diceRolled];
         

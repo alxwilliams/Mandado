@@ -18,7 +18,7 @@ public class BattleMenu : BaseMenu
     [SerializeField] private TMP_Text _rerollText;
     [SerializeField] private TMP_Text _orderTokenText;
     [SerializeField] private TMP_Text _enemyIntentDebugText;
-
+    [SerializeField] private TMP_Text _crippledText;
     
     [Header("Dice Sprites")] 
     [SerializeField] private Sprite _diceOne;
@@ -74,6 +74,18 @@ public class BattleMenu : BaseMenu
     public void UpdateEnemyEmpowerUI(float newValue)
     {
         _enemyCharacterUI.UpdateEmpowerUI(newValue);
+    }
+
+    public void UpdateCrippledState(float amountOfCripples)
+    {
+        if (amountOfCripples > 0)
+        {
+            _crippledText.text = "Crippled: " + amountOfCripples;
+        }
+        else
+        {
+            _crippledText.text = "";
+        }
     }
 
     public void UpdatePlayerCharacterStatusEffects(BattleSystemState state, int characterIndex)
@@ -225,10 +237,31 @@ public class BattleMenu : BaseMenu
                 _characterUIs[action.targetIndex].SetTargetIndicator(true);
             }
             
+            if (action.type == EnemyActionType.DamageAndDamageNearby)
+            {
+                _enemyIntentDebugText.text += "Damaging Target ";
+                _characterUIs[action.targetIndex].SetTargetIndicator(true);
+
+                if (action.targetIndex - 1 > 0)
+                {
+                    _characterUIs[action.targetIndex-1].SetTargetIndicator(true);
+                }
+
+                if (action.targetIndex + 1 < 6)
+                {
+                    _characterUIs[action.targetIndex+1].SetTargetIndicator(true);
+                }
+            }
+            
             if (action.type == EnemyActionType.BleedRandom)
             {
                 _enemyIntentDebugText.text += "Bleeding Target ";
                 _characterUIs[action.targetIndex].SetTargetIndicator(true);
+            }
+            
+            if (action.type == EnemyActionType.Cripple)
+            {
+                _enemyIntentDebugText.text += "Crippling ";
             }
             
             if (action.type == EnemyActionType.Guard)
@@ -254,6 +287,7 @@ public class BattleMenu : BaseMenu
             {
                 _enemyIntentDebugText.text += "Gaining Focus ";
             }
+            _enemyIntentDebugText.text += "\n";
         }
 
     }

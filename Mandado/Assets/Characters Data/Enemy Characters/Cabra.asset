@@ -27,24 +27,27 @@ MonoBehaviour:
   - conditionList: []
     sequencedAttacks:
     - actionSet:
-      - value: 5
-        type: 3
+      - value: 12
+        type: 5
         targetIndex: 2
     - actionSet:
-      - value: 3
-        type: 1
-        targetIndex: 1
+      - value: 2
+        type: 6
+        targetIndex: 0
       - value: 1
         type: 0
         targetIndex: 0
   - conditionList: []
     sequencedAttacks:
     - actionSet:
-      - value: 4
-        type: 2
+      - value: 1
+        type: 6
+        targetIndex: 0
+      - value: 10
+        type: 5
         targetIndex: 0
     - actionSet:
-      - value: 2
+      - value: 1
         type: 0
         targetIndex: 0
   - conditionList:
@@ -52,11 +55,10 @@ MonoBehaviour:
       value: 29
     sequencedAttacks:
     - actionSet:
-      - value: 20
+      - value: 1
+        type: 0
+        targetIndex: 0
+      - value: 3
         type: 6
         targetIndex: 0
-    - actionSet:
-      - value: 8
-        type: 5
-        targetIndex: 0
-  _enemyFocusAbility: 0
+  _enemyFocusAbility: 1
