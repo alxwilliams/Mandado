@@ -54,22 +54,22 @@ public class InGameCharacterController : MonoBehaviour
         //_spriteBillboard.ForceBillboardUpdate();
         
         _idleSpriteRenderer1.sprite = spriteData._frontIdleSprite1;
-        _idleSpriteRenderer1.sortingOrder = index;
+        _idleSpriteRenderer1.sortingOrder = index + 10;
         
         _idleSpriteRenderer2.sprite = spriteData._frontIdleSprite2;
-        _idleSpriteRenderer2.sortingOrder = index;
+        _idleSpriteRenderer2.sortingOrder = index + 10;
         
         _idleSpriteRenderer3.sprite = spriteData._frontIdleSprite3;
-        _idleSpriteRenderer3.sortingOrder = index;
+        _idleSpriteRenderer3.sortingOrder = index + 10;
         
         _attackSpriteRenderer1.sprite = spriteData._frontAttackSprite1;
-        _attackSpriteRenderer1.sortingOrder = index;
+        _attackSpriteRenderer1.sortingOrder = index + 10;
         
         _attackSpriteRenderer2.sprite = spriteData._frontAttackSprite2;
-        _attackSpriteRenderer2.sortingOrder = index;
+        _attackSpriteRenderer2.sortingOrder = index + 10;
         
         _attackSpriteRenderer3.sprite = spriteData._frontAttackSprite3;
-        _attackSpriteRenderer3.sortingOrder = index;
+        _attackSpriteRenderer3.sortingOrder = index + 10;
         
         
         
