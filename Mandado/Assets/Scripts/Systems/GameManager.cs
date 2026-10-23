@@ -149,8 +149,7 @@ public class GameManager : MonoBehaviour
         _currentSaveData.targetRandomCalls = 0;
         _currentSaveData.miscRandomCalls = 0;
 
-        _battleSystem.StartNewBattle();
-        //StartBattle();
+        _battleSystem.StartNewBattle(0);
     }
 
     public void LoadGameFromFile()

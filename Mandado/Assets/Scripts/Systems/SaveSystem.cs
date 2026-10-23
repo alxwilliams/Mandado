@@ -100,6 +100,7 @@ public class SaveData
 public class BattleSystemState
 {
     public int turnNumber = 0;
+    public int currentEnemyIndex = 0;
     public float  currentOrderTokens =0;
     public int[] activeDiceRolls = new int[6];
     public int amountOfRerolls = 3;

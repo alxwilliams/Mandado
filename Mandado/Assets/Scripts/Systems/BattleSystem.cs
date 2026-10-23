@@ -7,7 +7,8 @@ using UnityEngine;
 public partial class BattleSystem : BaseSystem
 {
     [SerializeField] private int _amountOfDiceRolledPerTurn = 5;
-    [SerializeField] private List<EnemyCharacter> _fakeEnemyData = new List<EnemyCharacter>();
+    //[SerializeField] private List<EnemyCharacter> _fakeEnemyData = new List<EnemyCharacter>();
+    [SerializeField] private List<EnemyCharacter> _enemyCharacters = new List<EnemyCharacter>();
     [SerializeField] private FieldController _fieldController;
     [SerializeField] private BattleMenu _battleMenu;
     [SerializeField] private int _maxFocusPoints = 3;
@@ -21,7 +22,7 @@ public partial class BattleSystem : BaseSystem
     [SerializeField] private float _timeAfterBleedDamage = .5f;
     [SerializeField] private float _timeAfterEnemyAttacks = .5f;
 
-    
+    private bool _enemyDied = false;
     private List<PlayerCharacter> _newGamePlayerCharacters = new List<PlayerCharacter>();
     private Dictionary<PlayerActionType, IntentTextDetails> _playerIntentDetailsDictionary = new Dictionary<PlayerActionType, IntentTextDetails>();
     private CameraSystem _cameraSystem;
@@ -117,6 +118,7 @@ public partial class BattleSystem : BaseSystem
         LoadInBattleState(_currentSaveState);
         UpdateUI();
         
+        _enemyDied = false;
         GameLoaded?.Invoke();
         _loadCharactersRoutine = null;
     }
@@ -142,19 +144,30 @@ public partial class BattleSystem : BaseSystem
         StartPlayerTurn(true);
     }
 
-    public void StartNewBattle()
+    public void StartNewBattle(int newEnemyIndex)
     {
-        BattleSystemState newState = new BattleSystemState();
-
-        if (_loadCharactersRoutine != null)
+        if (newEnemyIndex >= _enemyCharacters.Count)
         {
-            StopCoroutine(_loadCharactersRoutine);
+            //You Win!
+            Debug.Log("YOU WIN!");
         }
-
-        _loadCharactersRoutine = StartCoroutine(LoadNewBattleCharacters(newState, _newGamePlayerCharacters, _fakeEnemyData));
+        else
+        {
+            BattleSystemState newState = new BattleSystemState();
+            
+            newState.currentEnemyIndex = newEnemyIndex;
+            
+            if (_loadCharactersRoutine != null)
+            {
+                StopCoroutine(_loadCharactersRoutine);
+            }
+            
+            _loadCharactersRoutine = StartCoroutine(LoadNewBattleCharacters(newState, _newGamePlayerCharacters, _enemyCharacters[newState.currentEnemyIndex]));
+        }
     }
 
-    public IEnumerator LoadNewBattleCharacters(BattleSystemState state, List<PlayerCharacter> playerCharacters, List<EnemyCharacter> enemyCharacters)
+
+    public IEnumerator LoadNewBattleCharacters(BattleSystemState state, List<PlayerCharacter> playerCharacters, EnemyCharacter enemyCharacter)
     {
         _currentSaveState = state;
         
@@ -177,12 +190,9 @@ public partial class BattleSystem : BaseSystem
         yield return _fieldController.LoadPlayerCharactersCoroutine(playerData);
         _currentSaveState.playerCharacters = playerData;
         ChangePlayerIntentStates();
-        
-        foreach (var character in enemyCharacters)
-        {
-            enemyData.Add(character.GetFullHealthCharacterData());
-        }
-        
+
+        enemyData.Add(enemyCharacter.GetFullHealthCharacterData());
+
         _battleMenu.LoadInCharacterUI(playerData, enemyData[0]);
         
         yield return _fieldController.LoadEnemyCharactersCoroutine(enemyData);
@@ -222,6 +232,19 @@ public partial class BattleSystem : BaseSystem
         _battleMenu.UpdateCrippledState(_currentSaveState.amountOfCripple);
     }
 
+    private bool CheckEnemyHealth()
+    {
+        if (!_currentSaveState.enemyCharacters[0].IsAlive)
+        {
+            _currentSaveState.currentEnemyIndex++;
+            StartNewBattle(_currentSaveState.currentEnemyIndex);
+
+            return true;
+        }
+
+        return false;
+    }
+
     private void PlayerAttack()
     {
         if (!_currentSaveState.canAttack)
@@ -249,28 +272,49 @@ public partial class BattleSystem : BaseSystem
         }
         
         yield return PlayerDiceActions();
-        _currentSaveState.activeDiceRolls = new int[6];
+        
+        if(!_enemyDied)
+        {
+            _currentSaveState.activeDiceRolls = new int[6];
 
-        //enemy attack
-        EnemyRollDice();
+            //enemy attack
+            EnemyRollDice();
 
-        _cameraSystem.SwitchToEnemyView();
-        yield return new WaitForSeconds(_timeBeforeEnemyAttacks);
-        
-        yield return EnemyAttackActions();
-        
-        yield return new WaitForSeconds(_timeAfterEnemyAttacks);
-        
-        EndEnemyTurn();
-        StartPlayerTurn();
+            _cameraSystem.SwitchToEnemyView();
+            yield return new WaitForSeconds(_timeBeforeEnemyAttacks);
+
+            yield return EnemyAttackActions();
+
+            yield return new WaitForSeconds(_timeAfterEnemyAttacks);
+
+            EndEnemyTurn();
+            
+            if(!_enemyDied)
+            {
+                StartPlayerTurn();
+            }
+            else
+            {
+                _cameraSystem.SwitchToPlayerView();
+            }
+        }
+
+        _attackRoutine = null;
     }
 
     private void EndEnemyTurn()
     {
-        //ResetEnemyGuard();
         DealWithEnemyBleedDamage();
-        _currentSaveState.turnNumber++;
-        SaveGame?.Invoke();
+        
+        if(!CheckEnemyHealth())
+        {
+            _currentSaveState.turnNumber++;
+            SaveGame?.Invoke();
+        }
+        else
+        {
+            _enemyDied = true;
+        }
     }
 
     private void StartPlayerTurn(bool init = false)
@@ -325,7 +369,6 @@ public partial class BattleSystem : BaseSystem
                 _battleMenu.UpdateEnemyBleedUI(character.statusEffects[StatusEffects.Bleed]);
             }
         }
-        
     }
     private bool DealWithPlayerBleedDamage()
     {
@@ -361,6 +404,11 @@ public partial class BattleSystem : BaseSystem
                 yield return DealWithPlayerAction(_currentSaveState.playerCharacters[i].actionSet.GetActionSetFromRollNumber(_currentSaveState.activeDiceRolls[i]),
                     _currentSaveState.playerCharacters[i],i);
 
+                if (_enemyDied)
+                {
+                    break;
+                }
+                
                 ResetIndexedPlayerFocus(i);
                 
                 UpdateUI();
@@ -628,7 +676,7 @@ public partial class BattleSystem : BaseSystem
     private IEnumerator DealWithPlayerAction(List<PlayerCharacterAction> actions, PlayerCharacterData data, int castingUnitIndex, bool maxRoll = false)
     {
         yield return new WaitForSeconds(_fieldController.PlayerCharacterMoveForward(data));
-        
+
         foreach (var action in actions)
         {
             
@@ -653,6 +701,13 @@ public partial class BattleSystem : BaseSystem
                 else
                 {
                     PlayerAttackEnemy(damage);
+                }
+
+
+                if (CheckEnemyHealth())
+                {
+                    _enemyDied = true;
+                    break;
                 }
                 
             }
@@ -711,8 +766,11 @@ public partial class BattleSystem : BaseSystem
             yield return new WaitForSeconds(0.1f);
         }
 
-        _fieldController.WipePlayerCharacterIntent(data);
-        _battleMenu.ResetDice(castingUnitIndex);
+        if(!_enemyDied)
+        {
+            _fieldController.WipePlayerCharacterIntent(data);
+            _battleMenu.ResetDice(castingUnitIndex);
+        }
     }
 
     private void EmpowerPlayerUnit(int unitIndex, float amount)
@@ -854,6 +912,7 @@ public partial class BattleSystem : BaseSystem
         }
         
         EnemyTakeDamage(newDamageNum);
+        
     }
 
     private int GetNewPlayerIndex()

@@ -41,6 +41,14 @@ public class EnemyCharacterData
    public Dictionary<StatusEffects, float> statusEffects;
    public float width;
    public CharacterSpriteData characterSpriteData;
+   
+   public bool IsAlive
+   {
+      get
+      {
+         return currentHealth > 0;
+      }
+   }
 }
 
 public enum EnemyFocusAbility
