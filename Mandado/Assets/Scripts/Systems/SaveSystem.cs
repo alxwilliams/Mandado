@@ -96,11 +96,12 @@ public class SaveData
 [Serializable]
 public class RewardData
 {
-    private bool _fiveOfAKindUsed = false;
-    private int _straightsUsed = 0;
-    private bool _fiftyPercentDamageOneAttack = false;
-    private bool _enemyKilledOnTheirTurn = false;
-    private int _noRerollCount = 0;
+    public bool enemyKilledWithOneAttack = false;
+    public int fiveOfAKindsUsed = 0;
+    public int straightsUsed = 0;
+    public bool fiftyPercentDamageOneAttack = false;
+    public bool enemyKilledOnTheirTurn = false;
+    public int noRerollCount = 0;
 }
 
 [Serializable]

@@ -8,6 +8,7 @@ public class MenuSystem : BaseSystem
     [SerializeField] private BattleMenu _battleMenu;
     [SerializeField] private TitleScreen _titleScreen;
     [SerializeField] private CharacterSelectMenu _characterSelectMenu;
+    [SerializeField] private RewardMenu _rewardMenu;
     
     private BaseMenu _activeMenu;
 
@@ -15,6 +16,7 @@ public class MenuSystem : BaseSystem
     {
         _titleScreen.Initialize(this,loadGame,ShowCharacterSelectScreen);
         _characterSelectMenu.Initialize(this,startNewGame,ShowTitleScreen);
+        _rewardMenu.Initialize(this);
         
         base.Initialize(gameManager);
     }
@@ -29,6 +31,12 @@ public class MenuSystem : BaseSystem
     public void ShowTitleScreen()
     {
         _titleScreen.Show(true);
+    }
+
+    public void ShowRewardMenu(string text)
+    {
+        _rewardMenu.UpdateRewardText(text);
+        _rewardMenu.Show(true);
     }
 
     public void ShowCharacterSelectScreen()

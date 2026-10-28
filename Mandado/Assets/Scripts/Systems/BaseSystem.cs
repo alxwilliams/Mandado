@@ -8,7 +8,6 @@ public class BaseSystem : MonoBehaviour
     protected bool _initialized = false;
     public Action InitializedAction;
     protected GameManager _gameManager;
-
     public bool Initialized => _initialized;
 
     public virtual void Initialize(GameManager gameManager)

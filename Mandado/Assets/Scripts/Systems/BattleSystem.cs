@@ -26,6 +26,7 @@ public partial class BattleSystem : BaseSystem
     private List<PlayerCharacter> _newGamePlayerCharacters = new List<PlayerCharacter>();
     private Dictionary<PlayerActionType, IntentTextDetails> _playerIntentDetailsDictionary = new Dictionary<PlayerActionType, IntentTextDetails>();
     private CameraSystem _cameraSystem;
+    private MenuSystem _menuSystem;
     private Coroutine _attackRoutine;
     private Coroutine _loadCharactersRoutine;
     
@@ -49,6 +50,7 @@ public partial class BattleSystem : BaseSystem
     {
         SaveGame = saveGame;
         _cameraSystem = gameManager.CameraSystem;
+        _menuSystem = gameManager.MenuSystem;
         _battleMenu.Initialize(gameManager.MenuSystem, RollDice, PlayerAttack, IncreaseActiveDiceRolls, DecreaseActiveDiceRolls);
 
         foreach (var details in _intentTextDetails)
@@ -236,9 +238,7 @@ public partial class BattleSystem : BaseSystem
     {
         if (!_currentSaveState.enemyCharacters[0].IsAlive)
         {
-            _currentSaveState.currentEnemyIndex++;
-            StartNewBattle(_currentSaveState.currentEnemyIndex);
-
+            _gameManager.ShowRewardMenu();
             return true;
         }
 

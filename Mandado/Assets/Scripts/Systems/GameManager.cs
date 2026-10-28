@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private MenuSystem _menuSystem;
     [SerializeField] private CameraSystem _cameraSystem;
     [SerializeField] private SaveSystem _saveSystem;
+    [SerializeField] private RewardSystem _rewardSystem;
     
     private string _mainDiceSeed;
     private string _targetSeed;
@@ -30,6 +31,8 @@ public class GameManager : MonoBehaviour
 
     public MenuSystem MenuSystem => _menuSystem;
     public BattleSystem BattleSystem => _battleSystem;
+
+    public SaveSystem SaveSystem => _saveSystem;
 
     public CameraSystem CameraSystem => _cameraSystem;
 
@@ -58,7 +61,6 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
     }
 
     IEnumerator Initialize()
@@ -66,6 +68,7 @@ public class GameManager : MonoBehaviour
         _menuSystem.Initialize(this, StartNewAdventure, LoadAdventureFromFile);
         _battleSystem.Initialize(this,SaveGameWithBattle);
         _cameraSystem.Initialize(this);
+        _rewardSystem.Initialize(this);
         
         Task loadTask = _saveSystem.Initialize(this);
         yield return new WaitUntil(() => loadTask.IsCompleted);
@@ -102,6 +105,17 @@ public class GameManager : MonoBehaviour
         }
 
         _mainDiceSeed = new string(stringChars);
+    }
+
+    public void AddCoins(int coins)
+    {
+        _currentSaveData.coins += coins;
+        SaveGame();
+    }
+
+    public void ShowRewardMenu()
+    {
+        _menuSystem.ShowRewardMenu(_rewardSystem.GetRewards());
     }
     
     private void GenerateRandomMachines()
@@ -202,6 +216,12 @@ public class GameManager : MonoBehaviour
     {
         _currentSaveData.battleState = _battleSystem.GetBattleSystemState();
         SaveGame();
+    }
+
+    public void StartNextIndexedBattle()
+    {
+        _currentSaveData.battleState.currentEnemyIndex++;
+        _battleSystem.StartNewBattle(_currentSaveData.battleState.currentEnemyIndex);
     }
     
     private int StringToDeterministicHash(string str)
