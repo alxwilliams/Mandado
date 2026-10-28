@@ -17,7 +17,7 @@ public class SaveSystem : MonoBehaviour
     private bool _loadedGameFound = false;
     public bool LoadedGameFound => _loadedGameFound;
 
-    public async void Initialize(GameManager gameManager)
+    public async Task Initialize(GameManager gameManager)
     {
         _gameManager = gameManager;
         
@@ -88,17 +88,28 @@ public class SaveSystem : MonoBehaviour
 [Serializable]
 public class SaveData
 {
-    public string mainSeed;
-    public int mainRandomCalls;
-    public int targetRandomCalls;
-    public int miscRandomCalls;
+    public int coins = 0;
     public int version;
     public BattleSystemState battleState;
 }
 
 [Serializable]
+public class RewardData
+{
+    private bool _fiveOfAKindUsed = false;
+    private int _straightsUsed = 0;
+    private bool _fiftyPercentDamageOneAttack = false;
+    private bool _enemyKilledOnTheirTurn = false;
+    private int _noRerollCount = 0;
+}
+
+[Serializable]
 public class BattleSystemState
 {
+    public string mainSeed;
+    public int mainRandomCalls;
+    public int targetRandomCalls;
+    public int miscRandomCalls;
     public int turnNumber = 0;
     public int currentEnemyIndex = 0;
     public float  currentOrderTokens =0;
@@ -108,6 +119,7 @@ public class BattleSystemState
     public bool playerHasHealed = false;
     public bool canAttack = false;
     public int amountOfCripple = 0;
+    public RewardData rewardData = new RewardData();
     public List<PlayerCharacterData> playerCharacters = new List<PlayerCharacterData>();
     public List<EnemyCharacterData> enemyCharacters = new List<EnemyCharacterData>();
 }

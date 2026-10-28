@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using Random = System.Random;
 
@@ -62,10 +63,22 @@ public class GameManager : MonoBehaviour
 
     IEnumerator Initialize()
     {
-        _menuSystem.Initialize(this, StartNewGame, LoadGameFromFile);
-        _battleSystem.Initialize(this,SaveGame);
+        _menuSystem.Initialize(this, StartNewAdventure, LoadAdventureFromFile);
+        _battleSystem.Initialize(this,SaveGameWithBattle);
         _cameraSystem.Initialize(this);
-        _saveSystem.Initialize(this);
+        
+        Task loadTask = _saveSystem.Initialize(this);
+        yield return new WaitUntil(() => loadTask.IsCompleted);
+
+        if (_saveSystem.LoadedGameFound)
+        {
+            _currentSaveData = _saveSystem.LoadGame();
+        }
+        else
+        {
+            _currentSaveData = new SaveData();
+            SaveGame();
+        }
         
         _initialized = true;
         InitializedEvent?.Invoke();
@@ -121,38 +134,38 @@ public class GameManager : MonoBehaviour
     public int GetNewMainRandom(int inclusiveFloor, int exclusiveCeiling)
     {
         int num = _mainRandom.Next(inclusiveFloor, exclusiveCeiling);
-        _currentSaveData.mainRandomCalls++;
+        _currentSaveData.battleState.mainRandomCalls++;
         return num;
     }
     
     public int GetNewTargetRandom(int inclusiveFloor, int exclusiveCeiling)
     {
         int num = _mainRandom.Next(inclusiveFloor, exclusiveCeiling);
-        _currentSaveData.targetRandomCalls++;
+        _currentSaveData.battleState.targetRandomCalls++;
         return num;
     }
     
     public int GetNewMiscRandom(int inclusiveFloor, int exclusiveCeiling)
     {
         int num = _mainRandom.Next(inclusiveFloor, exclusiveCeiling);
-        _currentSaveData.miscRandomCalls++;
+        _currentSaveData.battleState.miscRandomCalls++;
         return num;
     }
 
     [ContextMenu("Start New Game")]
-    private void StartNewGame()
+    private void StartNewAdventure()
     {
         GenerateNewSeed();
         GenerateRandomMachines();
-        _currentSaveData = new SaveData();
-        _currentSaveData.mainRandomCalls = 0;
-        _currentSaveData.targetRandomCalls = 0;
-        _currentSaveData.miscRandomCalls = 0;
+        _currentSaveData.battleState = new BattleSystemState();
+        _currentSaveData.battleState.mainRandomCalls = 0;
+        _currentSaveData.battleState.targetRandomCalls = 0;
+        _currentSaveData.battleState.miscRandomCalls = 0;
 
         _battleSystem.StartNewBattle(0);
     }
 
-    public void LoadGameFromFile()
+    public void LoadAdventureFromFile()
     {
         if (!_saveSystem.LoadedGameFound)
         {
@@ -160,19 +173,19 @@ public class GameManager : MonoBehaviour
         }
         
         var data = _saveSystem.LoadGame();
-        _mainDiceSeed = data.mainSeed;
+        _mainDiceSeed = data.battleState.mainSeed;
         GenerateRandomMachines();
         _currentSaveData = data;
 
-        for (int i = 0; i < data.mainRandomCalls;i++)
+        for (int i = 0; i < data.battleState.mainRandomCalls;i++)
         {
             _mainRandom.Next();
         }
-        for (int i = 0; i < data.targetRandomCalls;i++)
+        for (int i = 0; i < data.battleState.targetRandomCalls;i++)
         {
             _targetRandom.Next();
         }
-        for (int i = 0; i < data.miscRandomCalls;i++)
+        for (int i = 0; i < data.battleState.miscRandomCalls;i++)
         {
             _miscRandom.Next();
         }
@@ -182,8 +195,13 @@ public class GameManager : MonoBehaviour
 
     public void SaveGame()
     {
-        _currentSaveData.battleState = _battleSystem.GetBattleSystemState();
         _saveSystem.SaveGame(_currentSaveData);
+    }
+    
+    public void SaveGameWithBattle()
+    {
+        _currentSaveData.battleState = _battleSystem.GetBattleSystemState();
+        SaveGame();
     }
     
     private int StringToDeterministicHash(string str)

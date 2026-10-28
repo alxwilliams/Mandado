@@ -977,6 +977,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7598188574114386483, guid: 933a28806fdbca04da05100098e19242, type: 3}
+      propertyPath: m_Name
+      value: Groudn Plane
+      objectReference: {fileID: 0}
     - target: {fileID: 7622111052676628121, guid: 933a28806fdbca04da05100098e19242, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1026,7 +1030,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 2283503040722249694, guid: 933a28806fdbca04da05100098e19242, type: 3}
+    - {fileID: 668462911137142313, guid: 933a28806fdbca04da05100098e19242, type: 3}
+    - {fileID: 5065403658469070073, guid: 933a28806fdbca04da05100098e19242, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3043992192964314749, guid: 933a28806fdbca04da05100098e19242, type: 3}
