@@ -48,6 +48,11 @@ public class RewardSystem : BaseSystem
                 {
                     aliveCount++;
                 }
+                else
+                {
+                    allAbove75 = false;
+                    allBelow25 = false;
+                }
 
                 if (allAbove75 && (character.currentHealth / character.maxHealth < .75f))
                 {

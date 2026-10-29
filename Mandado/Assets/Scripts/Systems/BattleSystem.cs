@@ -264,14 +264,14 @@ public partial class BattleSystem : BaseSystem
     
     private IEnumerator AttackRoutine()
     {
+        yield return PlayerDiceActions();
+        
         bool playerBled = DealWithPlayerBleedDamage();
 
         if (playerBled)
         {
             yield return  new WaitForSeconds(_timeAfterBleedDamage);
         }
-        
-        yield return PlayerDiceActions();
         
         if(!_enemyDied)
         {
@@ -313,6 +313,7 @@ public partial class BattleSystem : BaseSystem
         }
         else
         {
+            _currentSaveState.rewardData.enemyKilledOnTheirTurn = true;
             _enemyDied = true;
         }
     }
@@ -390,6 +391,10 @@ public partial class BattleSystem : BaseSystem
 
     private void EndPlayerTurn()
     {
+        if (_currentSaveState.amountOfRerolls == 3)
+        {
+            _currentSaveState.rewardData.noRerollCount++;
+        }
         _currentSaveState.canAttack = false;
         _currentSaveState.amountOfCripple = 0;
         UpdateUI();
@@ -402,7 +407,7 @@ public partial class BattleSystem : BaseSystem
             if (_currentSaveState.activeDiceRolls[i] > 0 && _currentSaveState.playerCharacters[i].IsAlive && _currentSaveState.playerCharacters[i].classType != ClassType.Empty)
             {
                 yield return DealWithPlayerAction(_currentSaveState.playerCharacters[i].actionSet.GetActionSetFromRollNumber(_currentSaveState.activeDiceRolls[i]),
-                    _currentSaveState.playerCharacters[i],i);
+                    _currentSaveState.playerCharacters[i],i,_currentSaveState.activeDiceRolls[i]);
 
                 if (_enemyDied)
                 {
@@ -673,13 +678,19 @@ public partial class BattleSystem : BaseSystem
         //player rolls less dice
     }
 
-    private IEnumerator DealWithPlayerAction(List<PlayerCharacterAction> actions, PlayerCharacterData data, int castingUnitIndex, bool maxRoll = false)
+    private IEnumerator DealWithPlayerAction(List<PlayerCharacterAction> actions, PlayerCharacterData data, int castingUnitIndex, int rollNumber)
     {
+        bool maxRoll = rollNumber == 5;
+
+        if (maxRoll)
+        {
+            _currentSaveState.rewardData.fiveOfAKindsUsed++;
+        }
+        
         yield return new WaitForSeconds(_fieldController.PlayerCharacterMoveForward(data));
 
         foreach (var action in actions)
         {
-            
             if (action.type == PlayerActionType.Damage)
             {
 
@@ -910,8 +921,15 @@ public partial class BattleSystem : BaseSystem
         {
             _battleMenu.UpdateEnemyGuardUI(_currentSaveState.enemyCharacters[0].statusEffects[StatusEffects.Guard]);
         }
-        
+
         EnemyTakeDamage(newDamageNum);
+
+        if (newDamageNum >= _currentSaveState.enemyCharacters[0].maxHealth / 2)
+        {
+            _currentSaveState.rewardData.fiftyPercentDamageOneAttack = true;
+        }
+        
+        //todo, check full damage attack here
         
     }
 
