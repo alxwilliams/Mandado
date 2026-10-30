@@ -51,7 +51,7 @@ public partial class BattleSystem : BaseSystem
         SaveGame = saveGame;
         _cameraSystem = gameManager.CameraSystem;
         _menuSystem = gameManager.MenuSystem;
-        _battleMenu.Initialize(gameManager.MenuSystem, RollDice, PlayerAttack, IncreaseActiveDiceRolls, DecreaseActiveDiceRolls);
+        _battleMenu.Initialize(gameManager.MenuSystem, RollDice, StartAttackSequence, IncreaseActiveDiceRolls, DecreaseActiveDiceRolls);
 
         foreach (var details in _intentTextDetails)
         {
@@ -245,7 +245,7 @@ public partial class BattleSystem : BaseSystem
         return false;
     }
 
-    private void PlayerAttack()
+    private void StartAttackSequence()
     {
         if (!_currentSaveState.canAttack)
         {
@@ -285,6 +285,8 @@ public partial class BattleSystem : BaseSystem
             _cameraSystem.SwitchToEnemyView();
             yield return new WaitForSeconds(_timeBeforeEnemyAttacks);
 
+            ResetEnemyGuard();
+            
             yield return EnemyAttackActions();
 
             yield return new WaitForSeconds(_timeAfterEnemyAttacks);
@@ -303,7 +305,7 @@ public partial class BattleSystem : BaseSystem
 
         _attackRoutine = null;
     }
-
+    
     private void EndEnemyTurn()
     {
         DealWithEnemyBleedDamage();
@@ -319,7 +321,7 @@ public partial class BattleSystem : BaseSystem
             _enemyDied = true;
         }
     }
-
+    
     private void StartPlayerTurn(bool init = false)
     {
         _currentSaveState.amountOfRerolls = 3;
@@ -337,60 +339,6 @@ public partial class BattleSystem : BaseSystem
         }
     }
 
-    private void ResetEnemyGuard()
-    {
-        if (_currentSaveState.enemyCharacters[0].statusEffects.ContainsKey(StatusEffects.Guard) &&
-            _currentSaveState.enemyCharacters[0].statusEffects[StatusEffects.Guard] != 0)
-        {
-            _currentSaveState.enemyCharacters[0].statusEffects[StatusEffects.Guard] = 0;
-            _battleMenu.UpdateEnemyGuardUI(0);
-        }
-    }
-    
-    
-    private void ResetPlayerGuard()
-    {
-        for (int i = 0; i < _currentSaveState.playerCharacters.Count; i++)
-        {
-            if (_currentSaveState.playerCharacters[i].statusEffects.ContainsKey(StatusEffects.Guard) && _currentSaveState.playerCharacters[i].statusEffects[StatusEffects.Guard] != 0 )
-            {
-                _currentSaveState.playerCharacters[i].statusEffects[StatusEffects.Guard] = 0;
-                _battleMenu.UpdatePlayerCharacterGuardUI(i,0);
-            }
-        }
-    }
-
-    private void DealWithEnemyBleedDamage()
-    {
-        foreach (var character in _currentSaveState.enemyCharacters)
-        {
-            if (character.statusEffects.ContainsKey(StatusEffects.Bleed) && character.statusEffects[StatusEffects.Bleed] > 0)
-            {
-                EnemyTakeDamage(character.statusEffects[StatusEffects.Bleed], StatusEffects.Bleed);
-                character.statusEffects[StatusEffects.Bleed]--;
-                
-                _battleMenu.UpdateEnemyBleedUI(character.statusEffects[StatusEffects.Bleed]);
-            }
-        }
-    }
-    private bool DealWithPlayerBleedDamage()
-    {
-        bool playerBled = false;
-        foreach (var character in _currentSaveState.playerCharacters)
-        {
-            if (character.statusEffects.ContainsKey(StatusEffects.Bleed) && character.statusEffects[StatusEffects.Bleed] > 0)
-            {
-                PlayerTakeDamage(character.currentIndex,character.statusEffects[StatusEffects.Bleed], StatusEffects.Bleed);
-                character.statusEffects[StatusEffects.Bleed]--;
-                
-                _battleMenu.UpdatePlayerCharacterBleedUI(character.currentIndex, character.statusEffects[StatusEffects.Bleed]);
-                playerBled = true;
-            }
-        }
-
-        return playerBled;
-    }
-
     private void EndPlayerTurn()
     {
         if (_currentSaveState.amountOfRerolls == 3)
@@ -400,35 +348,6 @@ public partial class BattleSystem : BaseSystem
         _currentSaveState.canAttack = false;
         _currentSaveState.amountOfCripple = 0;
         UpdateUI();
-    }
-
-    private IEnumerator PlayerDiceActions()
-    {
-        for (int i = 0; i < _currentSaveState.playerCharacters.Count; i++)
-        {
-            if (_currentSaveState.activeDiceRolls[i] > 0 && _currentSaveState.playerCharacters[i].IsAlive && _currentSaveState.playerCharacters[i].classType != ClassType.Empty)
-            {
-                yield return DealWithPlayerAction(_currentSaveState.playerCharacters[i].actionSet.GetActionSetFromRollNumber(_currentSaveState.activeDiceRolls[i]),
-                    _currentSaveState.playerCharacters[i],i,_currentSaveState.activeDiceRolls[i]);
-
-                if (_enemyDied)
-                {
-                    break;
-                }
-                
-                ResetIndexedPlayerFocus(i);
-                
-                UpdateUI();
-                
-                yield return new WaitForSeconds(_waitTimeBetweenAttacks);
-            }
-            else if(_currentSaveState.playerCharacters[i].currentFocus < 3 && _currentSaveState.playerCharacters[i].currentHealth > 0)
-            {
-                _currentSaveState.playerCharacters[i].currentFocus++;
-                CheckForPassiveFocusAbilities(i);
-                UpdateUI();
-            }
-        }
     }
 
     private void PlayerStraightCheck()
@@ -493,207 +412,6 @@ public partial class BattleSystem : BaseSystem
         SaveGame?.Invoke();
     }
 
-    private List<EnemyAttackSet> GetPotentialEnemyAttacks()
-    {
-        var currentEnemy = _currentSaveState.enemyCharacters[0];
-        List<EnemyAttackSet> _potentialAttackSets = new List<EnemyAttackSet>();
-
-        foreach (var attackSet in currentEnemy.enemyActions)
-        {
-            bool conditionPass = true;
-            
-            foreach (var condition in attackSet.conditionList)
-            {
-                if (condition.condition == EnemyAttackCondition.HealthLowerThan && currentEnemy.currentHealth > condition.value)
-                {
-                    conditionPass = false;
-                    break;
-                }
-                
-                if (condition.condition == EnemyAttackCondition.HealthGreaterThan && currentEnemy.currentHealth < condition.value)
-                {
-                    conditionPass = false;
-                    break;
-                }
-
-                if (condition.condition == EnemyAttackCondition.TurnCountEqualTo && _currentSaveState.turnNumber != condition.value)
-                {
-                    conditionPass = false;
-                    break;
-                }
-                
-                if (condition.condition == EnemyAttackCondition.TurnCountGreaterThan && _currentSaveState.turnNumber < condition.value)
-                {
-                    conditionPass = false;
-                    break;
-                }
-                
-                if (condition.condition == EnemyAttackCondition.TurnCountLessThan && _currentSaveState.turnNumber > condition.value)
-                {
-                    conditionPass = false;
-                    break;
-                }
-                
-                if (condition.condition == EnemyAttackCondition.PlayerHasHealed && !_currentSaveState.playerHasHealed)
-                {
-                    conditionPass = false;
-                    break;
-                }
-                
-                if (condition.condition == EnemyAttackCondition.PlayerHasNotHealed && _currentSaveState.playerHasHealed)
-                {
-                    conditionPass = false;
-                    break;
-                }
-            }
-
-            if (conditionPass)
-            {
-                _potentialAttackSets.Add(attackSet);
-            }
-        }
-
-        return _potentialAttackSets;
-    }
-
-    private void GenerateEnemyActions()
-    {
-        if (_currentEnemyAttackSet == null ||
-            _currentEnemyAttackSet.sequencedAttacks == null
-            || _currentEnemyAttackIndex >= _currentEnemyAttackSet.sequencedAttacks.Count)
-        {
-            List<EnemyAttackSet> listOfAttacks = GetPotentialEnemyAttacks();
-
-            _currentEnemyAttackIndex = 0;
-            _currentEnemyAttackSet = listOfAttacks[_gameManager.GetNewMainRandom(0,listOfAttacks.Count)];
-        }
-
-        foreach (var action in _currentEnemyAttackSet.sequencedAttacks[_currentEnemyAttackIndex].actionSet)
-        {
-            if (action.type == EnemyActionType.DamageRandom ||
-                action.type == EnemyActionType.BleedRandom ||
-                action.type == EnemyActionType.DamageAndDamageNearby)
-            {
-                action.targetIndex = GetNewPlayerIndex();
-            }
-            
-        }
-        
-        _battleMenu.ShowEnemyIntent(_currentEnemyAttackSet.sequencedAttacks[_currentEnemyAttackIndex].actionSet);
-    }
-    
-    private IEnumerator EnemyAttackActions()
-    {
-        yield return DealWithEnemyAction(_currentEnemyAttackSet.sequencedAttacks[_currentEnemyAttackIndex].actionSet,
-            _currentSaveState.enemyCharacters[0]);
-        
-        _currentEnemyAttackIndex++;
-    }
-
-    private IEnumerator DealWithEnemyAction(List<EnemyCharacterAction> actions, EnemyCharacterData data, bool maxRoll = false)
-    {
-        foreach (var action in actions)
-        {                    
-            yield return new WaitForSeconds(_fieldController.EnemyCharacterMoveForward(data));
-
-            if (action.type == EnemyActionType.DamageRandom)
-            {
-                if(!maxRoll)
-                {
-                    EnemyAttackPlayer(action.targetIndex,action.value);
-                }
-                else
-                {
-                    //yield return new WaitForSeconds(_fieldController.CharacterBigAttack(data));
-                    EnemyAttackPlayer(action.targetIndex,action.value);
-                }
-            }
-            
-            if (action.type == EnemyActionType.DamageAndDamageNearby)
-            {
-                if(!maxRoll)
-                {
-                    EnemyAttackPlayer(action.targetIndex,action.value);
-                    EnemyAttackPlayer(action.targetIndex-1,action.value);
-                    EnemyAttackPlayer(action.targetIndex+1,action.value);
-                }
-                else
-                {
-                    //yield return new WaitForSeconds(_fieldController.CharacterBigAttack(data));
-                    EnemyAttackPlayer(action.targetIndex,action.value);
-                    EnemyAttackPlayer(action.targetIndex-1,action.value);
-                    EnemyAttackPlayer(action.targetIndex+1,action.value);
-                }
-            }
-
-            if (action.type == EnemyActionType.Cripple)
-            {
-                PlayerGainCripple(action.value);
-            }
-
-
-            if (action.type == EnemyActionType.Guard)
-            {
-                GuardEnemyUnit(action.value);
-            }
-
-            if (action.type == EnemyActionType.Heal)
-            {
-                HealEnemyUnit(action.value);
-            }
-            
-            if (action.type == EnemyActionType.BleedRandom)
-            {
-                ApplyPlayerBleed(action.targetIndex, action.value);
-            }
-
-            if (action.type == EnemyActionType.BleedAll)
-            {
-                for (int i = 0; i < _currentSaveState.playerCharacters.Count; i++)
-                {
-                    ApplyPlayerBleed(i,action.value);
-                }
-            }
-
-            if (action.type == EnemyActionType.Focus)
-            {
-                if (data.currentFocus < 3)
-                {
-                    data.currentFocus+=action.value;
-
-                    if (data.currentFocus > 3)
-                    {
-                        data.currentFocus = 3;
-                    }
-                    
-                    _battleMenu.UpdateEnemyUI(data);
-                }
-            }
-
-            yield return new WaitForSeconds(_waitTimeBetweenAttacks);
-        }
-
-        _battleMenu.ResetTargetIndicators();
-
-        if (data.currentFocus >= 3)
-        {
-            if (data.enemyFocusAbility == EnemyFocusAbility.Tragos)
-            {
-                yield return new WaitForSeconds(_fieldController.EnemyCharacterMoveForward(data));
-                TragosFocusAttack();
-            }
-
-            if (data.enemyFocusAbility == EnemyFocusAbility.Cabra)
-            {
-                yield return new WaitForSeconds(_fieldController.EnemyCharacterMoveForward(data));
-                CabraFocusAttack();
-            }
-
-            data.currentFocus = 0;
-            _battleMenu.UpdateEnemyUI(data);
-        }
-    }
-
     private void PlayerGainCripple(float amountOfCripple)
     {
         _currentSaveState.amountOfCripple += (int)amountOfCripple;
@@ -701,251 +419,10 @@ public partial class BattleSystem : BaseSystem
         //player rolls less dice
     }
 
-    private IEnumerator DealWithPlayerAction(List<PlayerCharacterAction> actions, PlayerCharacterData data, int castingUnitIndex, int rolledNumber)
-    {
-        bool maxRoll = rolledNumber == 5;
-
-        if (maxRoll)
-        {
-            _currentSaveState.rewardData.fiveOfAKindsUsed++;
-        }
-        
-        yield return new WaitForSeconds(_fieldController.PlayerCharacterMoveForward(data));
-
-        foreach (var action in actions)
-        {
-            if (action.type == PlayerActionType.Damage)
-            {
-
-                float damage = action.value;
-                
-                if (data.statusEffects.ContainsKey(StatusEffects.Empower) &&
-                    data.statusEffects[StatusEffects.Empower] > 0)
-                {
-                    damage += data.statusEffects[StatusEffects.Empower];
-
-                    data.statusEffects[StatusEffects.Empower] = 0;
-                    _battleMenu.UpdatePlayerCharacterEmpowerUI(castingUnitIndex, 0);
-                }
-                
-                if(!maxRoll)
-                {
-                    PlayerAttackEnemy(damage);
-                }
-                else
-                {
-                    PlayerAttackEnemy(damage);
-                }
-
-
-                if (CheckEnemyHealth())
-                {
-                    _enemyDied = true;
-                    break;
-                }
-                
-            }
-
-            if (action.type == PlayerActionType.Bleed)
-            {
-                ApplyEnemyBleed(action.value);
-            }
-
-
-            if (action.type == PlayerActionType.Heal)
-            {
-
-                for (int i = 0; i < 6;i++) 
-                {
-                    HealPlayerUnit(i, action.value);
-                }
-                    
-                _currentSaveState.playerHasHealed = true;
-            }
-            
-
-            if (action.type == PlayerActionType.Guard)
-            {
-                for (int i = 0; i < 6;i++) 
-                {
-                    GuardPlayerUnit(i, action.value);
-                }
-                
-            }
-
-            if (action.type == PlayerActionType.Order)
-            {
-                AddOrder(action.value);
-            }
-
-            if (action.type == PlayerActionType.Empower)
-            {
-                for (int i = 0; i < 6;i++) 
-                {
-                    EmpowerPlayerUnit(i, action.value);
-                }
-                
-            }
-
-            if (action.type == PlayerActionType.Inspire)
-            {
-                for (int i = 0; i < 6;i++) 
-                {
-                    _currentSaveState.playerCharacters[i].currentFocus++;
-                    _battleMenu.UpdatePlayerCharacterFocus(_currentSaveState.playerCharacters[i]);
-                }
-                
-            }
-
-            yield return new WaitForSeconds(0.1f);
-        }
-
-        if(!_enemyDied)
-        {
-            _fieldController.WipePlayerCharacterIntent(data);
-            _battleMenu.ResetDice(castingUnitIndex);
-        }
-    }
-
-    private void EmpowerPlayerUnit(int unitIndex, float amount)
-    {
-        if (_currentSaveState.playerCharacters[unitIndex].classType == ClassType.Empty || !_currentSaveState.playerCharacters[unitIndex].IsAlive)
-        {
-            return;
-        }
-        
-        if (_currentSaveState.playerCharacters[unitIndex].statusEffects.ContainsKey(StatusEffects.Empower))
-        {
-            _currentSaveState.playerCharacters[unitIndex].statusEffects[StatusEffects.Empower] += amount;
-        }
-        else
-        {
-            _currentSaveState.playerCharacters[unitIndex].statusEffects[StatusEffects.Empower] = amount;
-        }
-        
-        
-        _battleMenu.UpdatePlayerCharacterEmpowerUI(unitIndex,
-            (_currentSaveState.playerCharacters[unitIndex].statusEffects[StatusEffects.Empower]));
-    }
-
     private void AddOrder(float newValue)
     {
         _currentSaveState.currentOrderTokens = newValue;
         _battleMenu.UpdateOrderTokenText(_currentSaveState.currentOrderTokens);
-    }
-
-    private void GuardPlayerUnit(int unitIndex, float amount)
-    {
-        if (_currentSaveState.playerCharacters[unitIndex].classType == ClassType.Empty || !_currentSaveState.playerCharacters[unitIndex].IsAlive)
-        {
-            return;
-        }
-        
-        if (_currentSaveState.playerCharacters[unitIndex].statusEffects.ContainsKey(StatusEffects.Guard))
-        {
-            _currentSaveState.playerCharacters[unitIndex].statusEffects[StatusEffects.Guard] += amount;
-        }
-        else
-        {
-            _currentSaveState.playerCharacters[unitIndex].statusEffects[StatusEffects.Guard] = amount;
-        }
-        
-        _battleMenu.UpdatePlayerCharacterGuardUI(unitIndex,_currentSaveState.playerCharacters[unitIndex].statusEffects[StatusEffects.Guard]);
-    }
-
-    private void ApplyPlayerBleed(int index, float amount)
-    {
-        if (_currentSaveState.playerCharacters[index].classType == ClassType.Empty || !_currentSaveState.playerCharacters[index].IsAlive)
-        {
-            return;
-        }
-        
-        if(_currentSaveState.playerCharacters[index].statusEffects.ContainsKey(StatusEffects.Bleed))
-        {
-            _currentSaveState.playerCharacters[index].statusEffects[StatusEffects.Bleed] += amount;
-        }
-        else
-        {
-            _currentSaveState.playerCharacters[index].statusEffects.Add(StatusEffects.Bleed,amount);
-        }
-        
-        
-        _fieldController.PlayerGainBleedDebuff(_currentSaveState.playerCharacters[index]);
-        _battleMenu.UpdatePlayerCharacterBleedUI(index,_currentSaveState.playerCharacters[index].statusEffects[StatusEffects.Bleed]);
-    }
-    
-    private void ApplyEnemyBleed(float amount)
-    {
-        if (_currentSaveState.enemyCharacters[0].statusEffects.ContainsKey(StatusEffects.Bleed))
-        {
-            _currentSaveState.enemyCharacters[0].statusEffects[StatusEffects.Bleed] += amount;
-        }
-        else
-        {
-            _currentSaveState.enemyCharacters[0].statusEffects.Add(StatusEffects.Bleed,amount);
-        }
-        
-        _fieldController.EnemyGainBleedDebuff(_currentSaveState.enemyCharacters[0]);
-        _battleMenu.UpdateEnemyBleedUI(_currentSaveState.enemyCharacters[0].statusEffects[StatusEffects.Bleed]);
-    }
-
-    private void HealPlayerUnit(int unitIndex, float amount)
-    {
-        if (_currentSaveState.playerCharacters[unitIndex].classType == ClassType.Empty || !_currentSaveState.playerCharacters[unitIndex].IsAlive)
-        {
-            return;
-        }
-        
-        if (_currentSaveState.playerCharacters[unitIndex].currentHealth + amount >=
-            _currentSaveState.playerCharacters[unitIndex].maxHealth)
-        {
-            amount = _currentSaveState.playerCharacters[unitIndex].maxHealth -
-                     _currentSaveState.playerCharacters[unitIndex].currentHealth;
-        }
-        
-        _currentSaveState.playerCharacters[unitIndex].currentHealth += amount;
-        _fieldController.PlayerCharacterGetHealed(_currentSaveState.playerCharacters[unitIndex], amount);
-    }
-    
-    private void GuardEnemyUnit(float amount)
-    {
-
-        if (_currentSaveState.enemyCharacters[0].statusEffects.ContainsKey(StatusEffects.Guard))
-        {
-            _currentSaveState.enemyCharacters[0].statusEffects[StatusEffects.Guard] += amount;
-        }
-        else
-        {
-            _currentSaveState.enemyCharacters[0].statusEffects[StatusEffects.Guard] = amount;
-        }
-        
-        _battleMenu.UpdateEnemyGuardUI(_currentSaveState.enemyCharacters[0].statusEffects[StatusEffects.Guard]);
-    }
-
-    private void HealEnemyUnit(float amount)
-    {
-        if (_currentSaveState.enemyCharacters[0].currentHealth + amount >
-            _currentSaveState.enemyCharacters[0].maxHealth)
-        {
-            amount = _currentSaveState.enemyCharacters[0].maxHealth -
-                     _currentSaveState.enemyCharacters[0].currentHealth;
-        }
-        
-        _currentSaveState.enemyCharacters[0].currentHealth += amount;
-        _fieldController.EnemyCharacterGetHealed(_currentSaveState.enemyCharacters[0],amount);
-    }
-
-    private void PlayerAttackEnemy(float num)
-    {
-        int enemyIndex = 0;
-        float newDamageNum = CheckStatusEffectsForGuard(ref _currentSaveState.enemyCharacters[enemyIndex].statusEffects, num);
-
-        if (num != newDamageNum)
-        {
-            _battleMenu.UpdateEnemyGuardUI(_currentSaveState.enemyCharacters[0].statusEffects[StatusEffects.Guard]);
-        }
-
-        EnemyTakeDamage(newDamageNum);
     }
 
     private int GetNewPlayerIndex()
@@ -981,49 +458,6 @@ public partial class BattleSystem : BaseSystem
 
         return playerIndex;
     }
-    
-    private void EnemyAttackPlayer(int playerIndex, float num)
-    {
-        if (playerIndex < 0 || playerIndex >= 6)
-        {
-            return;
-        }
-        
-        
-        if (_currentSaveState.playerCharacters[playerIndex].classType == ClassType.Warrior &&
-            _currentSaveState.playerCharacters[playerIndex].currentFocus > 0)
-        {
-            FocusWarriorCheckCounterDamage(_currentSaveState.playerCharacters[playerIndex]);
-        }
-
-        float newDamageNum = CheckStatusEffectsForGuard(ref _currentSaveState.playerCharacters[playerIndex].statusEffects, num);
-
-        if (num != newDamageNum)
-        {
-            _battleMenu.UpdatePlayerCharacterGuardUI(playerIndex,_currentSaveState.playerCharacters[playerIndex].statusEffects[StatusEffects.Guard]);
-        }
-        
-        PlayerTakeDamage(playerIndex, newDamageNum);
-    }
-
-    private void EnemyTakeDamage(float num, StatusEffects effect = StatusEffects.Guard)
-    {
-        _currentSaveState.enemyCharacters[0].currentHealth -= num;
-
-        if (effect == StatusEffects.Bleed)
-        {
-            _fieldController.EnemyTakeBleedDamage(_currentSaveState.enemyCharacters[0], num);
-        }
-        else
-        {
-            _fieldController.EnemyTakeDamageDamage(_currentSaveState.enemyCharacters[0], num);
-        }
-
-        EnemyDamagedRewardChecks(num);
-        
-        _battleMenu.UpdateEnemyUI(_currentSaveState.enemyCharacters[0]);
-        
-    }
 
     private void EnemyDamagedRewardChecks(float damage)
     {
@@ -1045,28 +479,6 @@ public partial class BattleSystem : BaseSystem
         {
             _currentSaveState.enemyCharacters[0].tookDamageThisBattle = true;
         }
-    }
-    
-    private void PlayerTakeDamage(int index, float num, StatusEffects effect = StatusEffects.Guard)
-    {
-        _currentSaveState.playerCharacters[index].currentHealth -= num;
-
-        if (effect == StatusEffects.Bleed)
-        {
-            _fieldController.PlayerTakeBleedDamage(_currentSaveState.playerCharacters[index], num);
-        }
-        else
-        {
-            _fieldController.PlayerTakeDamageDamage(_currentSaveState.playerCharacters[index], num);
-        }
-        
-        _battleMenu.UpdatePlayerCharacterHealth(_currentSaveState.playerCharacters[index]);
-
-        if (!_currentSaveState.playerCharacters[index].IsAlive)
-        {
-            PlayerDead(index);
-        }
-        
     }
 
     private void PlayerDead(int unitIndex)
