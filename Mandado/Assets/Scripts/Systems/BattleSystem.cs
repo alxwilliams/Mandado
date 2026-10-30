@@ -266,6 +266,8 @@ public partial class BattleSystem : BaseSystem
     {
         yield return PlayerDiceActions();
         
+        PlayerStraightCheck();
+        
         bool playerBled = DealWithPlayerBleedDamage();
 
         if (playerBled)
@@ -426,6 +428,27 @@ public partial class BattleSystem : BaseSystem
                 CheckForPassiveFocusAbilities(i);
                 UpdateUI();
             }
+        }
+    }
+
+    private void PlayerStraightCheck()
+    {
+        if (_currentSaveState.activeDiceRolls[0] > 0 &&
+            _currentSaveState.activeDiceRolls[1] > 0 &&
+            _currentSaveState.activeDiceRolls[2] > 0 &&
+            _currentSaveState.activeDiceRolls[3] > 0 &&
+            _currentSaveState.activeDiceRolls[4] > 0)
+        {
+            _currentSaveState.rewardData.straightsUsed ++;
+        }
+        
+        if (_currentSaveState.activeDiceRolls[5] > 0 &&
+            _currentSaveState.activeDiceRolls[1] > 0 &&
+            _currentSaveState.activeDiceRolls[2] > 0 &&
+            _currentSaveState.activeDiceRolls[3] > 0 &&
+            _currentSaveState.activeDiceRolls[4] > 0)
+        {
+            _currentSaveState.rewardData.straightsUsed ++;
         }
     }
 
@@ -678,9 +701,9 @@ public partial class BattleSystem : BaseSystem
         //player rolls less dice
     }
 
-    private IEnumerator DealWithPlayerAction(List<PlayerCharacterAction> actions, PlayerCharacterData data, int castingUnitIndex, int rollNumber)
+    private IEnumerator DealWithPlayerAction(List<PlayerCharacterAction> actions, PlayerCharacterData data, int castingUnitIndex, int rolledNumber)
     {
-        bool maxRoll = rollNumber == 5;
+        bool maxRoll = rolledNumber == 5;
 
         if (maxRoll)
         {
@@ -923,14 +946,6 @@ public partial class BattleSystem : BaseSystem
         }
 
         EnemyTakeDamage(newDamageNum);
-
-        if (newDamageNum >= _currentSaveState.enemyCharacters[0].maxHealth / 2)
-        {
-            _currentSaveState.rewardData.fiftyPercentDamageOneAttack = true;
-        }
-        
-        //todo, check full damage attack here
-        
     }
 
     private int GetNewPlayerIndex()
@@ -1003,9 +1018,33 @@ public partial class BattleSystem : BaseSystem
         {
             _fieldController.EnemyTakeDamageDamage(_currentSaveState.enemyCharacters[0], num);
         }
-        
+
+        EnemyDamagedRewardChecks(num);
         
         _battleMenu.UpdateEnemyUI(_currentSaveState.enemyCharacters[0]);
+        
+    }
+
+    private void EnemyDamagedRewardChecks(float damage)
+    {
+        float halfHealth = _currentSaveState.enemyCharacters[0].maxHealth / 2;
+        
+        if (_currentSaveState.enemyCharacters[0].currentHealth >= halfHealth &&
+            damage >= halfHealth)
+        {
+            _currentSaveState.rewardData.fiftyPercentDamageOneAttack = true;
+        }
+
+        if (!_currentSaveState.enemyCharacters[0].IsAlive && !_currentSaveState.enemyCharacters[0].tookDamageThisBattle)
+        {
+            _currentSaveState.rewardData.enemyKilledWithOneAttack = true;
+        }
+
+        if (!_currentSaveState.enemyCharacters[0].tookDamageThisBattle &&
+            _currentSaveState.enemyCharacters[0].currentHealth != _currentSaveState.enemyCharacters[0].maxHealth)
+        {
+            _currentSaveState.enemyCharacters[0].tookDamageThisBattle = true;
+        }
     }
     
     private void PlayerTakeDamage(int index, float num, StatusEffects effect = StatusEffects.Guard)

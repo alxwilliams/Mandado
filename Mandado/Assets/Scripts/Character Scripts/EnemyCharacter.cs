@@ -18,6 +18,7 @@ public class EnemyCharacter : BaseCharacter
       data.enemyActions = _enemyActions;
       data.maxHealth = _baseHealth;
       data.currentFocus = 0;
+      data.tookDamageThisBattle = false;
 
       data.statusEffects = new Dictionary<StatusEffects, float>();
       data.characterSpriteData = _characterSpriteData;
@@ -41,6 +42,7 @@ public class EnemyCharacterData
    public Dictionary<StatusEffects, float> statusEffects;
    public float width;
    public CharacterSpriteData characterSpriteData;
+   public bool tookDamageThisBattle = false;
    
    public bool IsAlive
    {
