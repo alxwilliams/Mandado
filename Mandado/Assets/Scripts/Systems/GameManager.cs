@@ -44,6 +44,8 @@ public class GameManager : MonoBehaviour
 
     public string MainDiceSeed => _mainDiceSeed;
 
+    private bool _inBattle = false;
+
     void Awake()
     {
         if (Instance == null)
@@ -92,6 +94,30 @@ public class GameManager : MonoBehaviour
         yield return null;
         _menuSystem.ShowTitleScreen();
     }
+
+    public void GameOver()
+    {
+        BackToTitleScreen();
+        ResetBattle();
+    }
+
+    public void Victory()
+    {
+        BackToTitleScreen();
+        ResetBattle();
+    }
+
+    private void ResetBattle()
+    {
+        _currentSaveData.battleState = new BattleSystemState();
+        SaveGame();
+    }
+
+    private void BackToTitleScreen()
+    {
+        _inBattle = false;
+        _menuSystem.ShowTitleScreen();
+    }
     
     private void GenerateNewSeed()
     {
@@ -111,6 +137,11 @@ public class GameManager : MonoBehaviour
     {
         _currentSaveData.coins += coins;
         SaveGame();
+    }
+
+    public int GetCoinData()
+    {
+        return _currentSaveData.coins;
     }
 
     public void ShowRewardMenu()
@@ -169,6 +200,13 @@ public class GameManager : MonoBehaviour
     [ContextMenu("Start New Game")]
     private void StartNewAdventure()
     {
+        if (_inBattle)
+        {
+            return;
+        }
+
+        _inBattle = true;
+        _currentSaveData.battleState.battleStarted = true;
         GenerateNewSeed();
         GenerateRandomMachines();
         _currentSaveData.battleState = new BattleSystemState();
@@ -176,16 +214,17 @@ public class GameManager : MonoBehaviour
         _currentSaveData.battleState.targetRandomCalls = 0;
         _currentSaveData.battleState.miscRandomCalls = 0;
 
-        _battleSystem.StartNewBattle(0);
+        _battleSystem.GoToNextSequencedEvent(0);
     }
 
     public void LoadAdventureFromFile()
     {
-        if (!_saveSystem.LoadedGameFound)
+        if (!_saveSystem.LoadedGameFound || _inBattle || !_currentSaveData.battleState.battleStarted)
         {
             return;
         }
-        
+
+        _inBattle = true;
         var data = _saveSystem.LoadGame();
         _mainDiceSeed = data.battleState.mainSeed;
         GenerateRandomMachines();
@@ -221,7 +260,7 @@ public class GameManager : MonoBehaviour
     public void StartNextIndexedBattle()
     {
         _currentSaveData.battleState.currentEnemyIndex++;
-        _battleSystem.StartNewBattle(_currentSaveData.battleState.currentEnemyIndex);
+        _battleSystem.GoToNextSequencedEvent(_currentSaveData.battleState.currentEnemyIndex);
     }
     
     private int StringToDeterministicHash(string str)

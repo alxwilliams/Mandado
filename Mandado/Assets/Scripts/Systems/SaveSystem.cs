@@ -107,6 +107,7 @@ public class RewardData
 [Serializable]
 public class BattleSystemState
 {
+    public bool battleStarted = false;
     public string mainSeed;
     public int mainRandomCalls;
     public int targetRandomCalls;

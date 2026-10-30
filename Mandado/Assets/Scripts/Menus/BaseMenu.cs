@@ -28,7 +28,7 @@ public class BaseMenu : MonoBehaviour
         _initialized = true;
     }
 
-    public void Show(bool show)
+    public virtual void Show(bool show)
     {
         if(show)
         {

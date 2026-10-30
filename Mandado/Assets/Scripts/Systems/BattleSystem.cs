@@ -120,7 +120,6 @@ public partial class BattleSystem : BaseSystem
         LoadInBattleState(_currentSaveState);
         UpdateUI();
         
-        _enemyDied = false;
         GameLoaded?.Invoke();
         _loadCharactersRoutine = null;
     }
@@ -139,6 +138,7 @@ public partial class BattleSystem : BaseSystem
     public void LoadInBattleState(BattleSystemState state)
     {
         //_battleMenu.OpenTrays();
+        _enemyDied = false;
         _battleMenu.UpdateOrderTokenText(_currentSaveState.currentOrderTokens);
         _battleMenu.SetRerollNumber(_currentSaveState.amountOfRerolls);
         _battleMenu.LoadInStatusEffects(state);
@@ -146,16 +146,17 @@ public partial class BattleSystem : BaseSystem
         StartPlayerTurn(true);
     }
 
-    public void StartNewBattle(int newEnemyIndex)
+    public void GoToNextSequencedEvent(int newEnemyIndex)
     {
         if (newEnemyIndex >= _enemyCharacters.Count)
         {
-            //You Win!
             Debug.Log("YOU WIN!");
+            _gameManager.Victory();
         }
         else
         {
             BattleSystemState newState = new BattleSystemState();
+            _enemyDied = false;
             
             newState.currentEnemyIndex = newEnemyIndex;
             
@@ -293,7 +294,13 @@ public partial class BattleSystem : BaseSystem
 
             EndEnemyTurn();
             
-            if(!_enemyDied)
+            bool playerIsStillAlive = CheckPlayerStillHasUnits();
+
+            if (!playerIsStillAlive)
+            {
+                _gameManager.GameOver();
+            }
+            else if(!_enemyDied)
             {
                 StartPlayerTurn();
             }
@@ -479,6 +486,22 @@ public partial class BattleSystem : BaseSystem
         {
             _currentSaveState.enemyCharacters[0].tookDamageThisBattle = true;
         }
+    }
+
+    private bool CheckPlayerStillHasUnits()
+    {
+        bool someoneIsAlive = false;
+        
+        foreach (var player in _currentSaveState.playerCharacters)
+        {
+            if (player.IsAlive)
+            {
+                someoneIsAlive = true;
+                break;
+            }
+        }
+
+        return someoneIsAlive;
     }
 
     private void PlayerDead(int unitIndex)

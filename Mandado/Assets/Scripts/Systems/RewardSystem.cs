@@ -57,7 +57,8 @@ public class RewardSystem : BaseSystem
                 if (allAbove75 && (character.currentHealth / character.maxHealth < .75f))
                 {
                     allAbove75 = false;
-                }else if (allBelow25 && (character.currentHealth / character.maxHealth > .25f))
+                }
+                else if (allBelow25 && (character.currentHealth / character.maxHealth > .25f))
                 {
                     allBelow25 = false;
                 }
@@ -84,15 +85,15 @@ public class RewardSystem : BaseSystem
             resultString += $"Straight used {battleResults.rewardData.straightsUsed} times: {val}\n";
         }
         
-        if (battleResults.turnNumber == 1)
+        if (battleResults.turnNumber == 0)
         {
             coinCount += _winningOnTurn1;
             resultString += $"Winning on turn 1: {_winningOnTurn1}\n";
-        }else if (battleResults.turnNumber == 2)
+        }else if (battleResults.turnNumber == 1)
         {
             coinCount += _winningOnTurn2;
             resultString += $"Winning on turn 2: {_winningOnTurn2}\n";
-        }else if (battleResults.turnNumber == 3)
+        }else if (battleResults.turnNumber == 2)
         {
             coinCount += _winningOnTurn3;
             resultString += $"Winning on turn 3: {_winningOnTurn3}\n";
