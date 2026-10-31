@@ -32,9 +32,9 @@ public class RewardSystem : BaseSystem
     public string GetRewards()
     {
         var battleResults = _battleSystem.GetBattleSystemState();
-        int coinCount = 0;
+        int coinCount = 5;
         int val;
-        string resultString = "";
+        string resultString = "Winning the fight!: 5\n";
         
         int aliveCount = 0;
         bool allAbove75 = true;
