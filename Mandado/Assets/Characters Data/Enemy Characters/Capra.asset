@@ -16,20 +16,20 @@ MonoBehaviour:
   _width: 15
   _baseHealth: 58
   _characterSpriteData:
-    _frontIdleSprite1: {fileID: 21300000, guid: d0973cd194cdf6942ad0aa679f5cabf0, type: 3}
-    _frontIdleSprite2: {fileID: 21300000, guid: e9ae68f1a9e0fde4d848cd2cbf7ea75b, type: 3}
-    _frontIdleSprite3: {fileID: 21300000, guid: 4764138541b75ec4da7b89b6848b8411, type: 3}
-    _frontAttackSprite1: {fileID: 21300000, guid: 28688532e1bbb2c40b7f5d2d297bb37f, type: 3}
-    _frontAttackSprite2: {fileID: 21300000, guid: 98c46c8cb2a255b4e9ff9123c45fa192, type: 3}
-    _frontAttackSprite3: {fileID: 21300000, guid: 4f268f6cf0e9ef34b9311480142ab800, type: 3}
-    _characterLabel: {fileID: 21300000, guid: 43cf44cb80ee21c41a4cf2c399e48695, type: 3}
+    _frontIdleSprite1: {fileID: 21300000, guid: 0c75cf8246b882a47a0b106b95e8151a, type: 3}
+    _frontIdleSprite2: {fileID: 21300000, guid: 4857c9d0dd8bcda4985df673dcff875e, type: 3}
+    _frontIdleSprite3: {fileID: 21300000, guid: 7a20fae1bd66d8b47ba2a2937b4e3dc8, type: 3}
+    _frontAttackSprite1: {fileID: 21300000, guid: 0c75cf8246b882a47a0b106b95e8151a, type: 3}
+    _frontAttackSprite2: {fileID: 21300000, guid: a88feaca6166c134d94efeef984a0d3b, type: 3}
+    _frontAttackSprite3: {fileID: 21300000, guid: 312d3cbad7d1a9647a1a72c294db177c, type: 3}
+    _characterLabel: {fileID: 21300000, guid: c3a913e3e6f264240b30098c199db36b, type: 3}
   _enemyActions:
   - conditionList: []
     sequencedAttacks:
     - actionSet:
       - value: 12
         type: 5
-        targetIndex: 2
+        targetIndex: 3
     - actionSet:
       - value: 2
         type: 6

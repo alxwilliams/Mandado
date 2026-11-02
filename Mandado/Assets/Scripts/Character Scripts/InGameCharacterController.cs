@@ -86,15 +86,32 @@ public class InGameCharacterController : MonoBehaviour
         _intentDetails.text = "";
     }
     
-    public void ChangeCharacterIntent(List<PlayerCharacterAction> newIntents)
+    public void ChangeCharacterIntent(List<PlayerCharacterAction> newIntents, Dictionary<StatusEffects, float> effects, float damageMultiplier, bool turnHasPassed)
     {
         _intentDetails.text = "";
         IntentTextDetails details;
         
-        foreach (var intent in newIntents)
+        if(!turnHasPassed)
         {
-            details = _battleSystem.GetIntentTextDetails(intent.type);
-            _intentDetails.text += $"<color=#{ColorUtility.ToHtmlStringRGB(details.textColor)}> {intent.value} {details.spriteIndex} </color>\n";
+            foreach (var intent in newIntents)
+            {
+                details = _battleSystem.GetIntentTextDetails(intent.type);
+
+                float value = intent.value;
+
+                if (intent.type == PlayerActionType.Damage || intent.type == PlayerActionType.PierceDamage)
+                {
+                    if (effects.ContainsKey(StatusEffects.Empower))
+                    {
+                        value += effects[StatusEffects.Empower];
+                    }
+
+                    value = MathF.Ceiling(damageMultiplier * value);
+                }
+
+                _intentDetails.text +=
+                    $"<color=#{ColorUtility.ToHtmlStringRGB(details.textColor)}> {value} {details.spriteIndex} </color>\n";
+            }
         }
     }
 

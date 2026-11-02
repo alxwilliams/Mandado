@@ -111,29 +111,45 @@ public partial class BattleSystem
             {
                 if(!maxRoll)
                 {
-                    EnemyAttackPlayer(action.targetIndex,action.value);
+                    EnemyAttackPlayer(GetNewPlayerIndex(),action.value);
                 }
                 else
                 {
                     //yield return new WaitForSeconds(_fieldController.CharacterBigAttack(data));
-                    EnemyAttackPlayer(action.targetIndex,action.value);
+                    EnemyAttackPlayer(GetNewPlayerIndex(),action.value);
+                }
+            }
+
+            if (action.type == EnemyActionType.DamageLowestHealth)
+            {
+                
+                
+                if(!maxRoll)
+                {
+                    EnemyAttackPlayer(GetLowestPlayerHealthIndex(),action.value);
+                }
+                else
+                {
+                    EnemyAttackPlayer(GetLowestPlayerHealthIndex(),action.value);
                 }
             }
             
             if (action.type == EnemyActionType.DamageAndDamageNearby)
             {
+                int target = GetNewPlayerIndex();
+                
                 if(!maxRoll)
                 {
-                    EnemyAttackPlayer(action.targetIndex,action.value);
-                    EnemyAttackPlayer(action.targetIndex-1,action.value);
-                    EnemyAttackPlayer(action.targetIndex+1,action.value);
+                    EnemyAttackPlayer(target,action.value);
+                    EnemyAttackPlayer(target-1,action.value);
+                    EnemyAttackPlayer(target+1,action.value);
                 }
                 else
                 {
                     //yield return new WaitForSeconds(_fieldController.CharacterBigAttack(data));
-                    EnemyAttackPlayer(action.targetIndex,action.value);
-                    EnemyAttackPlayer(action.targetIndex-1,action.value);
-                    EnemyAttackPlayer(action.targetIndex+1,action.value);
+                    EnemyAttackPlayer(target,action.value);
+                    EnemyAttackPlayer(target-1,action.value);
+                    EnemyAttackPlayer(target+1,action.value);
                 }
             }
 
@@ -155,7 +171,7 @@ public partial class BattleSystem
             
             if (action.type == EnemyActionType.BleedRandom)
             {
-                ApplyPlayerBleed(action.targetIndex, action.value);
+                ApplyPlayerBleed(GetNewPlayerIndex(), action.value);
             }
 
             if (action.type == EnemyActionType.BleedAll)
@@ -197,7 +213,13 @@ public partial class BattleSystem
             if (data.enemyFocusAbility == EnemyFocusAbility.Cabra)
             {
                 yield return new WaitForSeconds(_fieldController.EnemyCharacterMoveForward(data));
-                CabraFocusAttack();
+                CapraFocusAttack();
+            }
+
+            if (data.enemyFocusAbility == EnemyFocusAbility.Obsilat)
+            {
+                yield return new WaitForSeconds(_fieldController.EnemyCharacterMoveForward(data));
+                ObsilatFocusAttack();
             }
 
             data.currentFocus = 0;

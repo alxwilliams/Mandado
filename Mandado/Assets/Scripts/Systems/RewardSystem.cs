@@ -89,11 +89,13 @@ public class RewardSystem : BaseSystem
         {
             coinCount += _winningOnTurn1;
             resultString += $"Winning on turn 1: {_winningOnTurn1}\n";
-        }else if (battleResults.turnNumber == 1)
+        }
+        else if (battleResults.turnNumber == 1)
         {
             coinCount += _winningOnTurn2;
             resultString += $"Winning on turn 2: {_winningOnTurn2}\n";
-        }else if (battleResults.turnNumber == 2)
+        }
+        else if (battleResults.turnNumber == 2)
         {
             coinCount += _winningOnTurn3;
             resultString += $"Winning on turn 3: {_winningOnTurn3}\n";

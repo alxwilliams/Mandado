@@ -27,6 +27,22 @@ public partial class BattleSystem
         return highestIndexedSentinel;
     }
 
+    private float CheckTrackerFullPoints()
+    {
+        float multiplier = 1f;
+        
+        for (int i = 0; i < _currentSaveState.playerCharacters.Count; i++)
+        {
+            if (_currentSaveState.playerCharacters[i].classType == ClassType.Tracker &&
+                _currentSaveState.playerCharacters[i].currentFocus == 3 && _currentSaveState.playerCharacters[i].actionSet.focusValues[0] > multiplier)
+            {
+                return _currentSaveState.playerCharacters[i].actionSet.focusValues[0];
+            }
+        }
+
+        return multiplier;
+    }
+    
     private void FocusSentinelCheckForHeals(PlayerCharacterData character)
     {
         if (character.classType == ClassType.Sentinel && character.currentFocus > 0)
@@ -67,12 +83,17 @@ public partial class BattleSystem
 
     #region EnemyChecks
 
-    private void CabraFocusAttack()
+    private void CapraFocusAttack()
     {
         foreach (var data in _currentSaveState.playerCharacters)
         {
             EnemyAttackPlayer(data.currentIndex,10);
         }
+    }
+
+    private void ObsilatFocusAttack()
+    {
+        EnemyAttackPlayer(GetLowestPlayerHealthIndex(),27);
     }
     
     private void TragosFocusAttack()

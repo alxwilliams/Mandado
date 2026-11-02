@@ -56,5 +56,6 @@ public class EnemyCharacterData
 public enum EnemyFocusAbility
 {
    Tragos,
-   Cabra
+   Cabra,
+   Obsilat
 }

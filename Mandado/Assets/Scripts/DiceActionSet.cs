@@ -97,6 +97,7 @@ public enum PlayerActionType
     Bleed,
     Empower,
     Inspire,
+    PierceDamage
     //Sometimes We'll Need Specific IDs if, for example, the 3FP cast does something different. 
 }
 
@@ -110,7 +111,8 @@ public enum EnemyActionType
     DamageAndDamageNearby,
     Cripple,
     Guard,
-    Heal
+    Heal,
+    DamageLowestHealth
 }
 
 

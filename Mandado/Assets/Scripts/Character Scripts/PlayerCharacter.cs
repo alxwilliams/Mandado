@@ -63,6 +63,7 @@ public class PlayerCharacterData
     public Dictionary<StatusEffects, float> statusEffects;
     public float currentDamageMultiplier = 1;
     public float width;
+    public bool turnHasPassed = false;
     public CharacterSpriteData characterSpriteData;
     public int currentIndex;
 
@@ -86,6 +87,7 @@ public enum ClassType
     Sentinel,
     Pilgrim,
     Warrior,
+    Tracker,
     Empty
 }
 

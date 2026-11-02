@@ -229,6 +229,7 @@ public partial class BattleSystem : BaseSystem
 
     public void UpdateUI()
     {
+        ChangePlayerIntentStates();
         _battleMenu.SetRerollNumber(_currentSaveState.amountOfRerolls);
         _battleMenu.UpdatePlayerCharacters(_currentSaveState.playerCharacters);
         _battleMenu.UpdateEnemyUI(_currentSaveState.enemyCharacters[0]);
@@ -332,6 +333,12 @@ public partial class BattleSystem : BaseSystem
     private void StartPlayerTurn(bool init = false)
     {
         _currentSaveState.amountOfRerolls = 3;
+
+        foreach (var character in _currentSaveState.playerCharacters)
+        {
+            character.turnHasPassed = false;
+        }
+        
         ResetPlayerGuard();
         ResetPlayerDiceTrays();
         GenerateEnemyActions();
@@ -402,7 +409,7 @@ public partial class BattleSystem : BaseSystem
 
     private void ChangePlayerIntentStates()
     {
-        _fieldController.UpdatePlayerStates(_currentSaveState);
+        _fieldController.UpdatePlayerIntentStates(_currentSaveState,CheckTrackerFullPoints());
     }
 
     public void SwapCharacters(int character1, int character2)
@@ -464,6 +471,25 @@ public partial class BattleSystem : BaseSystem
         }
 
         return playerIndex;
+    }
+
+    private int GetLowestPlayerHealthIndex()
+    {
+        float lowestHealth = 999;
+        int index = -1;
+        
+        for(int i =0; i < 6;i++)
+        {
+            if (_currentSaveState.playerCharacters[i].classType != ClassType.Empty &&
+                _currentSaveState.playerCharacters[i].IsAlive &&
+                _currentSaveState.playerCharacters[i].currentHealth < lowestHealth)
+            {
+                lowestHealth = _currentSaveState.playerCharacters[i].currentHealth;
+                index = i;
+            }
+        }
+
+        return index;
     }
 
     private void EnemyDamagedRewardChecks(float damage)

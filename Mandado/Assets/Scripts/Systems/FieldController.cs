@@ -46,21 +46,19 @@ public class FieldController : MonoBehaviour
         }
     }
 
-    public void UpdatePlayerStates(BattleSystemState state)
+    public void UpdatePlayerIntentStates(BattleSystemState state, float damageMultiplier)
     {
         PlayerCharacterData data;
         
         for (int i = 0; i < state.playerCharacters.Count; i++)
         {
             data = state.playerCharacters[i];
-            
-            InGameCharacterController controller = _playerControllerDictionary[data];
-            List<PlayerCharacterAction> actionSet = data.actionSet.GetActionSetFromRollNumber(state.activeDiceRolls[i]);
 
-            if (controller.CurrentCharacterIntents != actionSet)
-            {
-                controller.ChangeCharacterIntent(actionSet);
-            }
+            InGameCharacterController controller = _playerControllerDictionary[data];
+            List<PlayerCharacterAction> actionSet =
+                data.actionSet.GetActionSetFromRollNumber(state.activeDiceRolls[i]);
+            
+            controller.ChangeCharacterIntent(actionSet, data.statusEffects, damageMultiplier, data.turnHasPassed);
         }
     }
 

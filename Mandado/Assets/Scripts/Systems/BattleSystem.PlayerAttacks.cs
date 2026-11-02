@@ -20,6 +20,7 @@ public partial class BattleSystem
                 
                 ResetIndexedPlayerFocus(i);
                 
+                _currentSaveState.playerCharacters[i].turnHasPassed = true;
                 UpdateUI();
                 
                 yield return new WaitForSeconds(_waitTimeBetweenAttacks);
@@ -28,14 +29,17 @@ public partial class BattleSystem
             {
                 _currentSaveState.playerCharacters[i].currentFocus++;
                 CheckForPassiveFocusAbilities(i);
+                _currentSaveState.playerCharacters[i].turnHasPassed = true;
                 UpdateUI();
             }
+
         }
     }
     
     private IEnumerator DealWithPlayerAction(List<PlayerCharacterAction> actions, PlayerCharacterData data, int castingUnitIndex, int rolledNumber)
     {
         bool maxRoll = rolledNumber == 5;
+        bool playerAttacked = false;
 
         if (maxRoll)
         {
@@ -46,28 +50,28 @@ public partial class BattleSystem
 
         foreach (var action in actions)
         {
-            if (action.type == PlayerActionType.Damage)
+            if (action.type == PlayerActionType.Damage || action.type == PlayerActionType.PierceDamage)
             {
-
                 float damage = action.value;
-                
+
                 if (data.statusEffects.ContainsKey(StatusEffects.Empower) &&
                     data.statusEffects[StatusEffects.Empower] > 0)
                 {
                     damage += data.statusEffects[StatusEffects.Empower];
-
-                    data.statusEffects[StatusEffects.Empower] = 0;
-                    _battleMenu.UpdatePlayerCharacterEmpowerUI(castingUnitIndex, 0);
                 }
+                
+                damage = Mathf.Ceil(CheckTrackerFullPoints() * damage);
                 
                 if(!maxRoll)
                 {
-                    PlayerAttackEnemy(damage);
+                    PlayerAttackEnemy(damage, action.type == PlayerActionType.PierceDamage);
                 }
                 else
                 {
-                    PlayerAttackEnemy(damage);
+                    PlayerAttackEnemy(damage, action.type == PlayerActionType.PierceDamage);
                 }
+
+                playerAttacked = true;
 
 
                 if (CheckEnemyHealth())
@@ -116,20 +120,34 @@ public partial class BattleSystem
                 {
                     EmpowerPlayerUnit(i, action.value);
                 }
-                
+
+                ChangePlayerIntentStates();
             }
 
             if (action.type == PlayerActionType.Inspire)
             {
                 for (int i = 0; i < 6;i++) 
                 {
-                    _currentSaveState.playerCharacters[i].currentFocus++;
-                    _battleMenu.UpdatePlayerCharacterFocus(_currentSaveState.playerCharacters[i]);
+                    if(_currentSaveState.playerCharacters[i].currentFocus < 3)
+                    {
+                        _currentSaveState.playerCharacters[i].currentFocus++;
+                        _battleMenu.UpdatePlayerCharacterFocus(_currentSaveState.playerCharacters[i]);
+                    }
                 }
+                
+                ChangePlayerIntentStates();
                 
             }
 
             yield return new WaitForSeconds(0.1f);
+        }
+        
+        if (playerAttacked &&
+            data.statusEffects.ContainsKey(StatusEffects.Empower) &&
+            data.statusEffects[StatusEffects.Empower] > 0)
+        {
+            data.statusEffects[StatusEffects.Empower] = 0;
+            _battleMenu.UpdatePlayerCharacterEmpowerUI(castingUnitIndex, 0);
         }
 
         if(!_enemyDied)
@@ -163,17 +181,26 @@ public partial class BattleSystem
         
     }
     
-    private void PlayerAttackEnemy(float num)
+    private void PlayerAttackEnemy(float num, bool ignoreGuard = false)
     {
         int enemyIndex = 0;
-        float newDamageNum = CheckStatusEffectsForGuard(ref _currentSaveState.enemyCharacters[enemyIndex].statusEffects, num);
-
-        if (num != newDamageNum)
+        
+        if(!ignoreGuard)
         {
-            _battleMenu.UpdateEnemyGuardUI(_currentSaveState.enemyCharacters[0].statusEffects[StatusEffects.Guard]);
-        }
+            float newDamageNum =
+                CheckStatusEffectsForGuard(ref _currentSaveState.enemyCharacters[enemyIndex].statusEffects, num);
 
-        EnemyTakeDamage(newDamageNum);
+            if (num != newDamageNum)
+            {
+                _battleMenu.UpdateEnemyGuardUI(_currentSaveState.enemyCharacters[0].statusEffects[StatusEffects.Guard]);
+            }
+
+            EnemyTakeDamage(newDamageNum);
+        }
+        else
+        {
+            EnemyTakeDamage(num);
+        }
     }
 
     private bool DealWithPlayerBleedDamage()
