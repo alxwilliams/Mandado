@@ -12,16 +12,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 090e94e55b33624449471849d902cf55, type: 3}
   m_Name: Obsilat
   m_EditorClassIdentifier: 
-  _name: 
+  _name: Obsilat
   _width: 10
-  _baseHealth: 15
+  _baseHealth: 80
   _characterSpriteData:
-    _frontIdleSprite1: {fileID: 0}
-    _frontIdleSprite2: {fileID: 0}
-    _frontIdleSprite3: {fileID: 0}
-    _frontAttackSprite1: {fileID: 0}
-    _frontAttackSprite2: {fileID: 0}
-    _frontAttackSprite3: {fileID: 0}
-    _characterLabel: {fileID: 0}
-  _enemyActions: []
-  _enemyFocusAbility: 0
+    _frontIdleSprite1: {fileID: 21300000, guid: d06b62019cde70a4ca8561f1f13a9d4d, type: 3}
+    _frontIdleSprite2: {fileID: 21300000, guid: 9c82d2962bf9dfc4997cf5c004adbbd1, type: 3}
+    _frontIdleSprite3: {fileID: 21300000, guid: 4e5db8c319094254e81758fc3cd6366c, type: 3}
+    _frontAttackSprite1: {fileID: 21300000, guid: 9571e95c66799a84abe1f70738d7f2c0, type: 3}
+    _frontAttackSprite2: {fileID: 21300000, guid: 88e1d35a36e944945b68ddd60a7de864, type: 3}
+    _frontAttackSprite3: {fileID: 21300000, guid: 8d1688ba3b3600b46b3c18f20094816c, type: 3}
+    _characterLabel: {fileID: 21300000, guid: e4ae67cd85628cf41994707915c7cb06, type: 3}
+  _enemyActions:
+  - conditionList: []
+    sequencedAttacks:
+    - actionSet:
+      - value: 10
+        type: 7
+        targetIndex: 0
+      - value: 8
+        type: 9
+        targetIndex: 0
+  - conditionList: []
+    sequencedAttacks:
+    - actionSet:
+      - value: 14
+        type: 7
+        targetIndex: 0
+    - actionSet:
+      - value: 5
+        type: 7
+        targetIndex: 0
+      - value: 11
+        type: 9
+        targetIndex: 0
+    - actionSet:
+      - value: 10
+        type: 7
+        targetIndex: 0
+      - value: 2
+        type: 0
+        targetIndex: 0
+  _enemyFocusAbility: 2

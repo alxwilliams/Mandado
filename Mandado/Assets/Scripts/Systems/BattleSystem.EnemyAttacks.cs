@@ -6,17 +6,17 @@ public partial class BattleSystem
 {
     private void GenerateEnemyActions()
     {
-        if (_currentEnemyAttackSet == null ||
-            _currentEnemyAttackSet.sequencedAttacks == null
-            || _currentEnemyAttackIndex >= _currentEnemyAttackSet.sequencedAttacks.Count)
+        if (_currentSaveState.currentEnemyAttackSet == null ||
+            _currentSaveState.currentEnemyAttackSet.sequencedAttacks == null
+            || _currentSaveState.currentEnemyAttackIndex >= _currentSaveState.currentEnemyAttackSet.sequencedAttacks.Count)
         {
             List<EnemyAttackSet> listOfAttacks = GetPotentialEnemyAttacks();
 
-            _currentEnemyAttackIndex = 0;
-            _currentEnemyAttackSet = listOfAttacks[_gameManager.GetNewMainRandom(0,listOfAttacks.Count)];
+            _currentSaveState.currentEnemyAttackIndex = 0;
+            _currentSaveState.currentEnemyAttackSet = listOfAttacks[_gameManager.GetNewMainRandom(0,listOfAttacks.Count)];
         }
 
-        foreach (var action in _currentEnemyAttackSet.sequencedAttacks[_currentEnemyAttackIndex].actionSet)
+        foreach (var action in _currentSaveState.currentEnemyAttackSet.sequencedAttacks[_currentSaveState.currentEnemyAttackIndex].actionSet)
         {
             if (action.type == EnemyActionType.DamageRandom ||
                 action.type == EnemyActionType.BleedRandom ||
@@ -27,15 +27,15 @@ public partial class BattleSystem
             
         }
         
-        _battleMenu.ShowEnemyIntent(_currentEnemyAttackSet.sequencedAttacks[_currentEnemyAttackIndex].actionSet);
+        _battleMenu.ShowEnemyIntent(_currentSaveState.currentEnemyAttackSet.sequencedAttacks[_currentSaveState.currentEnemyAttackIndex].actionSet);
     }
     
     private IEnumerator EnemyAttackActions()
     {
-        yield return DealWithEnemyAction(_currentEnemyAttackSet.sequencedAttacks[_currentEnemyAttackIndex].actionSet,
+        yield return DealWithEnemyAction(_currentSaveState.currentEnemyAttackSet.sequencedAttacks[_currentSaveState.currentEnemyAttackIndex].actionSet,
             _currentSaveState.enemyCharacters[0]);
         
-        _currentEnemyAttackIndex++;
+        _currentSaveState.currentEnemyAttackIndex++;
     }
     
     private List<EnemyAttackSet> GetPotentialEnemyAttacks()

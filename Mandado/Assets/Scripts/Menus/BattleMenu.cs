@@ -231,7 +231,7 @@ public class BattleMenu : BaseMenu
         
         foreach (var action in actions)
         {
-            if (action.type == EnemyActionType.DamageRandom)
+            if (action.type == EnemyActionType.DamageRandom || action.type == EnemyActionType.DamageLowestHealth)
             {
                 _enemyIntentDebugText.text += "Damaging Target ";
                 _characterUIs[action.targetIndex].SetTargetIndicator(true);

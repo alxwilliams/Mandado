@@ -644,12 +644,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2772939637584318596, guid: 037f72b4c413c2842bbf38a300cafcac, type: 3}
       propertyPath: _enemyCharacters.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2772939637584318596, guid: 037f72b4c413c2842bbf38a300cafcac, type: 3}
       propertyPath: _fakeEnemyData.Array.data[0]
       value: 
       objectReference: {fileID: 11400000, guid: 5cbac042aa2108a4f8b793c65655e473, type: 2}
+    - target: {fileID: 2772939637584318596, guid: 037f72b4c413c2842bbf38a300cafcac, type: 3}
+      propertyPath: _intentTextDetails.Array.size
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 2772939637584318596, guid: 037f72b4c413c2842bbf38a300cafcac, type: 3}
       propertyPath: _enemyCharacters.Array.data[0]
       value: 
@@ -658,6 +662,30 @@ PrefabInstance:
       propertyPath: _enemyCharacters.Array.data[1]
       value: 
       objectReference: {fileID: 11400000, guid: 4d84b5ed09b96a146be7e28a70c8105a, type: 2}
+    - target: {fileID: 2772939637584318596, guid: 037f72b4c413c2842bbf38a300cafcac, type: 3}
+      propertyPath: _enemyCharacters.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: 5b1b13040c4b6bf45857044c46a76986, type: 2}
+    - target: {fileID: 2772939637584318596, guid: 037f72b4c413c2842bbf38a300cafcac, type: 3}
+      propertyPath: _intentTextDetails.Array.data[7].type
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 2772939637584318596, guid: 037f72b4c413c2842bbf38a300cafcac, type: 3}
+      propertyPath: _intentTextDetails.Array.data[7].spriteIndex
+      value: <sprite index=7>
+      objectReference: {fileID: 0}
+    - target: {fileID: 2772939637584318596, guid: 037f72b4c413c2842bbf38a300cafcac, type: 3}
+      propertyPath: _intentTextDetails.Array.data[7].textColor.b
+      value: 0.27058825
+      objectReference: {fileID: 0}
+    - target: {fileID: 2772939637584318596, guid: 037f72b4c413c2842bbf38a300cafcac, type: 3}
+      propertyPath: _intentTextDetails.Array.data[7].textColor.g
+      value: 0.3647059
+      objectReference: {fileID: 0}
+    - target: {fileID: 2772939637584318596, guid: 037f72b4c413c2842bbf38a300cafcac, type: 3}
+      propertyPath: _intentTextDetails.Array.data[7].textColor.r
+      value: 0.427451
+      objectReference: {fileID: 0}
     - target: {fileID: 4257364000950128208, guid: 037f72b4c413c2842bbf38a300cafcac, type: 3}
       propertyPath: m_LocalScale.x
       value: 8.98
@@ -944,11 +972,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5618034425297248592, guid: 5aa96ba95d75a77478464495d74764cf, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -10
+      value: -9.999939
       objectReference: {fileID: 0}
     - target: {fileID: 5618034425297248592, guid: 5aa96ba95d75a77478464495d74764cf, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -17.000244
+      value: -17.000366
       objectReference: {fileID: 0}
     - target: {fileID: 7511977276304842743, guid: 5aa96ba95d75a77478464495d74764cf, type: 3}
       propertyPath: m_Pivot.x

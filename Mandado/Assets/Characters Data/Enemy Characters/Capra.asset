@@ -22,7 +22,7 @@ MonoBehaviour:
     _frontAttackSprite1: {fileID: 21300000, guid: 0c75cf8246b882a47a0b106b95e8151a, type: 3}
     _frontAttackSprite2: {fileID: 21300000, guid: a88feaca6166c134d94efeef984a0d3b, type: 3}
     _frontAttackSprite3: {fileID: 21300000, guid: 312d3cbad7d1a9647a1a72c294db177c, type: 3}
-    _characterLabel: {fileID: 21300000, guid: c3a913e3e6f264240b30098c199db36b, type: 3}
+    _characterLabel: {fileID: 21300000, guid: fb328e75f2672074e9f12b0ce335904c, type: 3}
   _enemyActions:
   - conditionList: []
     sequencedAttacks:

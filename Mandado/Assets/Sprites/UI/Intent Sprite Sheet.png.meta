@@ -282,6 +282,27 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Intent Sprite Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 1038
+        width: 394
+        height: 392
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ef7365f39dd45c4e89257ccc9ff02d7
+      internalID: 1557065731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -300,6 +321,9 @@ TextureImporter:
       Intent Sprite Sheet_4: -1256439021
       Intent Sprite Sheet_5: -28520386
       Intent Sprite Sheet_6: -521014769
+      Intent Sprite Sheet_7: 544277862
+      Intent Sprite Sheet_8: -129872812
+      Intent Sprite Sheet_9: 1557065731
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

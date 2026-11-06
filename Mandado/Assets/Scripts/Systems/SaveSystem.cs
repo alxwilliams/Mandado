@@ -114,7 +114,9 @@ public class BattleSystemState
     public int miscRandomCalls;
     public int turnNumber = 0;
     public int currentEnemyIndex = 0;
+    public int currentEnemyAttackIndex = 0;
     public float  currentOrderTokens =0;
+    public EnemyAttackSet currentEnemyAttackSet;
     public int[] activeDiceRolls = new int[6];
     public int amountOfRerolls = 3;
     public int diceInCharacterTrays = 0;

@@ -29,9 +29,6 @@ public partial class BattleSystem : BaseSystem
     private MenuSystem _menuSystem;
     private Coroutine _attackRoutine;
     private Coroutine _loadCharactersRoutine;
-    
-    private EnemyAttackSet _currentEnemyAttackSet;
-    private int _currentEnemyAttackIndex;
 
     private BattleSystemState _currentSaveState;
 

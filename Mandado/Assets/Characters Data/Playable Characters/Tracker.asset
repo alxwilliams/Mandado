@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Tracker
   m_EditorClassIdentifier: 
   _name: 
-  _width: 10
-  _baseHealth: 15
+  _width: 6
+  _baseHealth: 25
   _characterSpriteData:
     _frontIdleSprite1: {fileID: 21300000, guid: c343506ba2008c94781d1adaedaf9204, type: 3}
     _frontIdleSprite2: {fileID: 21300000, guid: e95279342fb1a75439885ef916d44f55, type: 3}
@@ -22,14 +22,30 @@ MonoBehaviour:
     _frontAttackSprite1: {fileID: 21300000, guid: c343506ba2008c94781d1adaedaf9204, type: 3}
     _frontAttackSprite2: {fileID: 21300000, guid: 871a12295cd27bc4996ea18fde0cbab3, type: 3}
     _frontAttackSprite3: {fileID: 21300000, guid: 1007810e78351bc45af8c736129f5469, type: 3}
-    _characterLabel: {fileID: 21300000, guid: 671fdceb3a4203c428eb64549cef3462, type: 3}
+    _characterLabel: {fileID: 21300000, guid: af6d6b5f9953ba540bba8cbe6bffb613, type: 3}
   _levelUpSets: []
   _baseActionSet:
-    rollOneActions: []
-    rollTwoActions: []
-    rollThreeActions: []
-    rollFourActions: []
-    rollFiveActions: []
+    rollOneActions:
+    - value: 2
+      type: 8
+    rollTwoActions:
+    - value: 4
+      type: 8
+    rollThreeActions:
+    - value: 6
+      type: 8
+    - value: 3
+      type: 11
+    rollFourActions:
+    - value: 9
+      type: 8
+    - value: 5
+      type: 11
+    rollFiveActions:
+    - value: 12
+      type: 8
+    - value: 8
+      type: 11
     focusValueDescription: '[0]: Multiplier for all damage to enemy'
     focusValues:
     - 1.3
