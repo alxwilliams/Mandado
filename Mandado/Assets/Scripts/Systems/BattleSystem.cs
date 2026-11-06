@@ -139,8 +139,8 @@ public partial class BattleSystem : BaseSystem
         _battleMenu.UpdateOrderTokenText(_currentSaveState.currentOrderTokens);
         _battleMenu.SetRerollNumber(_currentSaveState.amountOfRerolls);
         _battleMenu.LoadInStatusEffects(state);
-        _battleMenu.StartBattle();
         StartPlayerTurn(true);
+        _battleMenu.StartBattle();
     }
 
     public void GoToNextSequencedEvent(int newEnemyIndex)

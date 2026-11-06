@@ -9,6 +9,10 @@ public class DiceTrayDiceButton : MonoBehaviour
     [SerializeField] private Button _mainButton;
     [SerializeField] private Button _leftOrderButton;
     [SerializeField] private Button _rightOrderButton;
+    [SerializeField] private Animator _anim;
+    [SerializeField] private Image _image;
+
+    public Image Image => _image;
 
     private Action<int,int> _leftButtonAction;
     private Action<int,int> _rightButtonAction;
@@ -27,6 +31,16 @@ public class DiceTrayDiceButton : MonoBehaviour
         
         _leftOrderButton.onClick.AddListener(OnLeftOrderButtonClicked);
         _rightOrderButton.onClick.AddListener(OnRightOrderButtonClicked);
+    }
+
+    public void PressButton()
+    {
+        _anim.SetTrigger("Gone");
+    }
+    
+    public void ShowButton()
+    {
+        _anim.SetTrigger("Pressed");
     }
 
     public void SetDiceValue(int indexVal, int val)

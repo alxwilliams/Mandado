@@ -189,7 +189,7 @@ public class BattleMenu : BaseMenu
     {
         for(int i = 0; i< _diceTrayButtons.Count;i++)
         {
-            if (!_diceTrayButtons[i].gameObject.activeSelf)
+            if (!_diceTrayButtons[i].Image.enabled)
             {
                 SetDiceInTrayUI(i, diceNum);
                 _decreaseDiceRollsAction?.Invoke(diceNum-1);
@@ -225,6 +225,7 @@ public class BattleMenu : BaseMenu
         _characterUIs[index].SetDead();
     }
 
+    
     public void ShowEnemyIntent(List<EnemyCharacterAction> actions)
     {
         _enemyIntentDebugText.text = "";
@@ -332,11 +333,19 @@ public class BattleMenu : BaseMenu
         _characterUIs[num-1].IncreaseActiveDice();
     }
 
+
+    public override void Show(bool show)
+    {
+        base.Show(show);
+        StartBattle();
+    }
+
     public void StartBattle()
     {
         SetOrderButtons(false);
         ResetDiceTrays();
     }
+
 
     public void UpdateEnemyUI(EnemyCharacterData data)
     {
@@ -412,7 +421,7 @@ public class BattleMenu : BaseMenu
     {
         foreach (var button in _diceTrayButtons)
         {
-            button.gameObject.SetActive(false);
+            button.ShowButton();
         }
 
         foreach (var characterUI in _characterUIs)
@@ -425,15 +434,14 @@ public class BattleMenu : BaseMenu
     {
         _characterUIs[index].ResetDice();
     }
-    
 
     public void DisableDice(int index)
     {
-        var dice = _diceTrayButtons[index].gameObject;
+        var dice = _diceTrayButtons[index];
         
-        if(dice.activeSelf)
+        if(dice.Image.enabled)
         {
-            _diceTrayButtons[index].gameObject.SetActive(false);
+            _diceTrayButtons[index].PressButton();
         }
     }
 
@@ -443,9 +451,9 @@ public class BattleMenu : BaseMenu
         
         if (value != -1)
         {
-            if(!button.gameObject.activeSelf)
+            if(!button.Image.enabled)
             {
-                button.gameObject.SetActive(true);
+                button.ShowButton();
             }
 
             if (value == 1)
@@ -478,7 +486,7 @@ public class BattleMenu : BaseMenu
         }
         else
         {
-            button.gameObject.SetActive(false);
+            button.PressButton();
         }
     }
 
@@ -494,8 +502,8 @@ public class BattleMenu : BaseMenu
             return;
         }
         
-        button.gameObject.SetActive(false);
         SetDiceInCharacterUI(index, _diceTrayDictionary[button]);
+        button.PressButton();
     }
     
     #endregion

@@ -13,21 +13,13 @@ public class PlayerCharacterUI : CharacterUI
     [SerializeField] private Button _orderLeftButton;
     [SerializeField] private Button _orderRightButton;
     
-    
-    [Header("Dice Images/Sprites")] 
-    
-    [SerializeField] private Image _firstDice;
-    [SerializeField] private Image _secondDice;
-    [SerializeField] private Image _thirdDice;
-    [SerializeField] private Image _fourDice;
-    [SerializeField] private Image _fiveDice;
+    [Header("Dice")]
+    [SerializeField] private PlayerCharacterDiceButton _firstDice;
+    [SerializeField] private PlayerCharacterDiceButton _secondDice;
+    [SerializeField] private PlayerCharacterDiceButton _thirdDice;
+    [SerializeField] private PlayerCharacterDiceButton _fourDice;
+    [SerializeField] private PlayerCharacterDiceButton _fiveDice;
 
-    [Header("Dice Buttons")]
-    [SerializeField] private Button _firstButtons;
-    [SerializeField] private Button _secondButtons;
-    [SerializeField] private Button _thirdButtons;
-    [SerializeField] private Button _fourButtons;
-    [SerializeField] private Button _fiveButtons;
 
     private ClassType _classType;
     private Action<int,int> _swapCharacterAction;
@@ -62,11 +54,11 @@ public class PlayerCharacterUI : CharacterUI
         _diceNumber = diceNum;
         DiceButtonPressAction = diceButtonPress;
         
-        _firstButtons.onClick.AddListener(OnDiceButtonPress);
-        _secondButtons.onClick.AddListener(OnDiceButtonPress);
-        _thirdButtons.onClick.AddListener(OnDiceButtonPress);
-        _fourButtons.onClick.AddListener(OnDiceButtonPress);
-        _fiveButtons.onClick.AddListener(OnDiceButtonPress);
+        _firstDice.Button.onClick.AddListener(OnDiceButtonPress);
+        _secondDice.Button.onClick.AddListener(OnDiceButtonPress);
+        _thirdDice.Button.onClick.AddListener(OnDiceButtonPress);
+        _fourDice.Button.onClick.AddListener(OnDiceButtonPress);
+        _fiveDice.Button.onClick.AddListener(OnDiceButtonPress);
         
         _swapCharacterAction = swapCharacters;
         
@@ -159,7 +151,6 @@ public class PlayerCharacterUI : CharacterUI
 
         SetActiveDice(_amountOfActiveDice);
         character2.SetActiveDice(character2.AmountOfActiveDice);
-
         
     }
 
@@ -172,11 +163,51 @@ public class PlayerCharacterUI : CharacterUI
         else
         {
             _amountOfActiveDice = amount;
-            _firstDice.gameObject.SetActive(amount >= 1);
-            _secondDice.gameObject.SetActive(amount >= 2);
-            _thirdDice.gameObject.SetActive(amount >= 3);
-            _fourDice.gameObject.SetActive(amount >= 4);
-            _fiveDice.gameObject.SetActive(amount >= 5);
+
+            if (!_firstDice.Image.enabled && amount >= 1)
+            {
+                _firstDice.Animator.SetTrigger("Pressed");
+            }else if (_firstDice.Image.enabled && amount < 1)
+            {
+                _firstDice.Animator.SetTrigger("Gone");
+            }
+            
+            if (!_secondDice.Image.isActiveAndEnabled && amount >= 2)
+            {
+                _secondDice.Animator.SetTrigger("Pressed");
+            }
+            else if (_secondDice.Image.enabled && amount < 2)
+            {
+                _secondDice.Animator.SetTrigger("Gone");
+            }
+            
+            if (!_thirdDice.Image.isActiveAndEnabled && amount >= 3)
+            {
+                _thirdDice.Animator.SetTrigger("Pressed");
+            }
+            else if (_thirdDice.Image.enabled && amount < 3)
+            {
+                _thirdDice.Animator.SetTrigger("Gone");
+            }
+            
+            if (!_fourDice.Image.isActiveAndEnabled && amount >= 4)
+            {
+                _fourDice.Animator.SetTrigger("Pressed");
+            }
+            else if (_fourDice.Image.enabled && amount < 4)
+            {
+                _fourDice.Animator.SetTrigger("Gone");
+            }
+            
+            if (!_fiveDice.Image.isActiveAndEnabled && amount >= 5)
+            {
+                _fiveDice.Animator.SetTrigger("Pressed");
+            }
+            else if (_fiveDice.Image.enabled && amount < 5)
+            {
+                _fiveDice.Animator.SetTrigger("Gone");
+            }
+            
         }
     }
 
@@ -189,5 +220,13 @@ public class PlayerCharacterUI : CharacterUI
     {
         _swapCharacterAction(_diceNumber-1, _diceNumber);
     }
-    
+
+    private void OnDestroy()
+    {
+        _firstDice.Button.onClick.RemoveAllListeners();
+        _secondDice.Button.onClick.RemoveAllListeners();
+        _thirdDice.Button.onClick.RemoveAllListeners();
+        _fourDice.Button.onClick.RemoveAllListeners();
+        _fiveDice.Button.onClick.RemoveAllListeners();
+    }
 }
